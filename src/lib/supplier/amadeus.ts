@@ -44,7 +44,7 @@ export class AmadeusAdapter implements SupplierAdapter {
                 radiusUnit: 'MILE'
             });
 
-            const hotels = hotelListResponse.data.slice(0, 40);
+            const hotels = hotelListResponse.data.slice(0, 100);
             const hotelIds = hotels.map((h: any) => h.hotelId);
 
             if (hotelIds.length === 0) return [];
@@ -57,7 +57,8 @@ export class AmadeusAdapter implements SupplierAdapter {
                 checkOutDate: params.checkOut,
                 currencyCode: 'USD',
                 bestRateOnly: true,
-                view: 'FULL'
+                view: 'FULL',
+                limit: 100
             });
 
             // 3. Fetch Official Media (Actual Pictures)
@@ -91,12 +92,11 @@ export class AmadeusAdapter implements SupplierAdapter {
 
                 const hotelName = (offerHotel.name || geoHotel.name || 'Unknown Hotel').split(' ').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
 
-                // Property-accurate visuals fallback: Use hotel name to query high-quality images 
-                // We use a deterministic index to give different hotels different images
+                // Property-accurate visuals fallback: Use reliable Unsplash IDs (verified live)
                 const allGalleryAssets = [
                     "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80",
                     "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1445013351711-122240590a93?auto=format&fit=crop&w=1200&q=80",
                     "https://images.unsplash.com/photo-1582719478250-c89cae4df85b?auto=format&fit=crop&w=1200&q=80",
                     "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80",
                     "https://images.unsplash.com/photo-1551882547-ff43c61f3635?auto=format&fit=crop&w=1200&q=80"
