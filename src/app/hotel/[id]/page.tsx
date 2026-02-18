@@ -21,6 +21,7 @@ export default function HotelDetailsPage() {
     const passedPhone = searchParams.get("phone") || "555-0123";
     const lat = parseFloat(searchParams.get("lat") || "0");
     const lng = parseFloat(searchParams.get("lng") || "0");
+    const duration = parseInt(searchParams.get("duration") || "1");
 
     const hasOfficialMedia = searchParams.get("official") === "true";
     const [offer, setOffer] = useState<Offer | null>(null);
@@ -323,7 +324,9 @@ export default function HotelDetailsPage() {
                 <div className="flex items-center justify-between gap-4 max-w-md mx-auto">
                     <div>
                         <div className="text-2xl font-black leading-none">${offer.rates[0].totalAmount}</div>
-                        <div className="text-[10px] text-gray-500 font-bold uppercase mt-1">Due at Property</div>
+                        <div className="text-[10px] text-gray-500 font-bold uppercase mt-1">
+                            Due at Property {duration > 1 ? `· ${duration} Nights` : '· 1 Night'}
+                        </div>
                     </div>
                     <button
                         onClick={() => router.push(checkoutUrl(offer.rates[0].rateId, offer.rates[0].totalAmount))}

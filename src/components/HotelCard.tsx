@@ -7,14 +7,15 @@ import { PriceTrendBar } from "./PriceTrendBar";
 
 interface HotelCardProps {
     offer: Offer;
+    duration?: number;
 }
 
-export function HotelCard({ offer }: HotelCardProps) {
+export function HotelCard({ offer, duration = 1 }: HotelCardProps) {
     const lowestRate = offer.rates[0];
 
     return (
         <Link
-            href={`/hotel/${offer.hotelId}?risk=${offer.supportRisk?.label || 'LOW'}&name=${encodeURIComponent(offer.hotelName)}&amount=${lowestRate.totalAmount}&address=${encodeURIComponent(offer.address || '')}&rating=${offer.rating || ''}&stars=${offer.stars || ''}&phone=${encodeURIComponent(offer.hotelPhone || '')}&lat=${offer.lat}&lng=${offer.lng}&official=${offer.hasOfficialMedia}`}
+            href={`/hotel/${offer.hotelId}?risk=${offer.supportRisk?.label || 'LOW'}&name=${encodeURIComponent(offer.hotelName)}&amount=${lowestRate.totalAmount}&address=${encodeURIComponent(offer.address || '')}&rating=${offer.rating || ''}&stars=${offer.stars || ''}&phone=${encodeURIComponent(offer.hotelPhone || '')}&lat=${offer.lat}&lng=${offer.lng}&official=${offer.hasOfficialMedia}&duration=${duration}`}
             className="block group bg-[#111] border border-gray-800 rounded-2xl lg:rounded-3xl overflow-hidden active:scale-[0.98] transition-all"
         >
             <div className="relative h-28 lg:h-40 w-full border-b border-gray-800">
@@ -71,7 +72,7 @@ export function HotelCard({ offer }: HotelCardProps) {
                             ${lowestRate.totalAmount}
                         </div>
                         <div className="text-[8px] text-gray-500 font-bold uppercase">
-                            Total
+                            Total ({duration} {duration === 1 ? 'night' : 'nights'})
                         </div>
                     </div>
                 </div>

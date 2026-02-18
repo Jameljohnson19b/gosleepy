@@ -9,6 +9,8 @@ export default function LandingPage() {
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<"nearby" | "route">("nearby");
   const [radius, setRadius] = useState(10);
+  const [bookingTime, setBookingTime] = useState<"now" | "nextDay">("now");
+  const [duration, setDuration] = useState(1);
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
 
@@ -18,16 +20,36 @@ export default function LandingPage() {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          router.push(`/results?lat=${latitude}&lng=${longitude}&checkIn=${new Date().toISOString().split('T')[0]}&radius=${radius}`);
+          const searchParams = new URLSearchParams({
+            lat: latitude.toString(),
+            lng: longitude.toString(),
+            radius: radius.toString(),
+            bookingTime,
+            duration: duration.toString()
+          });
+          router.push(`/results?${searchParams.toString()}`);
         },
         (error) => {
           console.error("Location error:", error);
-          // Fallback location (e.g., NYC)
-          router.push(`/results?lat=40.7128&lng=-74.0060&radius=${radius}`);
+          const searchParams = new URLSearchParams({
+            lat: "40.7128",
+            lng: "-74.0060",
+            radius: radius.toString(),
+            bookingTime,
+            duration: duration.toString()
+          });
+          router.push(`/results?${searchParams.toString()}`);
         }
       );
     } else {
-      router.push(`/results?lat=40.7128&lng=-74.0060&radius=${radius}`);
+      const searchParams = new URLSearchParams({
+        lat: "40.7128",
+        lng: "-74.0060",
+        radius: radius.toString(),
+        bookingTime,
+        duration: duration.toString()
+      });
+      router.push(`/results?${searchParams.toString()}`);
     }
   };
 
@@ -35,7 +57,14 @@ export default function LandingPage() {
     e.preventDefault();
     if (!origin || !destination) return;
     setLoading(true);
-    router.push(`/results/route?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}`);
+    const searchParams = new URLSearchParams({
+      origin,
+      destination,
+      radius: radius.toString(),
+      bookingTime,
+      duration: duration.toString()
+    });
+    router.push(`/results/route?${searchParams.toString()}`);
   };
 
   return (
@@ -77,10 +106,44 @@ export default function LandingPage() {
           </button>
         </div>
 
-        <div className="mb-6 space-y-3">
-          <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block text-center">Search Radius (Miles)</label>
-          <div className="flex bg-[#111] p-1 rounded-xl border border-white/5 max-w-[280px] mx-auto">
-            {[10, 25, 50].map((r) => (
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="space-y-3">
+            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block text-center">Check-In</label>
+            <div className="flex bg-[#111] p-1 rounded-xl border border-white/5">
+              {[
+                { id: 'now', label: 'Now' },
+                { id: 'nextDay', label: 'Tomorrow' }
+              ].map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setBookingTime(t.id as "now" | "nextDay")}
+                  className={`flex-1 py-2 px-3 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all ${bookingTime === t.id ? "bg-[#ff10f0] text-white" : "text-gray-500 hover:text-white"}`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-3">
+            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block text-center">Duration</label>
+            <div className="flex bg-[#111] p-1 rounded-xl border border-white/5">
+              {[1, 2, 3, 5].map((d) => (
+                <button
+                  key={d}
+                  onClick={() => setDuration(d)}
+                  className={`flex-1 py-2 px-1 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all ${duration === d ? "bg-[#ff10f0] text-white" : "text-gray-500 hover:text-white"}`}
+                >
+                  {d}d
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-8 space-y-3">
+          <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block text-center">Proximity Alert (Miles)</label>
+          <div className="flex bg-[#111] p-1 rounded-xl border border-white/5">
+            {[10, 25, 50, 100].map((r) => (
               <button
                 key={r}
                 onClick={() => setRadius(r)}
@@ -148,8 +211,8 @@ export default function LandingPage() {
           </form>
         )}
 
-        <p className="mt-8 text-sm text-gray-500 font-medium">
-          TONIGHT · 2 GUESTS · PAY AT PROPERTY
+        <p className="mt-8 text-sm text-gray-500 font-black uppercase tracking-[0.2em]">
+          {bookingTime === 'now' ? 'TONIGHT' : 'TOMORROW'} · {duration} {duration === 1 ? 'NIGHT' : 'NIGHTS'} · 2 GUESTS
         </p>
       </div>
 

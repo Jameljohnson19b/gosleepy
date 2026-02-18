@@ -20,13 +20,34 @@ function RouteContent() {
     const origin = searchParams.get("origin");
     const destination = searchParams.get("destination");
 
+    const bookingTime = searchParams.get("bookingTime") || "now";
+    const duration = parseInt(searchParams.get("duration") || "1");
+
     useEffect(() => {
         async function fetchRoute() {
             try {
+                // Tactical Date Calculation
+                const now = new Date();
+                const checkInDate = new Date();
+                if (bookingTime === "nextDay") {
+                    checkInDate.setDate(now.getDate() + 1);
+                }
+
+                const checkOutDate = new Date(checkInDate);
+                checkOutDate.setDate(checkInDate.getDate() + duration);
+
+                const checkInString = checkInDate.toISOString().split('T')[0];
+                const checkOutString = checkOutDate.toISOString().split('T')[0];
+
                 const res = await fetch("/api/route-hotels", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ origin, destination })
+                    body: JSON.stringify({
+                        origin,
+                        destination,
+                        checkIn: checkInString,
+                        checkOut: checkOutString
+                    })
                 });
                 const d = await res.json();
                 if (d.error) {
@@ -46,7 +67,7 @@ function RouteContent() {
         if (origin && destination) {
             fetchRoute();
         }
-    }, [origin, destination]);
+    }, [origin, destination, bookingTime, duration]);
 
     return (
         <main className="min-h-screen bg-black text-white p-4">
@@ -96,7 +117,7 @@ function RouteContent() {
                                 <div className="mb-2">
                                     <span className="text-[#ff10f0] text-[10px] font-black uppercase tracking-widest">{stop.waypointLabel}</span>
                                 </div>
-                                <HotelCard offer={stop} />
+                                <HotelCard offer={stop} duration={duration} />
                             </div>
                         ))}
 

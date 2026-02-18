@@ -6,7 +6,7 @@ const supplier = process.env.AMADEUS_CLIENT_ID ? new AmadeusAdapter() : (new Moc
 
 export async function POST(req: Request) {
     try {
-        const { origin, destination } = await req.json();
+        const { origin, destination, checkIn, checkOut } = await req.json();
 
         if (!origin || !destination) {
             return NextResponse.json({ error: 'Origin and destination are required' }, { status: 400 });
@@ -45,8 +45,8 @@ export async function POST(req: Request) {
                 lat: wp.lat,
                 lng: wp.lng,
                 radiusMiles: 50, // Wider radius for road trips
-                checkIn: new Date().toISOString().split('T')[0],
-                checkOut: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+                checkIn: checkIn || new Date().toISOString().split('T')[0],
+                checkOut: checkOut || new Date(Date.now() + 86400000).toISOString().split('T')[0],
                 guests: 2
             });
 

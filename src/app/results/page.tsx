@@ -18,18 +18,34 @@ function ResultsContent() {
     const lng = searchParams.get("lng");
     const [radius, setRadius] = useState(parseInt(searchParams.get("radius") || "10"));
 
+    const bookingTime = searchParams.get("bookingTime") || "now";
+    const duration = parseInt(searchParams.get("duration") || "1");
+
     useEffect(() => {
         async function fetchOffers() {
             setLoading(true);
             try {
+                // Tactical Date Calculation
+                const now = new Date();
+                const checkInDate = new Date();
+                if (bookingTime === "nextDay") {
+                    checkInDate.setDate(now.getDate() + 1);
+                }
+
+                const checkOutDate = new Date(checkInDate);
+                checkOutDate.setDate(checkInDate.getDate() + duration);
+
+                const checkInString = checkInDate.toISOString().split('T')[0];
+                const checkOutString = checkOutDate.toISOString().split('T')[0];
+
                 const res = await fetch("/api/search", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         lat: parseFloat(lat || "0"),
                         lng: parseFloat(lng || "0"),
-                        checkIn: new Date().toISOString().split('T')[0],
-                        checkOut: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+                        checkIn: checkInString,
+                        checkOut: checkOutString,
                         guests: 2,
                         radiusMiles: radius
                     })
@@ -46,7 +62,7 @@ function ResultsContent() {
         if (lat && lng) {
             fetchOffers();
         }
-    }, [lat, lng, radius]);
+    }, [lat, lng, radius, bookingTime, duration]);
 
     return (
         <main className="min-h-screen bg-black text-white p-4">
@@ -66,9 +82,14 @@ function ResultsContent() {
                 </div>
 
                 <div className="flex items-center justify-between px-2">
-                    <div className="flex items-center gap-2">
-                        <div className="w-1 h-1 bg-[#ff10f0] rounded-full animate-pulse" />
-                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Boundary Scan</span>
+                    <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                            <div className="w-1 h-1 bg-[#ff10f0] rounded-full animate-pulse" />
+                            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Boundary Scan</span>
+                        </div>
+                        <div className="text-[9px] font-bold text-[#ff10f0]/60 uppercase tracking-[0.2em]">
+                            {bookingTime === 'now' ? 'Booking: Now' : 'Booking: Tomorrow'} · {duration} {duration === 1 ? 'Night' : 'Nights'}
+                        </div>
                     </div>
                     <div className="flex bg-[#111] p-1 rounded-xl border border-white/5 gap-1">
                         {[10, 25, 50].map((r) => (
@@ -93,7 +114,7 @@ function ResultsContent() {
                 <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 pb-20">
                     {offers.length > 0 ? (
                         offers.map((offer) => (
-                            <HotelCard key={offer.hotelId} offer={offer} />
+                            <HotelCard key={offer.hotelId} offer={offer} duration={duration} />
                         ))
                     ) : (
                         <div className="text-center py-20">
