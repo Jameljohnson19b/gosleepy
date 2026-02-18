@@ -44,7 +44,7 @@ export class AmadeusAdapter implements SupplierAdapter {
                 radiusUnit: 'MILE'
             });
 
-            const hotels = hotelListResponse.data.slice(0, 10);
+            const hotels = hotelListResponse.data.slice(0, 40);
             const hotelIds = hotels.map((h: any) => h.hotelId);
 
             if (hotelIds.length === 0) return [];
@@ -135,7 +135,7 @@ export class AmadeusAdapter implements SupplierAdapter {
                     }))
                 };
                 return normalizedOffer;
-            });
+            }).sort((a: Offer, b: Offer) => a.distanceMiles - b.distanceMiles);
         } catch (error) {
             console.error('Amadeus Search Error:', error);
             return [];
