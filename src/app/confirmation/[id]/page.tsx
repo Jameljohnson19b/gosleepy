@@ -86,7 +86,15 @@ export default function ConfirmationPage() {
                     </button>
                 </div>
 
-                <div className="mt-12 text-center pb-20">
+                <div className="mt-8 flex flex-col items-center gap-6 pb-20">
+                    <Link
+                        href={`/support?bookingId=${id}`}
+                        className="text-xs font-black text-[#ff10f0] uppercase tracking-[0.2em] flex items-center gap-2 group"
+                    >
+                        <Info className="w-4 h-4 transition-transform group-hover:scale-110" />
+                        Something wrong? Get Help
+                    </Link>
+
                     <Link href="/" className="text-xs font-black text-gray-600 uppercase tracking-[0.2em] border-b border-gray-900 pb-1">
                         Back to Search
                     </Link>

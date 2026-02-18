@@ -20,11 +20,37 @@ export async function POST(req: NextRequest) {
         }
 
         // 2. Fetch Supplier
-        const offers = await supplier.search({ lat, lng, checkIn, checkOut, guests, radiusMiles });
+        let offers = await supplier.search({ lat, lng, checkIn, checkOut, guests, radiusMiles });
 
-        // 3. Background Persistence
-        // We don't await these to keep response fast, but in a real prod env 
-        // you might use a background worker or Vercel waitUntil
+        // 3. Apply Support Load Balancer
+        const { computeSupportRisk, applySupportRiskPenalty } = await import('@/lib/support/balancer');
+        const { getHistoricSignals, detect1AMMode } = await import('@/lib/support/signals');
+
+        const is1AM = detect1AMMode();
+
+        offers = offers.map(offer => {
+            const signals = getHistoricSignals(offer.hotelId);
+            const risk = computeSupportRisk({
+                ...signals,
+                policyText: offer.rates[0]?.cancellationPolicyText || '',
+                is1AMMode: is1AM,
+                isDriveMode: true // Assuming roadside context
+            });
+
+            return {
+                ...offer,
+                supportRisk: risk
+            };
+        });
+
+        // 4. Re-rank based on Support Risk
+        offers.sort((a, b) => {
+            const scoreA = applySupportRiskPenalty(100, a.supportRisk?.riskScore || 0);
+            const scoreB = applySupportRiskPenalty(100, b.supportRisk?.riskScore || 0);
+            return scoreB - scoreA; // High score (low penalty) first
+        });
+
+        // 5. Background Persistence
         setCachedOffers(geoHash, checkIn, checkOut, guests, offers).catch(console.error);
         snapshotRates(offers, geoHash).catch(console.error);
 

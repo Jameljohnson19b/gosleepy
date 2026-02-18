@@ -20,6 +20,18 @@ function CheckoutContent() {
 
     const hotelId = searchParams.get("hotelId");
     const rateId = searchParams.get("rateId");
+    const riskLabel = searchParams.get("risk") || "LOW";
+    const hotelName = searchParams.get("hotelName") || "The Roadside Inn";
+    const amount = parseFloat(searchParams.get("amount") || "89.00");
+
+    const [isVerifying, setIsVerifying] = useState(riskLabel === 'HIGH');
+
+    useEffect(() => {
+        if (isVerifying) {
+            const timer = setTimeout(() => setIsVerifying(false), 2500);
+            return () => clearTimeout(timer);
+        }
+    }, [isVerifying]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -34,14 +46,14 @@ function CheckoutContent() {
                     guestLastName: formData.lastName,
                     email: formData.email,
                     phone: formData.phone,
-                    hotelName: "The Roadside Inn",
-                    supplierId: "hotelbeds",
+                    hotelName: hotelName,
+                    supplierId: "amadeus",
                     rateId: rateId,
                     ratePayload: { token: "mock-token-1" },
                     checkIn: new Date().toISOString().split('T')[0],
                     checkOut: new Date(Date.now() + 86400000).toISOString().split('T')[0],
                     guests: 2,
-                    totalAmount: 89.00,
+                    totalAmount: amount,
                     currency: "USD"
                 })
             });
@@ -60,14 +72,39 @@ function CheckoutContent() {
         }
     };
 
+    if (isVerifying) {
+        return (
+            <main className="min-h-screen bg-black flex flex-col items-center justify-center p-6 text-center">
+                <Zap className="w-16 h-16 text-[#ff10f0] animate-bounce mb-6" />
+                <h2 className="text-2xl font-black uppercase tracking-tighter mb-2">Verifying Live Rate</h2>
+                <p className="text-gray-500 font-medium">Availability at <span className="text-white">{hotelName}</span> is changing fast...</p>
+            </main>
+        );
+    }
+
     return (
         <main className="min-h-screen bg-black text-white p-6">
             <header className="flex items-center gap-4 mb-8">
                 <button onClick={() => router.back()} className="p-2 border border-gray-800 rounded-full">
                     <ArrowLeft className="w-6 h-6" />
                 </button>
-                <h1 className="text-xl font-black uppercase tracking-tighter">Secure Reservation</h1>
+                <div className="flex flex-col">
+                    <h1 className="text-xl font-black uppercase tracking-tighter">Secure Reservation</h1>
+                    <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{hotelName}</span>
+                </div>
             </header>
+
+            {riskLabel === 'HIGH' && (
+                <div className="mb-6 p-4 bg-[#ff10f0]/5 border border-[#ff10f0]/20 rounded-2xl flex items-center justify-between">
+                    <div className="flex flex-col">
+                        <span className="text-[10px] font-black text-[#ff10f0] uppercase tracking-widest">Late Arrival Tip</span>
+                        <span className="text-xs text-gray-400 font-medium">Call front desk to confirm 1AM check-in.</span>
+                    </div>
+                    <button className="bg-[#ff10f0] text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase">
+                        View Phone
+                    </button>
+                </div>
+            )}
 
             <div className="mb-8 p-5 bg-[#111] border border-emerald-400/20 rounded-3xl flex items-center gap-4">
                 <div className="w-12 h-12 bg-emerald-400/10 rounded-2xl flex items-center justify-center shrink-0">
@@ -75,7 +112,7 @@ function CheckoutContent() {
                 </div>
                 <div>
                     <div className="text-sm font-black text-emerald-400 uppercase tracking-widest">Pay at Property</div>
-                    <div className="text-xs text-gray-500 font-medium">No card required to secure room</div>
+                    <div className="text-xs text-gray-500 font-medium font-mono tracking-tight uppercase">Confirmed: Best Flex Rate</div>
                 </div>
             </div>
 
@@ -136,7 +173,7 @@ function CheckoutContent() {
                     </div>
                     <div className="mb-8 flex items-center justify-between px-2">
                         <span className="text-sm font-bold text-gray-500">Pay at Property</span>
-                        <span className="text-xl font-black">$89.00</span>
+                        <span className="text-xl font-black">${amount.toFixed(2)}</span>
                     </div>
 
                     <button
@@ -155,7 +192,7 @@ function CheckoutContent() {
                     </button>
 
                     <p className="text-center text-[10px] text-gray-600 font-bold uppercase tracking-widest mt-6 leading-relaxed">
-                        By clicking secure room, you agree to pay <br /> The Roadside Inn $89.00 upon arrival.
+                        By clicking secure room, you agree to pay <br /> {hotelName} ${amount.toFixed(2)} upon arrival.
                     </p>
                 </div>
             </form>

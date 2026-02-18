@@ -1,26 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Offer } from "@/types/hotel";
-import { ArrowLeft, Star, MapPin, ShieldCheck, Clock, Phone, Navigation } from "lucide-react";
+import { ArrowLeft, Star, MapPin, ShieldCheck, Clock, Phone, Navigation, Zap } from "lucide-react";
 import Link from "next/link";
 import { PriceTrendBar } from "@/components/PriceTrendBar";
 
 export default function HotelDetailsPage() {
     const { id } = useParams();
     const router = useRouter();
+    const searchParams = useSearchParams();
+
+    const riskLabel = searchParams.get("risk") || "LOW";
+    const passedName = searchParams.get("name") || "The Roadside Inn";
+    const passedAmount = parseFloat(searchParams.get("amount") || "89.00");
+
     const [offer, setOffer] = useState<Offer | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // In a real app, fetch from /api/details. 
-        // Here we'll simulate finding it from our mock search.
         async function fetchOffer() {
             await new Promise(r => setTimeout(r, 500));
             setOffer({
                 hotelId: id as string,
-                hotelName: "The Roadside Inn",
+                hotelName: passedName,
                 distanceMiles: 1.2,
                 rating: 4.2,
                 stars: 3,
@@ -31,7 +35,7 @@ export default function HotelDetailsPage() {
                     {
                         rateId: "r1",
                         roomName: "Queen Bed Non-Smoking",
-                        totalAmount: 89.00,
+                        totalAmount: passedAmount,
                         currency: "USD",
                         payType: "PAY_AT_PROPERTY",
                         refundable: true,
@@ -43,10 +47,13 @@ export default function HotelDetailsPage() {
             setLoading(false);
         }
         fetchOffer();
-    }, [id]);
+    }, [id, passedName, passedAmount]);
 
     if (loading) return null;
     if (!offer) return <div>Hotel not found</div>;
+
+    const checkoutUrl = (rateId: string, amount: number) =>
+        `/checkout?hotelId=${offer.hotelId}&rateId=${rateId}&risk=${riskLabel}&hotelName=${encodeURIComponent(offer.hotelName)}&amount=${amount}`;
 
     return (
         <main className="min-h-screen bg-black text-white">
@@ -63,8 +70,13 @@ export default function HotelDetailsPage() {
                     <button onClick={() => router.back()} className="p-2 bg-black/50 backdrop-blur-md rounded-full border border-white/10">
                         <ArrowLeft className="w-8 h-8" />
                     </button>
-                    <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain filter invert-[.5] sepia-[1] saturate-[5000%] hue-rotate-[290deg] drop-shadow-lg" />
-                    <div className="w-12 h-12" /> {/* Spacer */}
+                    <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain filter invert-[.5] sepia-[1] saturate-[5000%] hue-rotate-[290deg] shadow-lg" />
+                    {riskLabel === 'HIGH' ? (
+                        <div className="bg-[#ff10f0] text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse flex items-center gap-1">
+                            <Zap className="w-3 h-3 fill-white" />
+                            High Demand
+                        </div>
+                    ) : <div className="w-12 h-12" />}
                 </header>
 
                 <div className="absolute bottom-6 left-6 right-6">
@@ -129,7 +141,7 @@ export default function HotelDetailsPage() {
                             </div>
 
                             <button
-                                onClick={() => router.push(`/checkout?hotelId=${offer.hotelId}&rateId=${rate.rateId}`)}
+                                onClick={() => router.push(checkoutUrl(rate.rateId, rate.totalAmount))}
                                 className="w-full bg-[#ff10f0] text-white py-4 rounded-xl font-black text-xl active:scale-[0.98] transition-all"
                             >
                                 SELECT ROOM
@@ -159,7 +171,7 @@ export default function HotelDetailsPage() {
                         <div className="text-[10px] text-gray-500 font-bold uppercase mt-1">Due at Property</div>
                     </div>
                     <button
-                        onClick={() => router.push(`/checkout?hotelId=${offer.hotelId}&rateId=${offer.rates[0].rateId}`)}
+                        onClick={() => router.push(checkoutUrl(offer.rates[0].rateId, offer.rates[0].totalAmount))}
                         className="flex-1 bg-[#ff10f0] text-white py-4 rounded-xl font-black text-xl active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(255,16,240,0.2)]"
                     >
                         BOOK NOW

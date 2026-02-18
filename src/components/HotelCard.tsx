@@ -1,7 +1,7 @@
 "use client";
 
 import { Offer } from "@/types/hotel";
-import { Star, MapPin, TrendingDown, Clock, ShieldCheck } from "lucide-react";
+import { Star, MapPin, TrendingDown, Clock, ShieldCheck, Zap } from "lucide-react";
 import Link from "next/link";
 import { PriceTrendBar } from "./PriceTrendBar";
 
@@ -14,7 +14,7 @@ export function HotelCard({ offer }: HotelCardProps) {
 
     return (
         <Link
-            href={`/hotel/${offer.hotelId}`}
+            href={`/hotel/${offer.hotelId}?risk=${offer.supportRisk?.label || 'LOW'}&name=${encodeURIComponent(offer.hotelName)}&amount=${lowestRate.totalAmount}`}
             className="block group bg-[#111] border border-gray-800 rounded-3xl overflow-hidden active:scale-[0.98] transition-all"
         >
             <div className="relative h-48 w-full border-b border-gray-800">
@@ -56,10 +56,17 @@ export function HotelCard({ offer }: HotelCardProps) {
                         <ShieldCheck className="w-3.5 h-3.5" />
                         PAY AT PROPERTY
                     </div>
-                    <div className="flex items-center gap-1.5 text-blue-400 font-bold text-xs bg-blue-400/10 px-2 py-1 rounded-lg">
-                        <Clock className="w-3.5 h-3.5" />
-                        24H DESK
-                    </div>
+                    {offer.supportRisk?.label === 'HIGH' ? (
+                        <div className="flex items-center gap-1.5 text-[#ff10f0] font-bold text-xs bg-[#ff10f0]/10 px-2 py-1 rounded-lg animate-pulse">
+                            <Zap className="w-3.5 h-3.5" />
+                            {offer.supportRisk.reasonCodes[0].replace(/_/g, ' ')}
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-1.5 text-blue-400 font-bold text-xs bg-blue-400/10 px-2 py-1 rounded-lg">
+                            <Clock className="w-3.5 h-3.5" />
+                            24H DESK
+                        </div>
+                    )}
                 </div>
 
                 <div className="mt-6 pt-6 border-t border-gray-900">

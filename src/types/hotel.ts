@@ -1,9 +1,9 @@
-export type BookingStatus = 
-  | 'DRAFT' 
-  | 'PENDING_SUPPLIER' 
-  | 'CONFIRMED' 
-  | 'FAILED' 
-  | 'CANCEL_REQUESTED' 
+export type BookingStatus =
+  | 'DRAFT'
+  | 'PENDING_SUPPLIER'
+  | 'CONFIRMED'
+  | 'FAILED'
+  | 'CANCEL_REQUESTED'
   | 'CANCELED';
 
 export type PayType = 'PAY_AT_PROPERTY';
@@ -31,6 +31,11 @@ export interface Offer {
   images?: string[];
   amenities?: string[];
   rates: Rate[];
+  supportRisk?: {
+    riskScore: number;
+    label: 'LOW' | 'MEDIUM' | 'HIGH';
+    reasonCodes: string[];
+  };
 }
 
 export interface Booking {
@@ -38,37 +43,37 @@ export interface Booking {
   userId?: string;
   status: BookingStatus;
   payType: PayType;
-  
+
   // Supplier Refs
   supplier: string;
   supplierBookingId?: string;
   supplierHotelId: string;
-  
+
   // Hotel Details
   hotelName: string;
   hotelPhone?: string;
   hotelAddress?: string;
-  
+
   // Guest Info
   guestFirstName: string;
   guestLastName: string;
   email: string;
   phone?: string;
-  
+
   // Stay Info
   checkIn: string; // ISO date
   checkOut: string; // ISO date
   guests: number;
-  
+
   // Financial Info
   totalAmount: number;
   currency: string;
-  
+
   // Persistent Data
   rateId: string;
   ratePayload: any;
   cancellationPolicyJson?: any;
-  
+
   createdAt: string;
   updatedAt: string;
 }
