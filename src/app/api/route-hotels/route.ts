@@ -25,11 +25,15 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Could not resolve mission coordinates' }, { status: 404 });
         }
 
+        // Compute Total Distance and Arrival Time
+        const totalDistance = calculateDistance(originCoords.lat, originCoords.lng, destCoords.lat, destCoords.lng);
+        const estimatedHours = totalDistance / 60; // Average 60mph for MVP
+
         // 2. Compute tactical waypoints (lerp approach for MVP)
         const waypoints = [
-            { ...lerp(originCoords, destCoords, 0.25), label: '1/4 Way' },
-            { ...lerp(originCoords, destCoords, 0.50), label: 'Midpoint' },
-            { ...lerp(originCoords, destCoords, 0.75), label: '3/4 Way' }
+            { ...lerp(originCoords, destCoords, 0.25), label: 'Vortex Alpha' },
+            { ...lerp(originCoords, destCoords, 0.50), label: 'Vortex Beta' },
+            { ...lerp(originCoords, destCoords, 0.75), label: 'Vortex Gamma' }
         ];
 
         // 3. Resilient stop scanning with Promise.allSettled
@@ -52,49 +56,35 @@ export async function POST(req: Request) {
                 if (rawOffers.length > 0) break;
             }
 
-            if (rawOffers.length === 0) {
+            // 4. Intelligence Injection & Enrichment
+            const enrichedOffers = rawOffers.map((hotel: any) => {
+                const hash = (hotel.hotelId || '').split('').reduce((acc: number, char: string, i: number) => acc + char.charCodeAt(0) * (i + 1), 0);
                 return {
-                    stopIndex: idx,
-                    status: 'NO_OFFERS',
-                    label: `Waypoint ${idx + 1}`,
-                    waypoint: wp
+                    ...hotel,
+                    confidenceScore: 8.2 + (hash % 18) / 10,
+                    pressureLabel: (hash % 10) > 7 ? 'LIMITED' : (hash % 10) > 4 ? 'FILLING UP' : 'STABLE',
+                    supportRisk: {
+                        riskScore: hash % 100,
+                        label: (hash % 100) > 70 ? 'HIGH' : (hash % 100) > 30 ? 'MEDIUM' : 'LOW'
+                    }
                 };
-            }
+            }).sort((a: any, b: any) => a.rates[0].totalAmount - b.rates[0].totalAmount);
 
-            // 4. Select Cheapest Bookable Offer
-            const cheapest = rawOffers.reduce((prev: any, curr: any) =>
-                (prev.rates[0].totalAmount < curr.rates[0].totalAmount) ? prev : curr
-            );
-
-            // 5. Intelligence Injection (Simulation Layer)
-            const hash = (cheapest.hotelId || '').split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
-            const enriched = {
-                ...cheapest,
-                waypointLabel: wp.label,
-                confidenceScore: 8.5 + (hash % 15) / 10,
-                pressureLabel: (hash % 10) > 7 ? 'LIMITED' : (hash % 10) > 4 ? 'FILLING UP' : 'STABLE',
-                gravityBand: (hash % 3) === 0 ? 'LOW' : (hash % 3) === 1 ? 'MEDIUM' : 'HIGH',
-                supportRisk: {
-                    riskScore: hash % 100,
-                    label: (hash % 100) > 70 ? 'HIGH' : (hash % 100) > 30 ? 'MEDIUM' : 'LOW',
-                    reasonCodes: []
-                }
-            };
-
-            // Derive stop label from first hotel's city if available
-            const stopLabel = cheapest.address?.split(',')[1]?.trim() || wp.label;
+            // Mock Pit Stops (Gas/Stores)
+            const pitStops = getMockPitStops(wp.lat, wp.lng, idx);
 
             return {
                 stopIndex: idx,
-                status: 'OK',
-                label: stopLabel,
+                status: enrichedOffers.length > 0 ? 'OK' : 'NO_OFFERS',
+                label: enrichedOffers[0]?.address?.split(',')[1]?.trim() || wp.label,
                 waypoint: wp,
                 radiusUsed: usedRadius,
-                best: enriched
+                offers: enrichedOffers.slice(0, 3), // Return Top 3 options
+                pitStops
             };
         }));
 
-        // 6. Best-effort payload construction
+        // 5. Best-effort payload construction
         const cleanedStops = stopResults.map((res, i) => {
             if (res.status === 'fulfilled') return res.value;
             return {
@@ -107,6 +97,8 @@ export async function POST(req: Request) {
         return NextResponse.json({
             origin: originCoords,
             destination: destCoords,
+            distance: Math.round(totalDistance),
+            durationHours: Math.round(estimatedHours * 10) / 10,
             checkIn,
             checkOut,
             guests,
@@ -125,4 +117,44 @@ function lerp(a: LatLng, b: LatLng, t: number): LatLng {
         lat: a.lat + (b.lat - a.lat) * t,
         lng: a.lng + (b.lng - a.lng) * t
     };
+}
+
+function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 3958.8; // Radius of the Earth in miles
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
+
+function getMockPitStops(lat: number, lng: number, idx: number) {
+    const brands = [
+        { name: "Buc-ee's", perks: ["Legendary Brisket", "Cleanest Restrooms", "Cheap Fuel"] },
+        { name: "Pilot Travel Center", perks: ["Showers", "Wi-Fi", "Truck Parking"] },
+        { name: "Love's Travel Stop", perks: ["Dog Park", "Tire Shop", "Coffee"] },
+        { name: "Wawa", perks: ["Hoagies", "Smoothies", "Express Fuel"] }
+    ];
+
+    // Deterministic mock data based on index
+    const count = 2 + (idx % 2);
+    const stops = [];
+    for (let i = 0; i < count; i++) {
+        const brand = brands[(idx + i) % brands.length];
+        stops.push({
+            name: `${brand.name} #${100 + idx * 10 + i}`,
+            brand: brand.name,
+            perks: brand.perks,
+            distance: 0.5 + i * 1.2,
+            type: 'GAS_STATION',
+            coordinates: {
+                lat: lat + (i * 0.01),
+                lng: lng + (i * 0.01)
+            }
+        });
+    }
+    return stops;
 }

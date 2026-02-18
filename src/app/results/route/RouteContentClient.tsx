@@ -7,17 +7,85 @@ import { Zap, ArrowLeft, MapPin, Flag, Info } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+interface PitStop {
+    name: string;
+    brand: string;
+    perks: string[];
+    distance: number;
+    type: string;
+    coordinates: { lat: number; lng: number };
+}
+
 interface RouteStop {
     stopIndex: number;
     status: 'OK' | 'NO_OFFERS' | 'ERROR';
     label: string;
-    best?: Offer;
+    offers?: Offer[];
+    pitStops?: PitStop[];
     error?: string;
 }
 
 interface RouteResults {
     stops: RouteStop[];
+    distance?: number;
+    durationHours?: number;
     error?: string;
+}
+
+function TacticalMap({ stops, is1AM }: { stops: RouteStop[], is1AM: boolean }) {
+    return (
+        <div className="relative w-full h-48 bg-zinc-900/50 rounded-[40px] border border-white/5 overflow-hidden mb-12 shadow-2xl">
+            {/* Mission Grid */}
+            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+
+            <svg viewBox="0 0 400 200" className="absolute inset-0 w-full h-full p-10">
+                {/* Tactical Trace */}
+                <path
+                    d="M 20 100 Q 100 20, 200 100 T 380 100"
+                    fill="none"
+                    stroke={is1AM ? "#ff10f0" : "#fff"}
+                    strokeWidth="3"
+                    strokeDasharray="8 4"
+                    className="animate-[dash_20s_linear_infinite]"
+                />
+
+                {/* Origin */}
+                <circle cx="20" cy="100" r="10" fill={is1AM ? "#ff10f0" : "#fff"} className="animate-pulse" />
+
+                {/* Waypoints */}
+                {stops.map((_, i) => (
+                    <g key={i}>
+                        <circle
+                            cx={80 + i * 110}
+                            cy={stops[i].stopIndex === 1 ? 40 : 100}
+                            r="6"
+                            fill={is1AM ? "#ff10f0" : "#fff"}
+                            className="opacity-50"
+                        />
+                        <text
+                            x={80 + i * 110}
+                            cy={stops[i].stopIndex === 1 ? 25 : 125}
+                            textAnchor="middle"
+                            className="text-[8px] font-black fill-white/40 uppercase tracking-widest"
+                        >
+                            {stops[i].label}
+                        </text>
+                    </g>
+                ))}
+
+                {/* Destination */}
+                <circle cx="380" cy="100" r="10" fill={is1AM ? "#ff10f0" : "#fff"} />
+            </svg>
+
+            {/* Radar Sweep Effect */}
+            <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-[shimmer_3s_infinite]`} />
+
+            <div className="absolute bottom-4 right-6 flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-[8px] font-black uppercase tracking-widest text-white/40 italic">Live Vector Trace Active</span>
+            </div>
+        </div>
+    );
 }
 
 export default function RouteContentClient({
@@ -187,6 +255,21 @@ export default function RouteContentClient({
                     {/* Sleep Radar Strip */}
                     <section className="relative">
                         {is1AM && <div className="absolute inset-0 bg-[#ff10f0]/5 blur-3xl -z-10" />}
+                        <div className="flex items-center gap-10 mb-12 bg-white/5 border border-white/10 rounded-[35px] p-6 justify-between overflow-hidden relative">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-400/5 blur-3xl" />
+                            <div className="flex flex-col gap-1">
+                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Total Distance</span>
+                                <span className="text-3xl font-black tracking-tighter italic">{data?.distance || '---'} <span className="text-sm not-italic opacity-40">MI</span></span>
+                            </div>
+                            <div className="flex flex-col gap-1 items-end text-right">
+                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Arrival Approx.</span>
+                                <span className="text-3xl font-black tracking-tighter italic text-[#ff10f0]">{data?.durationHours || '--'} <span className="text-sm not-italic opacity-40">HRS</span></span>
+                            </div>
+                        </div>
+
+                        {/* Tactical Map */}
+                        <TacticalMap stops={data?.stops || []} is1AM={is1AM} />
+
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-3">
                                 <div className="w-2 h-2 rounded-full bg-[#ff10f0] animate-ping" />
@@ -195,23 +278,22 @@ export default function RouteContentClient({
                             <span className="text-[9px] font-black text-[#ff10f0] uppercase tracking-widest bg-[#ff10f0]/10 px-2 py-1 rounded">Radar Feed</span>
                         </div>
                         <div className="flex gap-5 overflow-x-auto pb-6 scrollbar-hide snap-x">
-                            {data?.stops?.filter(s => s.status === 'OK').map((stop, i) => (
+                            {data?.stops?.filter(s => s.status === 'OK').flatMap(s => s.offers || []).slice(0, 6).map((offer, i) => (
                                 <div key={i} className={`flex-none w-52 ${is1AM ? 'bg-[#111]' : 'bg-zinc-900'} border border-white/10 rounded-3xl p-5 snap-start relative overflow-hidden group hover:border-[#ff10f0]/50 transition-all`}>
                                     <div className="absolute top-0 right-0 w-16 h-16 bg-[#ff10f0]/10 rounded-bl-[40px] -mr-4 -mt-4 transition-colors group-hover:bg-[#ff10f0]/20" />
-                                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mb-1">{stop.label}</span>
-                                    <h3 className="text-xs font-black truncate mb-4">{stop.best?.hotelName}</h3>
+                                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mb-1">Top Pick</span>
+                                    <h3 className="text-xs font-black truncate mb-4">{offer.hotelName}</h3>
                                     <div className="flex items-end justify-between">
                                         <div className="flex flex-col">
-                                            <span className="text-2xl font-black leading-none tracking-tighter font-mono">${stop.best?.rates[0].totalAmount}</span>
+                                            <span className="text-2xl font-black leading-none tracking-tighter font-mono">${offer.rates[0].totalAmount}</span>
                                             <span className="text-[7px] font-bold text-gray-600 uppercase mt-1">Found Stop</span>
                                         </div>
                                         <div className="flex flex-col items-end gap-1">
-                                            {stop.best?.confidenceScore && (
+                                            {(offer as any).confidenceScore && (
                                                 <div className="px-2 py-0.5 bg-emerald-400/10 rounded text-emerald-400 text-[7px] font-black uppercase italic">
-                                                    {stop.best.confidenceScore.toFixed(1)} Confirms
+                                                    {(offer as any).confidenceScore.toFixed(1)} Confirms
                                                 </div>
                                             )}
-                                            <span className="text-[6px] font-black text-gray-500 uppercase tracking-tighter">Secure Room</span>
                                         </div>
                                     </div>
                                 </div>
@@ -249,13 +331,37 @@ export default function RouteContentClient({
                                         {i === 0 && stop.status === 'OK' && (
                                             <span className="bg-emerald-400 text-black text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-[0_0_20px_rgba(52,211,153,0.3)] animate-pulse">Next Best Rest</span>
                                         )}
-                                        {stop.status === 'OK' && stop.best?.pressureLabel === 'LIMITED' && (
+                                        {stop.status === 'OK' && stop.offers?.[0]?.pressureLabel === 'LIMITED' && (
                                             <span className="text-blue-400 text-[8px] font-black uppercase tracking-widest border border-blue-400/20 px-2 py-1 rounded">Demand Spiking</span>
                                         )}
                                     </div>
 
-                                    {stop.status === 'OK' && stop.best ? (
-                                        <HotelCard offer={stop.best} duration={duration} />
+                                    {/* Pit Stops (Gas / Food) */}
+                                    {stop.pitStops && stop.pitStops.length > 0 && (
+                                        <div className="flex gap-4 overflow-x-auto pb-4 mb-6 scrollbar-hide">
+                                            {stop.pitStops.map((pit, j) => (
+                                                <div key={j} className="flex-none w-48 bg-zinc-900 border border-white/5 rounded-2xl p-4 flex flex-col gap-2">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-[8px] font-black text-[#ff10f0] uppercase tracking-widest bg-[#ff10f0]/5 px-2 py-0.5 rounded">Pit Stop</span>
+                                                        <span className="text-[8px] font-bold text-gray-600">{pit.distance}mi</span>
+                                                    </div>
+                                                    <h4 className="text-[11px] font-black uppercase truncate">{pit.name}</h4>
+                                                    <div className="flex flex-wrap gap-1">
+                                                        {pit.perks.slice(0, 2).map((p, k) => (
+                                                            <span key={k} className="text-[6px] font-bold text-gray-500 uppercase border border-white/10 px-1 rounded">{p}</span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {stop.status === 'OK' && stop.offers && stop.offers.length > 0 ? (
+                                        <div className="space-y-4">
+                                            {stop.offers.map((offer, j) => (
+                                                <HotelCard key={j} offer={offer} duration={duration} />
+                                            ))}
+                                        </div>
                                     ) : (
                                         <div className="p-8 bg-[#111] border border-gray-800 border-dashed rounded-3xl flex flex-col items-center justify-center gap-3 text-center grayscale opacity-60">
                                             <Info className="w-8 h-8 text-gray-600" />
