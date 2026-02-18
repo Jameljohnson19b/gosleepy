@@ -22,6 +22,7 @@ export interface Rate {
 export interface Offer {
   hotelId: string;
   hotelName: string;
+  hotelPhone?: string;
   distanceMiles: number;
   rating?: number;
   stars?: number;

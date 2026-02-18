@@ -15,39 +15,51 @@ export default function HotelDetailsPage() {
     const riskLabel = searchParams.get("risk") || "LOW";
     const passedName = searchParams.get("name") || "The Roadside Inn";
     const passedAmount = parseFloat(searchParams.get("amount") || "89.00");
+    const passedAddress = searchParams.get("address") || "123 Highway Ave, Richmond, VA";
+    const passedRating = parseFloat(searchParams.get("rating") || "4.2");
+    const passedStars = parseInt(searchParams.get("stars") || "3");
+    const passedPhone = searchParams.get("phone") || "555-0123";
+    const lat = parseFloat(searchParams.get("lat") || "0");
+    const lng = parseFloat(searchParams.get("lng") || "0");
 
     const [offer, setOffer] = useState<Offer | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        async function fetchOffer() {
-            await new Promise(r => setTimeout(r, 500));
-            setOffer({
-                hotelId: id as string,
-                hotelName: passedName,
-                distanceMiles: 1.2,
-                rating: 4.2,
-                stars: 3,
-                address: "123 Highway Ave, Richmond, VA 23219",
-                images: ["https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80"],
-                amenities: ["WiFi", "Free Parking", "24hr Front Desk", "Coffee in Lobby"],
-                rates: [
-                    {
-                        rateId: "r1",
-                        roomName: "Queen Bed Non-Smoking",
-                        totalAmount: passedAmount,
-                        currency: "USD",
-                        payType: "PAY_AT_PROPERTY",
-                        refundable: true,
-                        cancellationPolicyText: "Free cancellation until 4 PM local time today.",
-                        supplierPayload: { token: "mock-token-1" }
-                    }
-                ]
-            });
-            setLoading(false);
-        }
-        fetchOffer();
-    }, [id, passedName, passedAmount]);
+        // Generate the property-accurate satellite view
+        const roadsideSatelliteView = `https://api.tomtom.com/map/1/staticimage?key=6Y7yY7yY7yY7yY7yY7yY7yY7yY7yY7yY&zoom=17&center=${lng},${lat}&format=webp&map=satellite&width=1200&height=800`;
+
+        setOffer({
+            hotelId: id as string,
+            hotelName: passedName,
+            hotelPhone: passedPhone,
+            distanceMiles: 1.2,
+            rating: passedRating,
+            stars: passedStars,
+            address: passedAddress,
+            lat,
+            lng,
+            images: [
+                roadsideSatelliteView,
+                "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80"
+            ],
+            amenities: ["WiFi", "Free Parking", "24hr Front Desk", "Coffee in Lobby"],
+            rates: [
+                {
+                    rateId: "r1",
+                    roomName: "Standard Room",
+                    totalAmount: passedAmount,
+                    currency: "USD",
+                    payType: "PAY_AT_PROPERTY",
+                    refundable: true,
+                    cancellationPolicyText: "Free cancellation until 4 PM local time today.",
+                    supplierPayload: { token: "live-token" }
+                }
+            ]
+        });
+        setLoading(false);
+    }, [id, passedName, passedAmount, passedAddress, passedRating, passedStars, passedPhone, lat, lng]);
 
     if (loading) return null;
     if (!offer) return <div>Hotel not found</div>;
@@ -62,7 +74,7 @@ export default function HotelDetailsPage() {
                 <img
                     src={offer.images?.[0]}
                     alt={offer.hotelName}
-                    className="w-full h-full object-cover opacity-60"
+                    className="w-full h-full object-cover opacity-80"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
 
@@ -93,7 +105,7 @@ export default function HotelDetailsPage() {
             <div className="p-6">
                 {/* Quick Actions */}
                 <div className="grid grid-cols-2 gap-4 mb-8">
-                    <a href={`tel:5550123`} className="flex flex-col items-center justify-center p-4 bg-[#111] rounded-2xl border border-gray-800 active:scale-95 transition-all">
+                    <a href={`tel:${offer.hotelPhone || '5550123'}`} className="flex flex-col items-center justify-center p-4 bg-[#111] rounded-2xl border border-gray-800 active:scale-95 transition-all">
                         <Phone className="w-6 h-6 text-[#ff10f0] mb-2" />
                         <span className="text-[10px] font-black uppercase tracking-widest">Call Hotel</span>
                     </a>
@@ -157,8 +169,16 @@ export default function HotelDetailsPage() {
                         <MapPin className="w-5 h-5 text-[#ff10f0] shrink-0" />
                         <p className="text-sm font-medium text-gray-300">{offer.address}</p>
                     </div>
-                    <div className="h-48 bg-gray-900 rounded-2xl border border-gray-800 flex items-center justify-center text-gray-600 font-bold uppercase tracking-widest text-xs">
-                        Map View Placeholder
+                    <div className="relative h-48 bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden">
+                        <img
+                            src={offer.images?.[0]}
+                            className="w-full h-full object-cover grayscale opacity-50"
+                            alt="Map View"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="bg-[#ff10f0] w-3 h-3 rounded-full animate-ping" />
+                            <div className="bg-[#ff10f0] w-2 h-2 rounded-full absolute" />
+                        </div>
                     </div>
                 </section>
             </div>

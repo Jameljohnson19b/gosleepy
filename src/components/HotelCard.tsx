@@ -14,7 +14,7 @@ export function HotelCard({ offer }: HotelCardProps) {
 
     return (
         <Link
-            href={`/hotel/${offer.hotelId}?risk=${offer.supportRisk?.label || 'LOW'}&name=${encodeURIComponent(offer.hotelName)}&amount=${lowestRate.totalAmount}`}
+            href={`/hotel/${offer.hotelId}?risk=${offer.supportRisk?.label || 'LOW'}&name=${encodeURIComponent(offer.hotelName)}&amount=${lowestRate.totalAmount}&address=${encodeURIComponent(offer.address || '')}&rating=${offer.rating || ''}&stars=${offer.stars || ''}&phone=${encodeURIComponent(offer.hotelPhone || '')}&lat=${offer.lat}&lng=${offer.lng}`}
             className="block group bg-[#111] border border-gray-800 rounded-3xl overflow-hidden active:scale-[0.98] transition-all"
         >
             <div className="relative h-48 w-full border-b border-gray-800">

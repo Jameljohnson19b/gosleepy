@@ -11,11 +11,16 @@ export class MockSupplierAdapter implements SupplierAdapter {
                 hotelId: 'mock-1',
                 hotelName: 'The Roadside Inn',
                 distanceMiles: 1.2,
+                address: '123 Highway Ave, Richmond, VA 23219',
+                lat: 37.5407,
+                lng: -77.4360,
                 rating: 4.2,
                 stars: 3,
-                address: '123 Highway Ave, Richmond, VA',
-                images: ['https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80'],
-                amenities: ['WiFi', 'Parking', '24hr Desk'],
+                images: [
+                    'https://api.tomtom.com/map/1/staticimage?key=6Y7yY7yY7yY7yY7yY7yY7yY7yY7yY7yY&zoom=17&center=-77.4360,37.5407&format=webp&map=satellite&width=1200&height=800',
+                    'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80'
+                ],
+                amenities: ['WiFi', 'Free Parking', '24hr Front Desk'],
                 rates: [
                     {
                         rateId: 'r1',
