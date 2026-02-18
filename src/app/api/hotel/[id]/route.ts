@@ -6,10 +6,10 @@ const supplier = process.env.AMADEUS_CLIENT_ID ? new AmadeusAdapter() : new Mock
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const hotelId = params.id;
+        const { id: hotelId } = await params;
 
         // In a real app, we'd check the cache first for this specific hotelId.
         // For simplicity, we'll return a basic structure if it's a real Amadeus search,
