@@ -77,12 +77,22 @@ export class AmadeusAdapter implements SupplierAdapter {
                 const hotelName = (offerHotel.name || geoHotel.name || 'Unknown Hotel').split(' ').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
 
                 // Property-accurate visuals fallback: Use hotel name to query high-quality images 
-                // This reflects the property people will actually be sleeping at
-                const searchKeywords = encodeURIComponent(`${hotelName} hotel room exterior`);
+                // We use a deterministic index to give different hotels different images
+                const allGalleryAssets = [
+                    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1582719478250-c89cae4df85b?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1551882547-ff43c61f3635?auto=format&fit=crop&w=1200&q=80"
+                ];
+
+                // Deterministic rotation based on ID hash or last digit
+                const hotelIndex = parseInt(offerHotel.hotelId.slice(-1), 36) || 0;
                 const gallery = [
-                    `https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80`,
-                    `https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80`,
-                    `https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80`
+                    allGalleryAssets[hotelIndex % allGalleryAssets.length],
+                    allGalleryAssets[(hotelIndex + 1) % allGalleryAssets.length],
+                    allGalleryAssets[(hotelIndex + 2) % allGalleryAssets.length]
                 ];
 
                 const normalizedOffer: Offer = {

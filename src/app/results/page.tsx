@@ -70,7 +70,7 @@ function ResultsContent() {
                     <p className="text-gray-400 animate-pulse font-medium">Scanning for safe zones...</p>
                 </div>
             ) : (
-                <div className="grid gap-6 pb-20">
+                <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 pb-20">
                     {offers.length > 0 ? (
                         offers.map((offer) => (
                             <HotelCard key={offer.hotelId} offer={offer} />
