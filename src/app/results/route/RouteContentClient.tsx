@@ -12,7 +12,8 @@ interface PitStop {
     brand: string;
     perks: string[];
     distance: number;
-    type: string;
+    type: 'GAS_STATION' | 'CHARGING_STATION';
+    gasPrices?: { regular: string; diesel: string };
     coordinates: { lat: number; lng: number };
 }
 
@@ -340,12 +341,50 @@ export default function RouteContentClient({
                                     {stop.pitStops && stop.pitStops.length > 0 && (
                                         <div className="flex gap-4 overflow-x-auto pb-4 mb-6 scrollbar-hide">
                                             {stop.pitStops.map((pit, j) => (
-                                                <div key={j} className="flex-none w-48 bg-zinc-900 border border-white/5 rounded-2xl p-4 flex flex-col gap-2">
+                                                <div key={j} className={`flex-none w-56 ${pit.type === 'CHARGING_STATION' ? 'bg-[#ff10f0]/5 border-[#ff10f0]/20' : 'bg-zinc-900 border-white/5'} border rounded-2xl p-4 flex flex-col gap-3 relative overflow-hidden`}>
+                                                    {pit.type === 'CHARGING_STATION' && (
+                                                        <div className="absolute -right-4 -top-4 opacity-10">
+                                                            <Zap className="w-20 h-20 text-[#ff10f0] fill-[#ff10f0]" />
+                                                        </div>
+                                                    )}
+
                                                     <div className="flex items-center justify-between">
-                                                        <span className="text-[8px] font-black text-[#ff10f0] uppercase tracking-widest bg-[#ff10f0]/5 px-2 py-0.5 rounded">Pit Stop</span>
-                                                        <span className="text-[8px] font-bold text-gray-600">{pit.distance}mi</span>
+                                                        <div className="flex items-center gap-1.5">
+                                                            {pit.type === 'CHARGING_STATION' ? (
+                                                                <Zap className="w-3 h-3 text-[#ff10f0] fill-[#ff10f0]" />
+                                                            ) : (
+                                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                                            )}
+                                                            <span className={`text-[8px] font-black uppercase tracking-widest ${pit.type === 'CHARGING_STATION' ? 'text-[#ff10f0]' : 'text-gray-400'}`}>
+                                                                {pit.type === 'CHARGING_STATION' ? 'Supercharger' : 'Refuel Point'}
+                                                            </span>
+                                                        </div>
+                                                        <span className="text-[8px] font-bold text-gray-500">{pit.distance}mi</span>
                                                     </div>
-                                                    <h4 className="text-[11px] font-black uppercase truncate">{pit.name}</h4>
+
+                                                    <h4 className="text-[11px] font-black uppercase truncate pr-4">{pit.name}</h4>
+
+                                                    {/* Gas Prices (if applicable) */}
+                                                    {pit.gasPrices && (
+                                                        <div className="flex gap-3 border-t border-white/5 pt-2">
+                                                            <div className="flex flex-col">
+                                                                <span className="text-[7px] font-black text-gray-500 uppercase tracking-tighter">Regular</span>
+                                                                <span className="text-[10px] font-mono font-black text-emerald-400">${pit.gasPrices.regular}</span>
+                                                            </div>
+                                                            <div className="flex flex-col">
+                                                                <span className="text-[7px] font-black text-gray-500 uppercase tracking-tighter">Diesel</span>
+                                                                <span className="text-[10px] font-mono font-black text-gray-400">${pit.gasPrices.diesel}</span>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {/* EV Indicator */}
+                                                    {pit.type === 'CHARGING_STATION' && (
+                                                        <div className="border-t border-[#ff10f0]/10 pt-2">
+                                                            <span className="text-[9px] font-black text-[#ff10f0] uppercase tracking-tighter animate-pulse">Fast Charge Available</span>
+                                                        </div>
+                                                    )}
+
                                                     <div className="flex flex-wrap gap-1">
                                                         {pit.perks.slice(0, 2).map((p, k) => (
                                                             <span key={k} className="text-[6px] font-bold text-gray-500 uppercase border border-white/10 px-1 rounded">{p}</span>

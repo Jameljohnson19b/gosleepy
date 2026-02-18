@@ -133,23 +133,36 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
 
 function getMockPitStops(lat: number, lng: number, idx: number) {
     const brands = [
-        { name: "Buc-ee's", perks: ["Legendary Brisket", "Cleanest Restrooms", "Cheap Fuel"] },
-        { name: "Pilot Travel Center", perks: ["Showers", "Wi-Fi", "Truck Parking"] },
-        { name: "Love's Travel Stop", perks: ["Dog Park", "Tire Shop", "Coffee"] },
-        { name: "Wawa", perks: ["Hoagies", "Smoothies", "Express Fuel"] }
+        { name: "Buc-ee's", perks: ["Legendary Brisket", "Cleanest Restrooms", "Cheap Fuel"], hasGas: true },
+        { name: "Tesla Supercharger", perks: ["250kW Max", "Preconditioning", "Tesla Lounge"], hasGas: false, isEV: true },
+        { name: "Pilot Travel Center", perks: ["Showers", "Wi-Fi", "Truck Parking"], hasGas: true },
+        { name: "Love's Travel Stop", perks: ["Dog Park", "Tire Shop", "Coffee"], hasGas: true },
+        { name: "Wawa", perks: ["Hoagies", "Smoothies", "Express Fuel"], hasGas: true }
     ];
 
     // Deterministic mock data based on index
-    const count = 2 + (idx % 2);
+    const count = 3; // Ensure variety in every stop
     const stops = [];
     for (let i = 0; i < count; i++) {
         const brand = brands[(idx + i) % brands.length];
+
+        // Simulating gas prices if applicable
+        let gasPrices = undefined;
+        if (brand.hasGas) {
+            const base = 3.10 + (idx % 5) * 0.1;
+            gasPrices = {
+                regular: (base + (i * 0.05)).toFixed(2),
+                diesel: (base + 0.65 + (i * 0.03)).toFixed(2)
+            };
+        }
+
         stops.push({
             name: `${brand.name} #${100 + idx * 10 + i}`,
             brand: brand.name,
             perks: brand.perks,
             distance: 0.5 + i * 1.2,
-            type: 'GAS_STATION',
+            type: brand.isEV ? 'CHARGING_STATION' : 'GAS_STATION',
+            gasPrices,
             coordinates: {
                 lat: lat + (i * 0.01),
                 lng: lng + (i * 0.01)
