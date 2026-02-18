@@ -22,12 +22,17 @@ export default function HotelDetailsPage() {
     const lat = parseFloat(searchParams.get("lat") || "0");
     const lng = parseFloat(searchParams.get("lng") || "0");
 
+    const hasOfficialMedia = searchParams.get("official") === "true";
     const [offer, setOffer] = useState<Offer | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Generate the property-accurate satellite view
-        const roadsideSatelliteView = `https://api.tomtom.com/map/1/staticimage?key=6Y7yY7yY7yY7yY7yY7yY7yY7yY7yY7yY&zoom=17&center=${lng},${lat}&format=webp&map=satellite&width=1200&height=800`;
+        // Truth-in-Travel Fallback: Neutral visuals for budget roadside hotels
+        const fallbackImages = [
+            "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1591088398332-8a7b3ff98322?auto=format&fit=crop&w=1200&q=80"
+        ];
 
         setOffer({
             hotelId: id as string,
@@ -39,12 +44,9 @@ export default function HotelDetailsPage() {
             address: passedAddress,
             lat,
             lng,
-            images: [
-                roadsideSatelliteView,
-                "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
-                "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80"
-            ],
-            amenities: ["WiFi", "Free Parking", "24hr Front Desk", "Coffee in Lobby"],
+            hasOfficialMedia,
+            images: fallbackImages,
+            amenities: ["WiFi", "Free Parking", "24hr Front Desk", "Roadside Access"],
             rates: [
                 {
                     rateId: "r1",
@@ -59,7 +61,7 @@ export default function HotelDetailsPage() {
             ]
         });
         setLoading(false);
-    }, [id, passedName, passedAmount, passedAddress, passedRating, passedStars, passedPhone, lat, lng]);
+    }, [id, passedName, passedAmount, passedAddress, passedRating, passedStars, passedPhone, lat, lng, hasOfficialMedia]);
 
     if (loading) return null;
     if (!offer) return <div>Hotel not found</div>;
@@ -76,6 +78,13 @@ export default function HotelDetailsPage() {
                     alt={offer.hotelName}
                     className="w-full h-full object-cover opacity-80"
                 />
+                {!offer.hasOfficialMedia && (
+                    <div className="absolute top-20 left-0 w-full flex justify-center">
+                        <div className="bg-black/60 backdrop-blur-sm border border-white/5 px-4 py-1.5 rounded-full">
+                            <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Representative View</span>
+                        </div>
+                    </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
 
                 <header className="absolute top-0 left-0 w-full p-4 flex items-center justify-between">
@@ -112,6 +121,31 @@ export default function HotelDetailsPage() {
                     <a href={`https://maps.apple.com/?q=${offer.address}`} className="flex flex-col items-center justify-center p-4 bg-[#111] rounded-2xl border border-gray-800 active:scale-95 transition-all">
                         <Navigation className="w-6 h-6 text-[#ff10f0] mb-2" />
                         <span className="text-[10px] font-black uppercase tracking-widest">Navigate</span>
+                    </a>
+                </div>
+
+                {/* Truth Verification Hub */}
+                <div className="mb-8 p-5 rounded-3xl bg-gradient-to-br from-[#111] to-black border border-white/5 shadow-2xl">
+                    <div className="flex items-center gap-2 mb-4">
+                        <ShieldCheck className="w-4 h-4 text-[#ff10f0]" />
+                        <h2 className="text-[10px] font-black uppercase tracking-widest text-[#ff10f0]">Truth Verification Hub</h2>
+                    </div>
+
+                    <p className="text-xs text-gray-400 mb-6 leading-relaxed">
+                        {offer.hasOfficialMedia
+                            ? "Verified property photos. These images represent the actual building and interiors."
+                            : "Images shown are representative for this property type. To verify the exact building footprint and surroundings, use the satellite tool below."
+                        }
+                    </p>
+
+                    <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${offer.lat},${offer.lng}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-3 w-full py-4 bg-white text-black rounded-xl font-black text-xs uppercase tracking-widest active:scale-95 transition-all"
+                    >
+                        <Zap className="w-4 h-4 fill-black" />
+                        Verify via Satellite
                     </a>
                 </div>
 

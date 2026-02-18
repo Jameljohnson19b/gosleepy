@@ -30,6 +30,7 @@ export interface Offer {
   lat?: number;
   lng?: number;
   images?: string[];
+  hasOfficialMedia?: boolean;
   amenities?: string[];
   rates: Rate[];
   supportRisk?: {

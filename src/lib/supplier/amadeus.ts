@@ -103,14 +103,15 @@ export class AmadeusAdapter implements SupplierAdapter {
 
                 const hotelName = (offerHotel.name || geoHotel.name || 'Unknown Hotel').split(' ').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
 
-                // Verified high-quality Unsplash assets (stable IDs)
+                // Truth-in-Travel: Use neutral business visuals when official photos are missing
+                // This avoids "False Advertising" by showing realistic roadside room types
                 const allGalleryAssets = [
-                    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1551882547-ff43c61f3635?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1582719478250-c89cae4df85b?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80"
+                    "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80", // Standard Room
+                    "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1200&q=80", // Clean Hallway
+                    "https://images.unsplash.com/photo-1591088398332-8a7b3ff98322?auto=format&fit=crop&w=1200&q=80", // Modern Building
+                    "https://images.unsplash.com/photo-1445013351711-122240590a93?auto=format&fit=crop&w=1200&q=80", // Generic Exterior
+                    "https://images.unsplash.com/photo-1555854811-66221f24bee8?auto=format&fit=crop&w=1200&q=80", // Standard Desk
+                    "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=1200&q=80"  // Basic Bedding
                 ];
 
                 // Deterministic rotation based on ID hash or last digit
@@ -134,6 +135,7 @@ export class AmadeusAdapter implements SupplierAdapter {
                     stars: offerHotel.rating ? parseInt(offerHotel.rating) : undefined,
                     amenities: offerHotel.amenities || geoHotel.amenities || [],
                     images: officialImages.length > 0 ? [...officialImages, ...gallery] : gallery,
+                    hasOfficialMedia: officialImages.length > 0,
                     rates: item.offers.map((o: any): Rate => ({
                         rateId: o.id,
                         roomName: o.room?.description?.text || 'Standard Room',

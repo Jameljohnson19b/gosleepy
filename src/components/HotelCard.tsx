@@ -14,7 +14,7 @@ export function HotelCard({ offer }: HotelCardProps) {
 
     return (
         <Link
-            href={`/hotel/${offer.hotelId}?risk=${offer.supportRisk?.label || 'LOW'}&name=${encodeURIComponent(offer.hotelName)}&amount=${lowestRate.totalAmount}&address=${encodeURIComponent(offer.address || '')}&rating=${offer.rating || ''}&stars=${offer.stars || ''}&phone=${encodeURIComponent(offer.hotelPhone || '')}&lat=${offer.lat}&lng=${offer.lng}`}
+            href={`/hotel/${offer.hotelId}?risk=${offer.supportRisk?.label || 'LOW'}&name=${encodeURIComponent(offer.hotelName)}&amount=${lowestRate.totalAmount}&address=${encodeURIComponent(offer.address || '')}&rating=${offer.rating || ''}&stars=${offer.stars || ''}&phone=${encodeURIComponent(offer.hotelPhone || '')}&lat=${offer.lat}&lng=${offer.lng}&official=${offer.hasOfficialMedia}`}
             className="block group bg-[#111] border border-gray-800 rounded-2xl lg:rounded-3xl overflow-hidden active:scale-[0.98] transition-all"
         >
             <div className="relative h-28 lg:h-40 w-full border-b border-gray-800">
@@ -23,9 +23,31 @@ export function HotelCard({ offer }: HotelCardProps) {
                     alt={offer.hotelName}
                     className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all opacity-80"
                 />
-                <div className="absolute top-2 left-2 bg-black/80 backdrop-blur-md px-2 py-1 rounded-full flex items-center gap-1 border border-white/10">
-                    <MapPin className="w-3 h-3 text-[#ff10f0]" />
-                    <span className="text-[10px] font-bold text-white">{offer.distanceMiles}mi</span>
+
+                {!offer.hasOfficialMedia && (
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center">
+                        <div className="bg-black/80 border border-white/5 px-3 py-1.5 rounded-full">
+                            <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">Representative View</span>
+                        </div>
+                    </div>
+                )}
+
+                <div className="absolute top-2 left-2 flex flex-col gap-2">
+                    <div className="bg-black/80 backdrop-blur-md px-2 py-1 rounded-full flex items-center gap-1 border border-white/10">
+                        <MapPin className="w-3 h-3 text-[#ff10f0]" />
+                        <span className="text-[10px] font-bold text-white">{offer.distanceMiles}mi</span>
+                    </div>
+
+                    <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${offer.lat},${offer.lng}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="bg-[#ff10f0] shadow-[0_0_10px_rgba(255,16,240,0.4)] p-1.5 rounded-full flex items-center justify-center hover:scale-110 transition-transform border border-white/20"
+                        title="Verify actual building via Satellite"
+                    >
+                        <Zap className="w-3.5 h-3.5 text-white fill-white" />
+                    </a>
                 </div>
 
                 {offer.rating && (
