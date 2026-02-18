@@ -4,7 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { HotelCard } from "@/components/HotelCard";
 import { Offer } from "@/types/hotel";
-import { Zap, ArrowLeft, MapPin, Flag } from "lucide-react";
+import { Zap, ArrowLeft, MapPin, Flag, Info } from "lucide-react";
 import Link from "next/link";
 
 interface RouteResults {
@@ -29,9 +29,15 @@ function RouteContent() {
                     body: JSON.stringify({ origin, destination })
                 });
                 const d = await res.json();
-                setData(d);
+                if (d.error) {
+                    console.error("Route calculation error:", d.error);
+                    setData({ stops: [], error: d.error } as any);
+                } else {
+                    setData(d);
+                }
             } catch (error) {
                 console.error("Route fetch failed:", error);
+                setData({ stops: [], error: "Connection problem" } as any);
             } finally {
                 setLoading(false);
             }
@@ -59,6 +65,13 @@ function RouteContent() {
                 <div className="flex flex-col items-center justify-center py-20 gap-4">
                     <Zap className="w-12 h-12 text-[#ff10f0] animate-spin" />
                     <p className="text-gray-400 animate-pulse font-medium">Calculating optimal pit stops...</p>
+                </div>
+            ) : (data as any)?.error ? (
+                <div className="flex flex-col items-center justify-center py-20 gap-4 px-6 text-center">
+                    <Info className="w-12 h-12 text-gray-600 mb-2" />
+                    <h2 className="text-xl font-black uppercase tracking-tighter">Route Failed</h2>
+                    <p className="text-gray-500 max-w-xs">{(data as any).error}. Check city names and try again.</p>
+                    <Link href="/" className="mt-8 text-[#ff10f0] font-black uppercase tracking-widest text-xs border-b border-[#ff10f0] pb-1">Try Again</Link>
                 </div>
             ) : (
                 <div className="relative max-w-xl mx-auto pb-20">

@@ -13,7 +13,7 @@ export function SiteFooter() {
                             <img
                                 src="/logo.png"
                                 alt=""
-                                className="w-10 h-10 object-contain filter invert-[.5] sepia-[1] saturate-[5000%] hue-rotate-[290deg]"
+                                className="w-10 h-10 object-contain drop-shadow-[0_0_15px_rgba(255,16,240,0.4)]"
                             />
                             <span className="text-[#ff10f0] font-black tracking-tighter text-2xl uppercase">Go Sleepy</span>
                         </Link>
@@ -50,9 +50,9 @@ export function SiteFooter() {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/contact" className="text-xs text-gray-500 hover:text-[#ff10f0] transition-colors flex items-center gap-2 group">
+                                <Link href="/support" className="text-xs text-gray-500 hover:text-[#ff10f0] transition-colors flex items-center gap-2 group">
                                     <Info className="w-3 h-3 text-gray-600 group-hover:text-[#ff10f0]" />
-                                    Contact Us
+                                    24/7 Roadside Help
                                 </Link>
                             </li>
                         </ul>

@@ -16,7 +16,7 @@ export function SiteHeader() {
                     <img
                         src="/logo.png"
                         alt=""
-                        className="w-8 h-8 object-contain filter invert-[.5] sepia-[1] saturate-[5000%] hue-rotate-[290deg]"
+                        className="w-8 h-8 object-contain drop-shadow-[0_0_10px_rgba(255,16,240,0.4)]"
                     />
                     <span className="text-[#ff10f0] font-black tracking-tighter text-xl uppercase">Go Sleepy</span>
                 </Link>

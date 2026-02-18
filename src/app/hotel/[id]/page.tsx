@@ -70,7 +70,7 @@ export default function HotelDetailsPage() {
                     <button onClick={() => router.back()} className="p-2 bg-black/50 backdrop-blur-md rounded-full border border-white/10">
                         <ArrowLeft className="w-8 h-8" />
                     </button>
-                    <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain filter invert-[.5] sepia-[1] saturate-[5000%] hue-rotate-[290deg] shadow-lg" />
+                    <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain drop-shadow-lg" />
                     {riskLabel === 'HIGH' ? (
                         <div className="bg-[#ff10f0] text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse flex items-center gap-1">
                             <Zap className="w-3 h-3 fill-white" />

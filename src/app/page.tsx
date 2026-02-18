@@ -45,11 +45,11 @@ export default function LandingPage() {
       </div>
 
       <div className="z-10 max-w-md w-full">
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-12">
           <img
             src="/logo.png"
             alt="Go Sleepy Logo"
-            className="w-32 h-32 object-contain filter invert-[.5] sepia-[1] saturate-[5000%] hue-rotate-[290deg] drop-shadow-[0_0_20px_rgba(255,16,240,0.4)]"
+            className="w-40 h-40 object-contain drop-shadow-[0_0_30px_rgba(255,16,240,0.6)] animate-pulse-slow"
           />
         </div>
 
