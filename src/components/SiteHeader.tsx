@@ -6,8 +6,8 @@ import { usePathname } from "next/navigation";
 export function SiteHeader() {
     const pathname = usePathname();
 
-    // Don't show header on landing page as it has its own centered hero
-    if (pathname === "/") return null;
+    // Don't show header on landing page or results pages as they have their own tactical headers
+    if (pathname === "/" || pathname?.startsWith("/results")) return null;
 
     return (
         <header className="w-full bg-black/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-[100]">

@@ -41,17 +41,32 @@ export async function POST(req: Request) {
 
         // 3. Search hotels at each waypoint
         const results = await Promise.all(waypoints.map(async (wp) => {
-            const rawOffers = await supplier.search({
+            let rawOffers = await supplier.search({
                 lat: wp.lat,
                 lng: wp.lng,
-                radiusMiles: 50, // Wider radius for road trips
+                radiusMiles: 50, // Standard secondary scan radius
                 checkIn: checkIn || new Date().toISOString().split('T')[0],
                 checkOut: checkOut || new Date(Date.now() + 86400000).toISOString().split('T')[0],
                 guests: 2
             });
 
-            // Find cheapest offer at this waypoint
-            if (rawOffers.length === 0) return null;
+            // Greedy Fallback: If no results at 50mi, try 100mi
+            if (rawOffers.length === 0) {
+                console.log(`Greedy Fallback for ${wp.label}: expanding search to 100mi`);
+                rawOffers = await supplier.search({
+                    lat: wp.lat,
+                    lng: wp.lng,
+                    radiusMiles: 100,
+                    checkIn: checkIn || new Date().toISOString().split('T')[0],
+                    checkOut: checkOut || new Date(Date.now() + 86400000).toISOString().split('T')[0],
+                    guests: 2
+                });
+            }
+
+            if (rawOffers.length === 0) {
+                console.warn(`Total failure at waypoint ${wp.label}`);
+                return null;
+            }
 
             const cheapest = rawOffers.reduce((prev: any, curr: any) =>
                 (prev.rates[0].totalAmount < curr.rates[0].totalAmount) ? prev : curr
