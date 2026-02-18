@@ -14,7 +14,7 @@ export class MockSupplierAdapter implements SupplierAdapter {
                 rating: 4.2,
                 stars: 3,
                 address: '123 Highway Ave, Richmond, VA',
-                images: ['https://images.unsplash.com/photo-1566073771259-6a8506099945'],
+                images: ['https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80'],
                 amenities: ['WiFi', 'Parking', '24hr Desk'],
                 rates: [
                     {
@@ -36,7 +36,7 @@ export class MockSupplierAdapter implements SupplierAdapter {
                 rating: 3.8,
                 stars: 2,
                 address: '456 Midnight Ln, Richmond, VA',
-                images: ['https://images.unsplash.com/photo-1551882547-ff43c636c70f'],
+                images: ['https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80'],
                 amenities: ['WiFi', 'Coffee', 'Pet Friendly'],
                 rates: [
                     {

@@ -25,7 +25,7 @@ export default function HotelDetailsPage() {
                 rating: 4.2,
                 stars: 3,
                 address: "123 Highway Ave, Richmond, VA 23219",
-                images: ["https://images.unsplash.com/photo-1566073771259-6a8506099945"],
+                images: ["https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80"],
                 amenities: ["WiFi", "Free Parking", "24hr Front Desk", "Coffee in Lobby"],
                 rates: [
                     {
