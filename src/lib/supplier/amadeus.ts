@@ -6,9 +6,18 @@ export class AmadeusAdapter implements SupplierAdapter {
     private amadeus: any;
 
     constructor() {
+        const clientId = process.env.AMADEUS_CLIENT_ID;
+        const clientSecret = process.env.AMADEUS_CLIENT_SECRET;
+        const hostname = process.env.AMADEUS_ENV === 'production' ? 'production' : 'test';
+
+        if (!clientId || !clientSecret) {
+            console.warn('AMADEUS: API keys are missing. Ensure AMADEUS_CLIENT_ID and AMADEUS_CLIENT_SECRET are set in environment variables.');
+        }
+
         this.amadeus = new Amadeus({
-            clientId: process.env.AMADEUS_CLIENT_ID,
-            clientSecret: process.env.AMADEUS_CLIENT_SECRET
+            clientId,
+            clientSecret,
+            hostname
         });
     }
 
