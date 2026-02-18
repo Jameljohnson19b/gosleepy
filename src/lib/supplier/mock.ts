@@ -65,4 +65,18 @@ export class MockSupplierAdapter implements SupplierAdapter {
     async cancel(bookingId: string) {
         return { ok: true };
     }
+
+    async getCityCoordinates(cityName: string) {
+        const cityMap: Record<string, { lat: number, lng: number }> = {
+            'New York': { lat: 40.7128, lng: -74.0060 },
+            'Miami': { lat: 25.7617, lng: -80.1918 },
+            'Richmond': { lat: 37.5407, lng: -77.4360 },
+            'Washington': { lat: 38.9072, lng: -77.0369 },
+            'Atlanta': { lat: 33.7490, lng: -84.3880 },
+            'Orlando': { lat: 28.5383, lng: -81.3792 }
+        };
+
+        const normalized = cityName.charAt(0).toUpperCase() + cityName.slice(1).toLowerCase();
+        return cityMap[normalized] || { lat: 40.7128, lng: -74.0060 }; // Default to NYC
+    }
 }

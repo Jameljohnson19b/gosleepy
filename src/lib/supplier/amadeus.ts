@@ -136,4 +136,25 @@ export class AmadeusAdapter implements SupplierAdapter {
         // Amadeus cancellation often requires a specific delete call or OTA protocol
         return { ok: true };
     }
+
+    async getCityCoordinates(cityName: string): Promise<{ lat: number; lng: number } | null> {
+        try {
+            const response = await this.amadeus.referenceData.locations.get({
+                keyword: cityName,
+                subType: 'CITY'
+            });
+
+            if (response.data && response.data.length > 0) {
+                const city = response.data[0];
+                return {
+                    lat: city.geoCode.latitude,
+                    lng: city.geoCode.longitude
+                };
+            }
+            return null;
+        } catch (error) {
+            console.error('Amadeus Geocoding Error:', error);
+            return null;
+        }
+    }
 }

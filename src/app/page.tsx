@@ -7,6 +7,9 @@ import { MapPin, Moon, Zap } from "lucide-react";
 export default function LandingPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [mode, setMode] = useState<"nearby" | "route">("nearby");
+  const [origin, setOrigin] = useState("");
+  const [destination, setDestination] = useState("");
 
   const handleFindRooms = () => {
     setLoading(true);
@@ -25,6 +28,13 @@ export default function LandingPage() {
     } else {
       router.push(`/results?lat=40.7128&lng=-74.0060`);
     }
+  };
+
+  const handleRouteSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!origin || !destination) return;
+    setLoading(true);
+    router.push(`/results/route?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}`);
   };
 
   return (
@@ -51,20 +61,76 @@ export default function LandingPage() {
           Help tired travelers find the next safe place to sleep — <span className="text-white italic">FAST.</span>
         </p>
 
-        <button
-          onClick={handleFindRooms}
-          disabled={loading}
-          className="w-full bg-[#ff10f0] hover:bg-[#ff10f0]/80 text-white font-black py-6 rounded-2xl text-2xl flex items-center justify-center gap-3 transition-all active:scale-95 shadow-[0_0_40px_rgba(255,16,240,0.3)]"
-        >
-          {loading ? (
-            <Zap className="animate-spin w-8 h-8 text-white" />
-          ) : (
-            <>
-              <MapPin className="w-8 h-8" />
-              FIND ROOMS NEAR ME
-            </>
-          )}
-        </button>
+        <div className="flex bg-[#111] p-1 rounded-xl mb-8 border border-white/5">
+          <button
+            onClick={() => setMode("nearby")}
+            className={`flex-1 py-3 px-4 rounded-lg font-black text-xs uppercase tracking-widest transition-all ${mode === "nearby" ? "bg-[#ff10f0] text-white" : "text-gray-500 hover:text-white"}`}
+          >
+            Nearby
+          </button>
+          <button
+            onClick={() => setMode("route")}
+            className={`flex-1 py-3 px-4 rounded-lg font-black text-xs uppercase tracking-widest transition-all ${mode === "route" ? "bg-[#ff10f0] text-white" : "text-gray-500 hover:text-white"}`}
+          >
+            Road Trip
+          </button>
+        </div>
+
+        {mode === "nearby" ? (
+          <button
+            onClick={handleFindRooms}
+            disabled={loading}
+            className="w-full bg-[#ff10f0] hover:bg-[#ff10f0]/80 text-white font-black py-6 rounded-2xl text-2xl flex items-center justify-center gap-3 transition-all active:scale-95 shadow-[0_0_40px_rgba(255,16,240,0.3)]"
+          >
+            {loading ? (
+              <Zap className="animate-spin w-8 h-8 text-white" />
+            ) : (
+              <>
+                <MapPin className="w-8 h-8" />
+                FIND ROOMS NEAR ME
+              </>
+            )}
+          </button>
+        ) : (
+          <form onSubmit={handleRouteSearch} className="space-y-4">
+            <div className="space-y-2 text-left">
+              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-4">Start City</label>
+              <input
+                required
+                type="text"
+                value={origin}
+                onChange={(e) => setOrigin(e.target.value)}
+                placeholder="e.g. New York"
+                className="w-full bg-[#111] border border-gray-800 rounded-2xl p-5 text-white placeholder:text-gray-700 focus:border-[#ff10f0] outline-none transition-all text-xl font-bold"
+              />
+            </div>
+            <div className="space-y-2 text-left">
+              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-4">End City</label>
+              <input
+                required
+                type="text"
+                value={destination}
+                onChange={(e) => setDestination(e.target.value)}
+                placeholder="e.g. Miami"
+                className="w-full bg-[#111] border border-gray-800 rounded-2xl p-5 text-white placeholder:text-gray-700 focus:border-[#ff10f0] outline-none transition-all text-xl font-bold"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#ff10f0] hover:bg-[#ff10f0]/80 text-white font-black py-6 rounded-2xl text-2xl flex items-center justify-center gap-3 transition-all active:scale-95 shadow-[0_0_40px_rgba(255,16,240,0.3)] mt-4"
+            >
+              {loading ? (
+                <Zap className="animate-spin w-8 h-8 text-white" />
+              ) : (
+                <>
+                  <Zap className="w-8 h-8" />
+                  FIND STOPS ALONG ROUTE
+                </>
+              )}
+            </button>
+          </form>
+        )}
 
         <p className="mt-8 text-sm text-gray-500 font-medium">
           TONIGHT · 2 GUESTS · PAY AT PROPERTY
