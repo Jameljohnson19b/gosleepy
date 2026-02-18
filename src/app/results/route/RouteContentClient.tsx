@@ -33,9 +33,12 @@ interface RouteResults {
     error?: string;
 }
 
-function TacticalMap({ stops, is1AM }: { stops: RouteStop[], is1AM: boolean }) {
+function TacticalMap({ stops, is1AM, origin, destination }: { stops: RouteStop[], is1AM: boolean, origin: string, destination: string }) {
+    const originCity = origin.split(',')[0].trim();
+    const destCity = destination.split(',')[0].trim();
+
     return (
-        <div className="relative w-full h-48 bg-zinc-900/50 rounded-[40px] border border-white/5 overflow-hidden mb-12 shadow-2xl">
+        <div className="relative w-full h-56 bg-zinc-900/50 rounded-[40px] border border-white/5 overflow-hidden mb-12 shadow-2xl">
             {/* Mission Grid */}
             <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
 
@@ -47,35 +50,43 @@ function TacticalMap({ stops, is1AM }: { stops: RouteStop[], is1AM: boolean }) {
                     stroke={is1AM ? "#ff10f0" : "#fff"}
                     strokeWidth="3"
                     strokeDasharray="8 4"
-                    className="animate-[dash_20s_linear_infinite]"
+                    className="animate-[dash_60s_linear_infinite]"
                 />
 
                 {/* Origin */}
-                <circle cx="20" cy="100" r="10" fill={is1AM ? "#ff10f0" : "#fff"} className="animate-pulse" />
+                <g>
+                    <circle cx="20" cy="100" r="8" fill={is1AM ? "#ff10f0" : "#fff"} className="animate-pulse" />
+                    <text x="20" y="130" textAnchor="middle" className="text-[7px] font-black fill-[#ff10f0] uppercase tracking-tighter">Origin</text>
+                    <text x="20" y="142" textAnchor="middle" className="text-[9px] font-black fill-white uppercase tracking-tighter">{originCity}</text>
+                </g>
 
                 {/* Waypoints */}
-                {stops.map((_, i) => (
+                {stops.map((stop, i) => (
                     <g key={i}>
                         <circle
                             cx={80 + i * 110}
-                            cy={stops[i].stopIndex === 1 ? 40 : 100}
-                            r="6"
+                            cy={i === 1 ? 40 : 100}
+                            r="5"
                             fill={is1AM ? "#ff10f0" : "#fff"}
                             className="opacity-50"
                         />
                         <text
                             x={80 + i * 110}
-                            cy={stops[i].stopIndex === 1 ? 25 : 125}
+                            cy={i === 1 ? 25 : 125}
                             textAnchor="middle"
-                            className="text-[8px] font-black fill-white/40 uppercase tracking-widest"
+                            className="text-[8px] font-black fill-white uppercase tracking-tighter"
                         >
-                            {stops[i].label}
+                            {stop.label}
                         </text>
                     </g>
                 ))}
 
                 {/* Destination */}
-                <circle cx="380" cy="100" r="10" fill={is1AM ? "#ff10f0" : "#fff"} />
+                <g>
+                    <circle cx="380" cy="100" r="8" fill={is1AM ? "#ff10f0" : "#fff"} />
+                    <text x="380" y="130" textAnchor="middle" className="text-[7px] font-black fill-emerald-400 uppercase tracking-tighter">Terminal</text>
+                    <text x="380" y="142" textAnchor="middle" className="text-[9px] font-black fill-white uppercase tracking-tighter">{destCity}</text>
+                </g>
             </svg>
 
             {/* Radar Sweep Effect */}
@@ -269,7 +280,7 @@ export default function RouteContentClient({
                         </div>
 
                         {/* Tactical Map */}
-                        <TacticalMap stops={data?.stops || []} is1AM={is1AM} />
+                        <TacticalMap stops={data?.stops || []} is1AM={is1AM} origin={origin} destination={destination} />
 
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-3">

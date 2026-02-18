@@ -73,10 +73,17 @@ export async function POST(req: Request) {
             // Mock Pit Stops (Gas/Stores)
             const pitStops = getMockPitStops(wp.lat, wp.lng, idx);
 
+            // Derive stop label from first hotel's city/state if available
+            const addressParts = (enrichedOffers[0]?.address || '').split(',');
+            const city = addressParts[1]?.trim();
+            const stateZip = addressParts[2]?.trim();
+            const state = stateZip?.split(' ')[0];
+            const stopLabel = city && state ? `${city}, ${state}` : (city || wp.label);
+
             return {
                 stopIndex: idx,
                 status: enrichedOffers.length > 0 ? 'OK' : 'NO_OFFERS',
-                label: enrichedOffers[0]?.address?.split(',')[1]?.trim() || wp.label,
+                label: stopLabel,
                 waypoint: wp,
                 radiusUsed: usedRadius,
                 offers: enrichedOffers.slice(0, 3), // Return Top 3 options
