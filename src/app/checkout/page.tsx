@@ -89,7 +89,7 @@ function CheckoutContent() {
                             value={formData.firstName}
                             onChange={e => setFormData({ ...formData, firstName: e.target.value })}
                             placeholder="Jamel"
-                            className="w-full bg-[#111] border border-gray-800 rounded-2xl p-4 text-white placeholder:text-gray-700 focus:border-yellow-400 outline-none transition-all"
+                            className="w-full bg-[#111] border border-gray-800 rounded-2xl p-4 text-white placeholder:text-gray-700 focus:border-[#ff10f0] outline-none transition-all"
                         />
                     </div>
                     <div className="space-y-2">
@@ -100,7 +100,7 @@ function CheckoutContent() {
                             value={formData.lastName}
                             onChange={e => setFormData({ ...formData, lastName: e.target.value })}
                             placeholder="Johnson"
-                            className="w-full bg-[#111] border border-gray-800 rounded-2xl p-4 text-white placeholder:text-gray-700 focus:border-yellow-400 outline-none transition-all"
+                            className="w-full bg-[#111] border border-gray-800 rounded-2xl p-4 text-white placeholder:text-gray-700 focus:border-[#ff10f0] outline-none transition-all"
                         />
                     </div>
                 </div>
@@ -113,7 +113,7 @@ function CheckoutContent() {
                         value={formData.email}
                         onChange={e => setFormData({ ...formData, email: e.target.value })}
                         placeholder="stay@gosleepy.xyz"
-                        className="w-full bg-[#111] border border-gray-800 rounded-2xl p-4 text-white placeholder:text-gray-700 focus:border-yellow-400 outline-none transition-all"
+                        className="w-full bg-[#111] border border-gray-800 rounded-2xl p-4 text-white placeholder:text-gray-700 focus:border-[#ff10f0] outline-none transition-all"
                     />
                 </div>
 
@@ -125,7 +125,7 @@ function CheckoutContent() {
                         value={formData.phone}
                         onChange={e => setFormData({ ...formData, phone: e.target.value })}
                         placeholder="(555) 000-0000"
-                        className="w-full bg-[#111] border border-gray-800 rounded-2xl p-4 text-white placeholder:text-gray-700 focus:border-yellow-400 outline-none transition-all"
+                        className="w-full bg-[#111] border border-gray-800 rounded-2xl p-4 text-white placeholder:text-gray-700 focus:border-[#ff10f0] outline-none transition-all"
                     />
                 </div>
 
@@ -142,10 +142,10 @@ function CheckoutContent() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full h-20 bg-yellow-400 text-black rounded-2xl font-black text-2xl active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                        className="w-full h-20 bg-[#ff10f0] text-white rounded-2xl font-black text-2xl active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                     >
                         {loading ? (
-                            <Zap className="animate-spin w-8 h-8" />
+                            <Zap className="animate-spin w-8 h-8 text-white" />
                         ) : (
                             <>
                                 <Lock className="w-6 h-6" />
@@ -167,7 +167,7 @@ export default function CheckoutPage() {
     return (
         <Suspense fallback={
             <div className="min-h-screen bg-black flex items-center justify-center">
-                <Zap className="w-12 h-12 text-yellow-400 animate-spin" />
+                <Zap className="w-12 h-12 text-[#ff10f0] animate-spin" />
             </div>
         }>
             <CheckoutContent />

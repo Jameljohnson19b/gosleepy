@@ -35,8 +35,12 @@ export default function LandingPage() {
       </div>
 
       <div className="z-10 max-w-md w-full">
-        <div className="flex justify-center mb-6">
-          <Moon className="w-16 h-16 text-yellow-400 fill-yellow-400 animate-pulse" />
+        <div className="flex justify-center mb-8">
+          <img
+            src="/logo.png"
+            alt="Go Sleepy Logo"
+            className="w-32 h-32 object-contain filter invert-[.5] sepia-[1] saturate-[5000%] hue-rotate-[290deg] drop-shadow-[0_0_20px_rgba(255,16,240,0.4)]"
+          />
         </div>
 
         <h1 className="text-5xl font-extrabold tracking-tighter mb-4">
@@ -50,10 +54,10 @@ export default function LandingPage() {
         <button
           onClick={handleFindRooms}
           disabled={loading}
-          className="w-full bg-yellow-400 hover:bg-yellow-300 text-black font-black py-6 rounded-2xl text-2xl flex items-center justify-center gap-3 transition-all active:scale-95 shadow-[0_0_40px_rgba(250,204,21,0.3)]"
+          className="w-full bg-[#ff10f0] hover:bg-[#ff10f0]/80 text-white font-black py-6 rounded-2xl text-2xl flex items-center justify-center gap-3 transition-all active:scale-95 shadow-[0_0_40px_rgba(255,16,240,0.3)]"
         >
           {loading ? (
-            <Zap className="animate-spin w-8 h-8" />
+            <Zap className="animate-spin w-8 h-8 text-white" />
           ) : (
             <>
               <MapPin className="w-8 h-8" />

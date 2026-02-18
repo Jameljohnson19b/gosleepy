@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getGeoHash, getCachedOffers, setCachedOffers } from '@/lib/cache';
 import { snapshotRates } from '@/lib/priceTrend';
 import { MockSupplierAdapter } from '@/lib/supplier/mock';
+import { AmadeusAdapter } from '@/lib/supplier/amadeus';
 
-const supplier = new MockSupplierAdapter();
+const supplier = process.env.AMADEUS_CLIENT_ID ? new AmadeusAdapter() : new MockSupplierAdapter();
 
 export async function POST(req: NextRequest) {
     try {

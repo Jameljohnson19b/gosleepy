@@ -52,9 +52,12 @@ function ResultsContent() {
                 <Link href="/" className="p-2 -ml-2">
                     <ArrowLeft className="w-8 h-8" />
                 </Link>
-                <div className="flex flex-col items-center">
-                    <span className="text-yellow-400 font-black tracking-tighter text-xl">GO SLEEPY</span>
-                    <span className="text-[10px] text-gray-500 uppercase tracking-[0.2em]">Tonight Nearby</span>
+                <div className="flex items-center gap-2">
+                    <img src="/logo.png" alt="" className="w-8 h-8 object-contain filter invert-[.5] sepia-[1] saturate-[5000%] hue-rotate-[290deg]" />
+                    <div className="flex flex-col items-center">
+                        <span className="text-[#ff10f0] font-black tracking-tighter text-xl">GO SLEEPY</span>
+                        <span className="text-[10px] text-gray-500 uppercase tracking-[0.2em]">Tonight Nearby</span>
+                    </div>
                 </div>
                 <div className="p-2 opacity-0">
                     <ArrowLeft className="w-8 h-8" />
@@ -63,7 +66,7 @@ function ResultsContent() {
 
             {loading ? (
                 <div className="flex flex-col items-center justify-center py-20 gap-4">
-                    <Zap className="w-12 h-12 text-yellow-400 animate-spin" />
+                    <Zap className="w-12 h-12 text-[#ff10f0] animate-spin" />
                     <p className="text-gray-400 animate-pulse font-medium">Scanning for safe zones...</p>
                 </div>
             ) : (
@@ -82,7 +85,7 @@ function ResultsContent() {
 
             {/* 1AM Mode Status Bar */}
             {!loading && (
-                <div className="fixed bottom-0 left-0 w-full bg-yellow-400 text-black py-2 text-center font-bold text-xs uppercase tracking-widest px-4 truncate">
+                <div className="fixed bottom-0 left-0 w-full bg-[#ff10f0] text-white py-2 text-center font-bold text-xs uppercase tracking-widest px-4 truncate">
                     Prices updated {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · Pay at Property only
                 </div>
             )}
@@ -94,7 +97,7 @@ export default function ResultsPage() {
     return (
         <Suspense fallback={
             <div className="min-h-screen bg-black flex items-center justify-center">
-                <Zap className="w-12 h-12 text-yellow-400 animate-spin" />
+                <Zap className="w-12 h-12 text-[#ff10f0] animate-spin" />
             </div>
         }>
             <ResultsContent />

@@ -3,13 +3,14 @@
 :root {
   --background: #000000;
   --foreground: #ffffff;
-  --sleepy-yellow: #ffd700;
+  --sleepy-pink: #ff10f0;
+  /* Hot Pink */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-sleepy-yellow: var(--sleepy-yellow);
+  --color-sleepy-pink: var(--sleepy-pink);
 }
 
 body {

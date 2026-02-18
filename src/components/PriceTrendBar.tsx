@@ -26,8 +26,8 @@ export function PriceTrendBar({ hotelId }: PriceTrendBarProps) {
                 >
                     <div
                         className={`w-full rounded-t-sm transition-all duration-500 ${i === data.length - 1
-                                ? "bg-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.5)]"
-                                : "bg-gray-800"
+                            ? "bg-[#ff10f0] shadow-[0_0_10px_rgba(255,16,240,0.5)]"
+                            : "bg-gray-800"
                             }`}
                         style={{ height: `${point.height}%` }}
                     />

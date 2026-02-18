@@ -24,13 +24,13 @@ export function HotelCard({ offer }: HotelCardProps) {
                     className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all opacity-80"
                 />
                 <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-white/10">
-                    <MapPin className="w-3.5 h-3.5 text-yellow-400" />
+                    <MapPin className="w-3.5 h-3.5 text-[#ff10f0]" />
                     <span className="text-xs font-bold text-white">{offer.distanceMiles}mi</span>
                 </div>
 
                 {offer.rating && (
                     <div className="absolute top-4 right-4 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-white/10">
-                        <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
+                        <Star className="w-3.5 h-3.5 text-[#ff10f0] fill-[#ff10f0]" />
                         <span className="text-xs font-bold text-white">{offer.rating}</span>
                     </div>
                 )}
@@ -64,13 +64,13 @@ export function HotelCard({ offer }: HotelCardProps) {
 
                 <div className="mt-6 pt-6 border-t border-gray-900">
                     <div className="flex items-center gap-2 mb-3">
-                        <TrendingDown className="w-4 h-4 text-yellow-400" />
+                        <TrendingDown className="w-4 h-4 text-[#ff10f0]" />
                         <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
                             Price Trend (Last 24h)
                         </span>
                     </div>
                     <PriceTrendBar hotelId={offer.hotelId} />
-                    <div className="mt-2 text-[10px] text-yellow-400/60 font-medium italic">
+                    <div className="mt-2 text-[10px] text-[#ff10f0]/60 font-medium italic">
                         Lowest price seen today: ${lowestRate.totalAmount - 5}
                     </div>
                 </div>

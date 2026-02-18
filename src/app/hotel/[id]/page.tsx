@@ -63,11 +63,13 @@ export default function HotelDetailsPage() {
                     <button onClick={() => router.back()} className="p-2 bg-black/50 backdrop-blur-md rounded-full border border-white/10">
                         <ArrowLeft className="w-8 h-8" />
                     </button>
+                    <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain filter invert-[.5] sepia-[1] saturate-[5000%] hue-rotate-[290deg] drop-shadow-lg" />
+                    <div className="w-12 h-12" /> {/* Spacer */}
                 </header>
 
                 <div className="absolute bottom-6 left-6 right-6">
                     <div className="flex items-center gap-2 mb-2">
-                        <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                        <Star className="w-4 h-4 text-[#ff10f0] fill-[#ff10f0]" />
                         <span className="text-sm font-bold">{offer.rating} · {offer.stars} Stars</span>
                     </div>
                     <h1 className="text-4xl font-black tracking-tighter uppercase leading-none">
@@ -80,17 +82,17 @@ export default function HotelDetailsPage() {
                 {/* Quick Actions */}
                 <div className="grid grid-cols-2 gap-4 mb-8">
                     <a href={`tel:5550123`} className="flex flex-col items-center justify-center p-4 bg-[#111] rounded-2xl border border-gray-800 active:scale-95 transition-all">
-                        <Phone className="w-6 h-6 text-yellow-400 mb-2" />
+                        <Phone className="w-6 h-6 text-[#ff10f0] mb-2" />
                         <span className="text-[10px] font-black uppercase tracking-widest">Call Hotel</span>
                     </a>
                     <a href={`https://maps.apple.com/?q=${offer.address}`} className="flex flex-col items-center justify-center p-4 bg-[#111] rounded-2xl border border-gray-800 active:scale-95 transition-all">
-                        <Navigation className="w-6 h-6 text-yellow-400 mb-2" />
+                        <Navigation className="w-6 h-6 text-[#ff10f0] mb-2" />
                         <span className="text-[10px] font-black uppercase tracking-widest">Navigate</span>
                     </a>
                 </div>
 
                 {/* Price Trend */}
-                <section className="mb-8 p-5 bg-[#0a0a0a] border border-yellow-400/20 rounded-3xl">
+                <section className="mb-8 p-5 bg-[#0a0a0a] border border-[#ff10f0]/20 rounded-3xl">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">Price Timeline</h2>
                         <span className="text-emerald-400 text-[10px] font-black bg-emerald-400/10 px-2 py-1 rounded">LOWEST SEEN TODAY</span>
@@ -128,7 +130,7 @@ export default function HotelDetailsPage() {
 
                             <button
                                 onClick={() => router.push(`/checkout?hotelId=${offer.hotelId}&rateId=${rate.rateId}`)}
-                                className="w-full bg-yellow-400 text-black py-4 rounded-xl font-black text-xl active:scale-[0.98] transition-all"
+                                className="w-full bg-[#ff10f0] text-white py-4 rounded-xl font-black text-xl active:scale-[0.98] transition-all"
                             >
                                 SELECT ROOM
                             </button>
@@ -140,7 +142,7 @@ export default function HotelDetailsPage() {
                 <section className="pb-20">
                     <h2 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 mb-4">Location</h2>
                     <div className="flex gap-3 mb-4">
-                        <MapPin className="w-5 h-5 text-yellow-400 shrink-0" />
+                        <MapPin className="w-5 h-5 text-[#ff10f0] shrink-0" />
                         <p className="text-sm font-medium text-gray-300">{offer.address}</p>
                     </div>
                     <div className="h-48 bg-gray-900 rounded-2xl border border-gray-800 flex items-center justify-center text-gray-600 font-bold uppercase tracking-widest text-xs">
@@ -158,7 +160,7 @@ export default function HotelDetailsPage() {
                     </div>
                     <button
                         onClick={() => router.push(`/checkout?hotelId=${offer.hotelId}&rateId=${offer.rates[0].rateId}`)}
-                        className="flex-1 bg-yellow-400 text-black py-4 rounded-xl font-black text-xl active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(250,204,21,0.2)]"
+                        className="flex-1 bg-[#ff10f0] text-white py-4 rounded-xl font-black text-xl active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(255,16,240,0.2)]"
                     >
                         BOOK NOW
                     </button>
