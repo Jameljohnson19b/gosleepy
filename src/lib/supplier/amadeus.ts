@@ -49,31 +49,42 @@ export class AmadeusAdapter implements SupplierAdapter {
 
             if (hotelIds.length === 0) return [];
 
-            // 2. Get live offers for these hotels
-            const offersResponse = await this.amadeus.shopping.hotelOffersSearch.get({
-                hotelIds: hotelIds.join(','),
-                adults: params.guests,
-                checkInDate: params.checkIn,
-                checkOutDate: params.checkOut,
-                currencyCode: 'USD',
-                bestRateOnly: true,
-                view: 'FULL',
-                limit: 100
-            });
+            // 2. Get live offers (Batching to avoid API limits)
+            const offerChunks = [];
+            for (let i = 0; i < hotelIds.length; i += 40) {
+                const chunkIds = hotelIds.slice(i, i + 40);
+                try {
+                    const chunkResponse = await this.amadeus.shopping.hotelOffersSearch.get({
+                        hotelIds: chunkIds.join(','),
+                        adults: params.guests,
+                        checkInDate: params.checkIn,
+                        checkOutDate: params.checkOut,
+                        currencyCode: 'USD',
+                        bestRateOnly: true,
+                        view: 'FULL'
+                    });
+                    if (chunkResponse.data) offerChunks.push(...chunkResponse.data);
+                } catch (offerError) {
+                    console.warn(`Amadeus Offer Batch ${i} Failed:`, offerError);
+                }
+            }
 
-            // 3. Fetch Official Media (Actual Pictures)
+            // 3. Fetch Official Media (Batching for stability)
             let mediaData: any[] = [];
-            try {
-                const mediaResponse = await this.amadeus.client.get('/v2/shopping/hotel-media', {
-                    hotelIds: hotelIds.join(',')
-                });
-                mediaData = mediaResponse.data || [];
-            } catch (mediaError) {
-                console.warn('Amadeus Media Fetch Failed:', mediaError);
+            for (let j = 0; j < hotelIds.slice(0, 40).length; j += 20) {
+                const mediaChunkIds = hotelIds.slice(j, j + 20);
+                try {
+                    const mediaResponse = await this.amadeus.client.get('/v2/shopping/hotel-media', {
+                        hotelIds: mediaChunkIds.join(',')
+                    });
+                    if (mediaResponse.data) mediaData.push(...mediaResponse.data);
+                } catch (mediaError) {
+                    console.warn(`Amadeus Media Batch ${j} Failed:`, mediaError);
+                }
             }
 
             // 4. Merge & Normalize
-            return offersResponse.data.map((item: any) => {
+            return offerChunks.map((item: any) => {
                 const offerHotel = item.hotel;
                 const offer = item.offers[0];
 
@@ -92,14 +103,14 @@ export class AmadeusAdapter implements SupplierAdapter {
 
                 const hotelName = (offerHotel.name || geoHotel.name || 'Unknown Hotel').split(' ').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
 
-                // Property-accurate visuals fallback: Use reliable Unsplash IDs (verified live)
+                // Verified high-quality Unsplash assets (stable IDs)
                 const allGalleryAssets = [
                     "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1445013351711-122240590a93?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1582719478250-c89cae4df85b?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1551882547-ff43c61f3635?auto=format&fit=crop&w=1200&q=80",
                     "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80",
-                    "https://images.unsplash.com/photo-1551882547-ff43c61f3635?auto=format&fit=crop&w=1200&q=80"
+                    "https://images.unsplash.com/photo-1582719478250-c89cae4df85b?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80"
                 ];
 
                 // Deterministic rotation based on ID hash or last digit

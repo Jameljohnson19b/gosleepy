@@ -50,33 +50,34 @@ function ResultsContent() {
 
     return (
         <main className="min-h-screen bg-black text-white p-4">
-            <header className="flex flex-col gap-6 mb-8 sticky top-0 bg-black/80 backdrop-blur-md z-20 py-2">
-                <div className="flex items-center justify-between">
-                    <Link href="/" className="p-2 -ml-2">
-                        <ArrowLeft className="w-8 h-8 text-gray-400 hover:text-white transition-colors" />
+            <header className="flex flex-col gap-6 mb-8 sticky top-0 bg-black/80 backdrop-blur-md z-20 py-4 border-b border-white/5">
+                <div className="flex items-center relative h-10">
+                    <Link href="/" className="absolute left-0 p-2">
+                        <ArrowLeft className="w-8 h-8 text-gray-400 hover:text-[#ff10f0] transition-colors" />
                     </Link>
-                    <div className="flex items-center gap-2">
+
+                    <div className="flex items-center gap-3 mx-auto">
                         <img src="/logo.png" alt="" className="w-8 h-8 object-contain filter invert-[.5] sepia-[1] saturate-[5000%] hue-rotate-[290deg]" />
-                        <div className="flex flex-col items-center">
-                            <span className="text-[#ff10f0] font-black tracking-tighter text-xl">GO SLEEPY</span>
-                            <span className="text-[10px] text-gray-400 uppercase tracking-[0.2em]">Nearby</span>
+                        <div className="text-center">
+                            <h1 className="text-[#ff10f0] font-black tracking-tighter text-2xl leading-none">GO SLEEPY</h1>
+                            <p className="text-[10px] text-gray-400 uppercase tracking-[0.3em] font-bold">NEARBY</p>
                         </div>
-                    </div>
-                    <div className="p-2 opacity-0 pointer-events-none">
-                        <ArrowLeft className="w-8 h-8" />
                     </div>
                 </div>
 
                 <div className="flex items-center justify-between px-2">
-                    <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Radius</span>
+                    <div className="flex items-center gap-2">
+                        <div className="w-1 h-1 bg-[#ff10f0] rounded-full animate-pulse" />
+                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Boundary Scan</span>
+                    </div>
                     <div className="flex bg-[#111] p-1 rounded-xl border border-white/5 gap-1">
                         {[10, 25, 50].map((r) => (
                             <button
                                 key={r}
                                 onClick={() => setRadius(r)}
-                                className={`py-1.5 px-3 rounded-lg font-black text-[9px] uppercase tracking-widest transition-all ${radius === r ? "bg-white text-black" : "text-gray-500 hover:text-white"}`}
+                                className={`py-1.5 px-4 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all ${radius === r ? "bg-[#ff10f0] text-white shadow-[0_0_15px_rgba(255,16,240,0.4)]" : "text-gray-500 hover:text-white"}`}
                             >
-                                {r}MI
+                                {r}mi
                             </button>
                         ))}
                     </div>
