@@ -86,6 +86,7 @@ export async function POST(req: Request) {
                 label: stopLabel,
                 waypoint: wp,
                 radiusUsed: usedRadius,
+                bestOffer: enrichedOffers[0] || null,
                 offers: enrichedOffers.slice(0, 3), // Return Top 3 options
                 pitStops
             };

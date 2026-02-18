@@ -21,6 +21,7 @@ interface RouteStop {
     stopIndex: number;
     status: 'OK' | 'NO_OFFERS' | 'ERROR';
     label: string;
+    bestOffer?: Offer;
     offers?: Offer[];
     pitStops?: PitStop[];
     error?: string;
@@ -31,6 +32,123 @@ interface RouteResults {
     distance?: number;
     durationHours?: number;
     error?: string;
+}
+
+function RadarCard({ stop, offer, is1AM }: { stop: RouteStop; offer?: Offer; is1AM: boolean }) {
+    const price = offer?.rates?.[0]?.totalAmount;
+    const currency = offer?.rates?.[0]?.currency ?? "USD";
+
+    return (
+        <div className={`flex-none w-[260px] ${is1AM ? 'bg-[#111]' : 'bg-zinc-900'} border border-white/10 rounded-2xl p-4 snap-start relative overflow-hidden group hover:border-[#ff10f0]/50 transition-all`}>
+            <div className="absolute top-0 right-0 w-16 h-16 bg-[#ff10f0]/10 rounded-bl-[40px] -mr-4 -mt-4 transition-colors group-hover:bg-[#ff10f0]/20" />
+            <div className="text-sm font-black uppercase tracking-tighter mb-1">{stop.label}</div>
+            <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3">{stop.status}</div>
+
+            {price ? (
+                <div className="mt-2 text-2xl font-black tracking-tighter font-mono leading-none">
+                    ${price} <span className="text-[10px] opacity-40 font-mono italic">{currency}</span>
+                </div>
+            ) : (
+                <div className="mt-2 text-xs font-black uppercase text-gray-600 italic">No Intel Found</div>
+            )}
+
+            {offer && (
+                <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
+                    <div className="text-[9px] font-black text-emerald-400 uppercase italic">
+                        {offer.confidenceScore?.toFixed(1) || '—'}/10 CONFIRMS
+                    </div>
+                    <div className={`text-[8px] font-black uppercase tracking-wider ${offer.pressureLabel === 'LIMITED' ? 'text-blue-400' : 'text-gray-500'}`}>
+                        {offer.pressureLabel || 'STABLE'}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+function RouteStopComponent({ index, stop, offer, duration, radius, is1AM }: { index: number; stop: RouteStop; offer?: Offer; duration: number; radius: number; is1AM: boolean }) {
+    const price = offer?.rates?.[0]?.totalAmount;
+    const currency = offer?.rates?.[0]?.currency ?? "USD";
+
+    return (
+        <div className="relative pl-10 group">
+            {/* Trace Indicator */}
+            <div className={`absolute left-[20px] top-3 w-1.5 h-1.5 rounded-full ${offer ? 'bg-[#ff10f0]' : 'bg-gray-800'} z-10`} />
+
+            <div className="mb-10">
+                <div className="flex flex-col gap-1 mb-4">
+                    <div className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-500 italic">Stop {index}</div>
+                    <h3 className="text-2xl font-black uppercase tracking-tighter">{stop.label}</h3>
+                </div>
+
+                {offer ? (
+                    <div className="space-y-4">
+                        <div className="flex flex-wrap items-center gap-3">
+                            <div className="bg-emerald-400 text-black text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-lg shadow-[0_0_20px_rgba(52,211,153,0.2)]">
+                                ${price} {currency}
+                            </div>
+                            <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                {offer.hotelName}
+                            </div>
+                            <div className="text-[9px] font-bold text-emerald-400 border border-emerald-400/20 px-2 py-0.5 rounded">
+                                {offer.confidenceScore?.toFixed(1) || '—'}/10 CONFIRMS
+                            </div>
+                            <div className="text-[9px] font-bold text-blue-400 border border-blue-400/20 px-2 py-0.5 rounded uppercase">
+                                {offer.pressureLabel}
+                            </div>
+                        </div>
+
+                        <div className="text-[9px] font-black text-gray-600 uppercase tracking-widest flex items-center gap-2">
+                            SUPPORT RISK: <span className={offer.supportRisk?.label === 'HIGH' ? 'text-[#ff10f0]' : 'text-blue-400'}>{offer.supportRisk?.label} ({offer.supportRisk?.riskScore})</span>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="text-[10px] font-black uppercase text-gray-600 italic">
+                        {stop.status === "NO_OFFERS" ? "No tactical lodging identified at this vector." : stop.status}
+                    </div>
+                )}
+
+                {/* Pit Stops Supply Chain */}
+                {stop.pitStops && stop.pitStops.length > 0 && (
+                    <div className="mt-8 space-y-3">
+                        <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 border-b border-white/5 pb-2">Supply Points Nearby</div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {stop.pitStops.map((pit, j) => (
+                                <div key={j} className={`rounded-2xl ${pit.type === 'CHARGING_STATION' ? 'bg-[#ff10f0]/5 border-[#ff10f0]/20' : 'bg-white/5 border-white/10'} border p-4 text-[11px] relative overflow-hidden group`}>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <div className="font-black uppercase tracking-tighter text-white">{pit.name}</div>
+                                        <div className="text-[9px] font-bold text-gray-500">{pit.distance} mi</div>
+                                    </div>
+                                    <div className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-3">{pit.type.replace('_', ' ')}</div>
+
+                                    {pit.gasPrices && (
+                                        <div className="flex items-center gap-4 mt-1 bg-black/40 rounded-lg p-2 border border-white/5">
+                                            <div className="flex flex-col">
+                                                <span className="text-[7px] font-black text-gray-600 uppercase">Regular</span>
+                                                <span className="text-emerald-400 font-mono font-black">${pit.gasPrices.regular}</span>
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-[7px] font-black text-gray-600 uppercase">Diesel</span>
+                                                <span className="text-gray-400 font-mono font-black">${pit.gasPrices.diesel}</span>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {pit.perks?.length && (
+                                        <div className="mt-3 flex flex-wrap gap-1">
+                                            {pit.perks.map((p, k) => (
+                                                <span key={k} className="text-[7px] font-bold text-gray-600 uppercase bg-white/5 px-1.5 py-0.5 rounded">{p}</span>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
 }
 
 function TacticalMap({ stops, is1AM, origin, destination }: { stops: RouteStop[], is1AM: boolean, origin: string, destination: string }) {
@@ -306,36 +424,19 @@ export default function RouteContentClient({
                             <span className="text-[9px] font-black text-[#ff10f0] uppercase tracking-widest bg-[#ff10f0]/10 px-2 py-1 rounded">Radar Feed</span>
                         </div>
                         <div className="flex gap-5 overflow-x-auto pb-6 scrollbar-hide snap-x">
-                            {data?.stops?.filter(s => s.status === 'OK').flatMap(s => s.offers || []).slice(0, 6).map((offer, i) => (
-                                <div key={i} className={`flex-none w-52 ${is1AM ? 'bg-[#111]' : 'bg-zinc-900'} border border-white/10 rounded-3xl p-5 snap-start relative overflow-hidden group hover:border-[#ff10f0]/50 transition-all`}>
-                                    <div className="absolute top-0 right-0 w-16 h-16 bg-[#ff10f0]/10 rounded-bl-[40px] -mr-4 -mt-4 transition-colors group-hover:bg-[#ff10f0]/20" />
-                                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mb-1">Top Pick</span>
-                                    <h3 className="text-xs font-black truncate mb-4">{offer.hotelName}</h3>
-                                    <div className="flex items-end justify-between">
-                                        <div className="flex flex-col">
-                                            <span className="text-2xl font-black leading-none tracking-tighter font-mono">${offer.rates[0].totalAmount}</span>
-                                            <span className="text-[7px] font-bold text-gray-600 uppercase mt-1">Found Stop</span>
-                                        </div>
-                                        <div className="flex flex-col items-end gap-1">
-                                            {(offer as any).confidenceScore && (
-                                                <div className="px-2 py-0.5 bg-emerald-400/10 rounded text-emerald-400 text-[7px] font-black uppercase italic">
-                                                    {(offer as any).confidenceScore.toFixed(1)} Confirms
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
+                            {data?.stops?.filter(s => s.status === 'OK').map((stop, i) => (
+                                <RadarCard key={i} stop={stop} offer={stop.bestOffer} is1AM={is1AM} />
                             ))}
                         </div>
                     </section>
 
                     {/* Detailed Route Intelligence */}
-                    <section className="space-y-14 relative pb-10">
+                    <section className="space-y-4 relative pb-20">
                         {/* The High-Speed Trace Line */}
                         <div className={`absolute left-[23px] top-6 bottom-6 w-[2px] ${is1AM ? 'bg-gradient-to-b from-[#ff10f0] via-[#ff10f0]/40 to-emerald-400' : 'bg-gray-800'} opacity-30`} />
 
                         {/* Starting Location */}
-                        <div className="relative pl-16">
+                        <div className="relative pl-16 mb-12">
                             <div className="absolute left-0 top-0 w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center border border-white/10 shadow-2xl">
                                 <MapPin className="w-5 h-5 text-gray-500" />
                             </div>
@@ -347,98 +448,15 @@ export default function RouteContentClient({
 
                         {/* Tactical Stop Points */}
                         {data?.stops?.map((stop, i) => (
-                            <div key={i} className="relative pl-16 group">
-                                <div className="absolute left-0 top-0 w-12 h-12 bg-black rounded-2xl flex items-center justify-center border-2 border-[#ff10f0] shadow-[0_0_30px_rgba(255,16,240,0.4)] z-10 transition-all group-hover:scale-110">
-                                    <span className="text-[#ff10f0] font-black text-xl italic">{i + 1}</span>
-                                </div>
-                                <div className="mb-8">
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <div className="px-3 py-1 bg-[#ff10f0]/10 border border-[#ff10f0]/30 text-[#ff10f0] text-[9px] font-black uppercase tracking-widest rounded-lg">
-                                            {stop.label}
-                                        </div>
-                                        {i === 0 && stop.status === 'OK' && (
-                                            <span className="bg-emerald-400 text-black text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-[0_0_20px_rgba(52,211,153,0.3)] animate-pulse">Next Best Rest</span>
-                                        )}
-                                        {stop.status === 'OK' && stop.offers?.[0]?.pressureLabel === 'LIMITED' && (
-                                            <span className="text-blue-400 text-[8px] font-black uppercase tracking-widest border border-blue-400/20 px-2 py-1 rounded">Demand Spiking</span>
-                                        )}
-                                    </div>
-
-                                    {/* Pit Stops (Gas / Food) */}
-                                    {stop.pitStops && stop.pitStops.length > 0 && (
-                                        <div className="flex gap-4 overflow-x-auto pb-4 mb-6 scrollbar-hide">
-                                            {stop.pitStops.map((pit, j) => (
-                                                <div key={j} className={`flex-none w-56 ${pit.type === 'CHARGING_STATION' ? 'bg-[#ff10f0]/5 border-[#ff10f0]/20' : 'bg-zinc-900 border-white/5'} border rounded-2xl p-4 flex flex-col gap-3 relative overflow-hidden`}>
-                                                    {pit.type === 'CHARGING_STATION' && (
-                                                        <div className="absolute -right-4 -top-4 opacity-10">
-                                                            <Zap className="w-20 h-20 text-[#ff10f0] fill-[#ff10f0]" />
-                                                        </div>
-                                                    )}
-
-                                                    <div className="flex items-center justify-between">
-                                                        <div className="flex items-center gap-1.5">
-                                                            {pit.type === 'CHARGING_STATION' ? (
-                                                                <Zap className="w-3 h-3 text-[#ff10f0] fill-[#ff10f0]" />
-                                                            ) : (
-                                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                                                            )}
-                                                            <span className={`text-[8px] font-black uppercase tracking-widest ${pit.type === 'CHARGING_STATION' ? 'text-[#ff10f0]' : 'text-gray-400'}`}>
-                                                                {pit.type === 'CHARGING_STATION' ? 'Supercharger' : 'Refuel Point'}
-                                                            </span>
-                                                        </div>
-                                                        <span className="text-[8px] font-bold text-gray-500">{pit.distance}mi</span>
-                                                    </div>
-
-                                                    <h4 className="text-[11px] font-black uppercase truncate pr-4">{pit.name}</h4>
-
-                                                    {/* Gas Prices (if applicable) */}
-                                                    {pit.gasPrices && (
-                                                        <div className="flex gap-3 border-t border-white/5 pt-2">
-                                                            <div className="flex flex-col">
-                                                                <span className="text-[7px] font-black text-gray-500 uppercase tracking-tighter">Regular</span>
-                                                                <span className="text-[10px] font-mono font-black text-emerald-400">${pit.gasPrices.regular}</span>
-                                                            </div>
-                                                            <div className="flex flex-col">
-                                                                <span className="text-[7px] font-black text-gray-500 uppercase tracking-tighter">Diesel</span>
-                                                                <span className="text-[10px] font-mono font-black text-gray-400">${pit.gasPrices.diesel}</span>
-                                                            </div>
-                                                        </div>
-                                                    )}
-
-                                                    {/* EV Indicator */}
-                                                    {pit.type === 'CHARGING_STATION' && (
-                                                        <div className="border-t border-[#ff10f0]/10 pt-2">
-                                                            <span className="text-[9px] font-black text-[#ff10f0] uppercase tracking-tighter animate-pulse">Fast Charge Available</span>
-                                                        </div>
-                                                    )}
-
-                                                    <div className="flex flex-wrap gap-1">
-                                                        {pit.perks.slice(0, 2).map((p, k) => (
-                                                            <span key={k} className="text-[6px] font-bold text-gray-500 uppercase border border-white/10 px-1 rounded">{p}</span>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-
-                                    {stop.status === 'OK' && stop.offers && stop.offers.length > 0 ? (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                            {stop.offers.map((offer, j) => (
-                                                <HotelCard key={j} offer={offer} duration={duration} />
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="p-8 bg-[#111] border border-gray-800 border-dashed rounded-3xl flex flex-col items-center justify-center gap-3 text-center grayscale opacity-60">
-                                            <Info className="w-8 h-8 text-gray-600" />
-                                            <div>
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Sensor Gap</p>
-                                                <p className="text-[9px] font-bold text-gray-600 italic">No suitable lodging within {radius * 2}mi of this vector.</p>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
+                            <RouteStopComponent
+                                key={i}
+                                index={i + 1}
+                                stop={stop}
+                                offer={stop.bestOffer}
+                                duration={duration}
+                                radius={radius}
+                                is1AM={is1AM}
+                            />
                         ))}
 
                         {/* Destination */}
