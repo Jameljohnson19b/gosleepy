@@ -77,7 +77,7 @@ function RouteContent() {
                 </button>
                 <div className="flex flex-col items-center">
                     <span className="text-[#ff10f0] font-black tracking-tighter text-xl uppercase italic">The Route</span>
-                    <span className="text-[10px] text-gray-500 uppercase tracking-[0.2em]">{origin} → {destination}</span>
+                    <span className="text-[10px] text-gray-400 uppercase tracking-[0.1em] font-black"><span className="text-[#ff10f0]">LOWEST PRICED PITSTOPS</span> · {origin} → {destination}</span>
                 </div>
                 <div className="w-8 h-8 opacity-0" />
             </header>

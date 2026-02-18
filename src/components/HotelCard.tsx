@@ -93,6 +93,12 @@ export function HotelCard({ offer, duration = 1 }: HotelCardProps) {
                             24H DESK
                         </div>
                     )}
+                    {offer.amenities?.some(a => a.toUpperCase().includes('PARKING')) && (
+                        <div className="flex items-center gap-1 text-emerald-400 font-bold text-[9px] bg-emerald-400/10 px-1.5 py-0.5 rounded border border-emerald-400/20">
+                            <MapPin className="w-2.5 h-2.5" />
+                            FREE PARKING
+                        </div>
+                    )}
                 </div>
 
                 <div className="mt-4 pt-4 border-t border-gray-900">

@@ -88,7 +88,7 @@ export default function LandingPage() {
         </h1>
 
         <p className="text-xl text-gray-400 mb-12">
-          Help tired travelers find the next safe place to sleep — <span className="text-white italic">FAST.</span>
+          Find the <span className="text-[#ff10f0] font-black">LOWEST PRICE</span> hospitality stays for tired travelers — <span className="text-white italic">FAST.</span>
         </p>
 
         <div className="flex bg-[#111] p-1 rounded-xl mb-8 border border-white/5">

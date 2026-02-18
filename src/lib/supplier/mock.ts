@@ -74,6 +74,8 @@ export class MockSupplierAdapter implements SupplierAdapter {
     async getCityCoordinates(cityName: string) {
         const cityMap: Record<string, { lat: number, lng: number }> = {
             'New York': { lat: 40.7128, lng: -74.0060 },
+            'New York City': { lat: 40.7128, lng: -74.0060 },
+            'Toronto': { lat: 43.6532, lng: -79.3832 },
             'Miami': { lat: 25.7617, lng: -80.1918 },
             'Richmond': { lat: 37.5407, lng: -77.4360 },
             'Washington': { lat: 38.9072, lng: -77.0369 },
@@ -81,7 +83,9 @@ export class MockSupplierAdapter implements SupplierAdapter {
             'Orlando': { lat: 28.5383, lng: -81.3792 }
         };
 
-        const normalized = cityName.charAt(0).toUpperCase() + cityName.slice(1).toLowerCase();
-        return cityMap[normalized] || { lat: 40.7128, lng: -74.0060 }; // Default to NYC
+        const normalized = cityName.split(',')[0].trim();
+        // Case-insensitive lookup
+        const entry = Object.entries(cityMap).find(([k]) => k.toLowerCase() === normalized.toLowerCase());
+        return entry ? entry[1] : cityMap['New York'];
     }
 }

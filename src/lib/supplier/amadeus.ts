@@ -125,7 +125,7 @@ export class AmadeusAdapter implements SupplierAdapter {
                 const normalizedOffer: Offer = {
                     hotelId: offerHotel.hotelId,
                     hotelName,
-                    hotelPhone: offerHotel.contact?.phone || geoHotel.contact?.phone || 'Contact at Property',
+                    hotelPhone: offerHotel.contact?.phone || geoHotel.contact?.phone,
                     distanceMiles,
                     address: offerHotel.address ? `${offerHotel.address.lines?.[0] || ''}, ${offerHotel.address.cityName || ''}, ${offerHotel.address.countryCode || ''}` :
                         (geoHotel.address ? `${geoHotel.address.lines?.[0] || ''}, ${geoHotel.address.cityName || ''}` : 'Address available at desk'),
@@ -217,23 +217,55 @@ export class AmadeusAdapter implements SupplierAdapter {
     }
 
     async getCityCoordinates(cityName: string): Promise<{ lat: number; lng: number } | null> {
-        try {
-            const response = await this.amadeus.referenceData.locations.get({
-                keyword: cityName,
-                subType: 'CITY'
-            });
+        const cleanName = cityName.split(',')[0].trim();
+        if (!cleanName) return null;
 
-            if (response.data && response.data.length > 0) {
-                const city = response.data[0];
-                return {
-                    lat: city.geoCode.latitude,
-                    lng: city.geoCode.longitude
-                };
+        const trySearch = async (kw: string, subTypes: string) => {
+            try {
+                const res = await this.amadeus.referenceData.locations.get({
+                    keyword: kw,
+                    subType: subTypes
+                });
+                return (res.data && res.data.length > 0) ? res.data[0] : null;
+            } catch (err) {
+                console.warn(`Amadeus Geocoding Attempt Failed [${kw}/${subTypes}]:`, err);
+                return null;
             }
-            return null;
-        } catch (error) {
-            console.error('Amadeus Geocoding Error:', error);
-            return null;
+        };
+
+        // Attempt 1: Specific CITY search with clean name
+        let city = await trySearch(cleanName, 'CITY');
+
+        // Attempt 2: Broader CITY/AIRPORT search if failed
+        if (!city) {
+            city = await trySearch(cleanName, 'CITY,AIRPORT');
         }
+
+        // Attempt 3: Specific fallback for "City" suffix (e.g., "New York City" -> "New York")
+        if (!city && cleanName.toLowerCase().endsWith(' city')) {
+            const shorterName = cleanName.slice(0, -5).trim();
+            city = await trySearch(shorterName, 'CITY');
+        }
+
+        // Attempt 4: Even broader search for shorter name if Attempt 3 failed
+        if (!city && cleanName.toLowerCase().endsWith(' city')) {
+            const shorterName = cleanName.slice(0, -5).trim();
+            city = await trySearch(shorterName, 'CITY,AIRPORT');
+        }
+
+        // Attempt 5: If still failed and name is long, try even shorter version (first word)
+        if (!city && cleanName.includes(' ')) {
+            const firstWord = cleanName.split(' ')[0];
+            city = await trySearch(firstWord, 'CITY,AIRPORT');
+        }
+
+        if (city) {
+            return {
+                lat: city.geoCode.latitude,
+                lng: city.geoCode.longitude
+            };
+        }
+
+        return null;
     }
 }

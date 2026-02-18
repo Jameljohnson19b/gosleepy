@@ -87,8 +87,8 @@ function ResultsContent() {
                             <div className="w-1 h-1 bg-[#ff10f0] rounded-full animate-pulse" />
                             <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Boundary Scan</span>
                         </div>
-                        <div className="text-[9px] font-bold text-[#ff10f0]/60 uppercase tracking-[0.2em]">
-                            {bookingTime === 'now' ? 'Booking: Now' : 'Booking: Tomorrow'} · {duration} {duration === 1 ? 'Night' : 'Nights'}
+                        <div className="text-[9px] font-bold text-[#ff10f0] uppercase tracking-[0.2em]">
+                            <span className="font-black">LOWEST PRICES</span> · {bookingTime === 'now' ? 'Booking: Now' : 'Booking: Tomorrow'} · {duration} {duration === 1 ? 'Night' : 'Nights'}
                         </div>
                     </div>
                     <div className="flex bg-[#111] p-1 rounded-xl border border-white/5 gap-1">
