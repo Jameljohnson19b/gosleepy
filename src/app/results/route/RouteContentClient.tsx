@@ -155,17 +155,30 @@ export default function RouteContentClient({
                         <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest animate-pulse max-w-[200px]">Intercepting mission-critical rates from suppliers...</p>
                     </div>
                 </div>
-            ) : data?.error ? (
+            ) : (data as any)?.error ? (
                 <div className="flex flex-col items-center justify-center py-24 gap-8 px-10 text-center">
                     <div className="w-24 h-24 rounded-full bg-red-500/10 flex items-center justify-center border border-red-500/20 shadow-[0_0_50px_rgba(239,68,68,0.1)]">
                         <Info className="w-12 h-12 text-red-500" />
                     </div>
                     <div>
                         <h2 className="text-3xl font-black uppercase tracking-tighter mb-3">Vector Lost</h2>
-                        <p className="text-gray-500 text-sm italic">{data.error}</p>
+                        <p className="text-gray-500 text-sm italic">{(data as any).error}</p>
                     </div>
                     <Link href="/" className="px-12 py-5 bg-[#ff10f0] text-white font-black uppercase tracking-widest text-xs rounded-3xl shadow-[0_0_30px_rgba(255,16,240,0.4)]">
                         Calculate New Mission
+                    </Link>
+                </div>
+            ) : (!data || !data.stops || data.stops.length === 0) && !loading ? (
+                <div className="flex flex-col items-center justify-center py-24 gap-8 px-10 text-center">
+                    <div className="w-24 h-24 rounded-full bg-[#ff10f0]/5 flex items-center justify-center border border-[#ff10f0]/20 shadow-[0_0_50px_rgba(255,16,240,0.1)]">
+                        <MapPin className="w-12 h-12 text-[#ff10f0]" />
+                    </div>
+                    <div>
+                        <h2 className="text-3xl font-black uppercase tracking-tighter mb-3">No Mission Active</h2>
+                        <p className="text-gray-500 text-sm italic">Define an origin and destination to begin scanning waypoints.</p>
+                    </div>
+                    <Link href="/" className="px-12 py-5 bg-[#ff10f0] text-white font-black uppercase tracking-widest text-xs rounded-3xl shadow-[0_0_30px_rgba(255,16,240,0.4)]">
+                        Initialize Mission
                     </Link>
                 </div>
             ) : (
@@ -182,7 +195,7 @@ export default function RouteContentClient({
                             <span className="text-[9px] font-black text-[#ff10f0] uppercase tracking-widest bg-[#ff10f0]/10 px-2 py-1 rounded">Radar Feed</span>
                         </div>
                         <div className="flex gap-5 overflow-x-auto pb-6 scrollbar-hide snap-x">
-                            {data?.stops.filter(s => s.status === 'OK').map((stop, i) => (
+                            {data?.stops?.filter(s => s.status === 'OK').map((stop, i) => (
                                 <div key={i} className={`flex-none w-52 ${is1AM ? 'bg-[#111]' : 'bg-zinc-900'} border border-white/10 rounded-3xl p-5 snap-start relative overflow-hidden group hover:border-[#ff10f0]/50 transition-all`}>
                                     <div className="absolute top-0 right-0 w-16 h-16 bg-[#ff10f0]/10 rounded-bl-[40px] -mr-4 -mt-4 transition-colors group-hover:bg-[#ff10f0]/20" />
                                     <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mb-1">{stop.label}</span>
@@ -223,13 +236,7 @@ export default function RouteContentClient({
                         </div>
 
                         {/* Tactical Stop Points */}
-                        {data?.stops.length === 0 ? (
-                            <div className="relative pl-16 py-10 opacity-60">
-                                <div className="p-6 bg-[#111] border border-dashed border-gray-800 rounded-3xl text-center">
-                                    <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Scanning waypoints for optimal egress...</p>
-                                </div>
-                            </div>
-                        ) : data?.stops.map((stop, i) => (
+                        {data?.stops?.map((stop, i) => (
                             <div key={i} className="relative pl-16 group">
                                 <div className="absolute left-0 top-0 w-12 h-12 bg-black rounded-2xl flex items-center justify-center border-2 border-[#ff10f0] shadow-[0_0_30px_rgba(255,16,240,0.4)] z-10 transition-all group-hover:scale-110">
                                     <span className="text-[#ff10f0] font-black text-xl italic">{i + 1}</span>

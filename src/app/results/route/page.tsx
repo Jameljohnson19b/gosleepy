@@ -1,13 +1,14 @@
 import RouteContentClient from "./RouteContentClient";
 
-export default function RouteResultsPage({ searchParams }: {
-    searchParams: { [key: string]: string | string[] | undefined }
+export default async function RouteResultsPage({ searchParams }: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-    const origin = String(searchParams.origin ?? "");
-    const destination = String(searchParams.destination ?? "");
-    const radius = Number(searchParams.radius ?? 50);
-    const bookingTime = String(searchParams.bookingTime ?? "now");
-    const duration = Number(searchParams.duration ?? 1);
+    const params = await searchParams;
+    const origin = String(params.origin ?? "");
+    const destination = String(params.destination ?? "");
+    const radius = Number(params.radius ?? 50);
+    const bookingTime = String(params.bookingTime ?? "now");
+    const duration = Number(params.duration ?? 1);
 
     return (
         <RouteContentClient
