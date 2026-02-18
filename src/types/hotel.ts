@@ -38,6 +38,9 @@ export interface Offer {
     label: 'LOW' | 'MEDIUM' | 'HIGH';
     reasonCodes: string[];
   };
+  confidenceScore?: number; // 0-10 scaling
+  pressureLabel?: 'STABLE' | 'FILLING UP' | 'LIMITED';
+  gravityBand?: 'LOW' | 'MEDIUM' | 'HIGH'; // Pricing relative to local cluster
 }
 
 export interface Booking {

@@ -26,10 +26,7 @@ export function getHistoricSignals(hotelId: string): RawSignals {
 }
 
 export function detect1AMMode(): boolean {
-    if (typeof window === 'undefined') {
-        // Simple server-side check: between 11PM and 4AM
-        const hour = new Date().getHours();
-        return hour >= 23 || hour <= 4;
-    }
-    return false; // Client side would check actual local time
+    const hour = new Date().getHours();
+    // 1AM Mode: 11 PM to 4 AM
+    return hour >= 23 || hour <= 4;
 }
