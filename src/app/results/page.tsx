@@ -16,9 +16,11 @@ function ResultsContent() {
 
     const lat = searchParams.get("lat");
     const lng = searchParams.get("lng");
+    const [radius, setRadius] = useState(parseInt(searchParams.get("radius") || "10"));
 
     useEffect(() => {
         async function fetchOffers() {
+            setLoading(true);
             try {
                 const res = await fetch("/api/search", {
                     method: "POST",
@@ -29,7 +31,7 @@ function ResultsContent() {
                         checkIn: new Date().toISOString().split('T')[0],
                         checkOut: new Date(Date.now() + 86400000).toISOString().split('T')[0],
                         guests: 2,
-                        radiusMiles: 10
+                        radiusMiles: radius
                     })
                 });
                 const data = await res.json();
@@ -44,23 +46,40 @@ function ResultsContent() {
         if (lat && lng) {
             fetchOffers();
         }
-    }, [lat, lng]);
+    }, [lat, lng, radius]);
 
     return (
         <main className="min-h-screen bg-black text-white p-4">
-            <header className="flex items-center justify-between mb-8 sticky top-0 bg-black/80 backdrop-blur-md z-20 py-2">
-                <Link href="/" className="p-2 -ml-2">
-                    <ArrowLeft className="w-8 h-8" />
-                </Link>
-                <div className="flex items-center gap-2">
-                    <img src="/logo.png" alt="" className="w-8 h-8 object-contain filter invert-[.5] sepia-[1] saturate-[5000%] hue-rotate-[290deg]" />
-                    <div className="flex flex-col items-center">
-                        <span className="text-[#ff10f0] font-black tracking-tighter text-xl">GO SLEEPY</span>
-                        <span className="text-[10px] text-gray-500 uppercase tracking-[0.2em]">Tonight Nearby</span>
+            <header className="flex flex-col gap-6 mb-8 sticky top-0 bg-black/80 backdrop-blur-md z-20 py-2">
+                <div className="flex items-center justify-between">
+                    <Link href="/" className="p-2 -ml-2">
+                        <ArrowLeft className="w-8 h-8 text-gray-400 hover:text-white transition-colors" />
+                    </Link>
+                    <div className="flex items-center gap-2">
+                        <img src="/logo.png" alt="" className="w-8 h-8 object-contain filter invert-[.5] sepia-[1] saturate-[5000%] hue-rotate-[290deg]" />
+                        <div className="flex flex-col items-center">
+                            <span className="text-[#ff10f0] font-black tracking-tighter text-xl">GO SLEEPY</span>
+                            <span className="text-[10px] text-gray-400 uppercase tracking-[0.2em]">Nearby</span>
+                        </div>
+                    </div>
+                    <div className="p-2 opacity-0 pointer-events-none">
+                        <ArrowLeft className="w-8 h-8" />
                     </div>
                 </div>
-                <div className="p-2 opacity-0">
-                    <ArrowLeft className="w-8 h-8" />
+
+                <div className="flex items-center justify-between px-2">
+                    <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Radius</span>
+                    <div className="flex bg-[#111] p-1 rounded-xl border border-white/5 gap-1">
+                        {[10, 25, 50].map((r) => (
+                            <button
+                                key={r}
+                                onClick={() => setRadius(r)}
+                                className={`py-1.5 px-3 rounded-lg font-black text-[9px] uppercase tracking-widest transition-all ${radius === r ? "bg-white text-black" : "text-gray-500 hover:text-white"}`}
+                            >
+                                {r}MI
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </header>
 
