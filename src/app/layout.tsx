@@ -56,6 +56,9 @@ export const metadata: Metadata = {
   },
 };
 
+import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -63,8 +66,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="bg-black">
-      <body className={`${inter.className} antialiased bg-black`}>
-        {children}
+      <body className={`${inter.className} antialiased bg-black flex flex-col min-h-screen`}>
+        <SiteHeader />
+        <main className="flex-grow">
+          {children}
+        </main>
+        <SiteFooter />
       </body>
     </html>
   );
