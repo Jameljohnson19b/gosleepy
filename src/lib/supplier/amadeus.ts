@@ -60,13 +60,28 @@ export class AmadeusAdapter implements SupplierAdapter {
                 view: 'FULL'
             });
 
-            // 3. Merge & Normalize
+            // 3. Fetch Official Media (Actual Pictures)
+            let mediaData: any[] = [];
+            try {
+                const mediaResponse = await this.amadeus.client.get('/v2/shopping/hotel-media', {
+                    hotelIds: hotelIds.join(',')
+                });
+                mediaData = mediaResponse.data || [];
+            } catch (mediaError) {
+                console.warn('Amadeus Media Fetch Failed:', mediaError);
+            }
+
+            // 4. Merge & Normalize
             return offersResponse.data.map((item: any) => {
                 const offerHotel = item.hotel;
                 const offer = item.offers[0];
 
                 // Find matching hotel from the geocode list to get extra location metadata
                 const geoHotel = hotels.find((h: any) => h.hotelId === offerHotel.hotelId) || {};
+
+                // Find matching media for this hotel
+                const hotelMedia = mediaData.find((m: any) => m.hotelId === offerHotel.hotelId);
+                const officialImages = hotelMedia?.media?.map((m: any) => m.uri) || [];
 
                 const lat = offerHotel.latitude || geoHotel.geoCode?.latitude;
                 const lng = offerHotel.longitude || geoHotel.geoCode?.longitude;
@@ -107,7 +122,7 @@ export class AmadeusAdapter implements SupplierAdapter {
                     rating: offerHotel.rating ? parseFloat(offerHotel.rating) : undefined,
                     stars: offerHotel.rating ? parseInt(offerHotel.rating) : undefined,
                     amenities: offerHotel.amenities || geoHotel.amenities || [],
-                    images: gallery,
+                    images: officialImages.length > 0 ? [...officialImages, ...gallery] : gallery,
                     rates: item.offers.map((o: any): Rate => ({
                         rateId: o.id,
                         roomName: o.room?.description?.text || 'Standard Room',
