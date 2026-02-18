@@ -6,6 +6,7 @@ import { Offer } from "@/types/hotel";
 import { Zap, ArrowLeft, MapPin, Flag, Info } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import SoftAuthSheet from "@/components/auth/SoftAuthSheet";
 
 interface PitStop {
     name: string;
@@ -224,17 +225,25 @@ export default function RouteContentClient({
     radius,
     bookingTime,
     duration,
+    sessionId,
 }: {
     origin: string;
     destination: string;
     radius: number;
     bookingTime: string;
     duration: number;
+    sessionId: string;
 }) {
     const router = useRouter();
     const [data, setData] = useState<RouteResults | null>(null);
     const [loading, setLoading] = useState(true);
     const [is1AM, setIs1AM] = useState(false);
+
+    // Auth Intent State
+    const [authSheetOpen, setAuthSheetOpen] = useState(false);
+    const [tapCounts, setTapCounts] = useState<{ [key: string]: { count: number; last: number } }>({});
+    const [idleTimer, setIdleTimer] = useState<NodeJS.Timeout | null>(null);
+    const [hasTriggeredIdle, setHasTriggeredIdle] = useState(false);
 
     // 1AM Mode (Mission Spec: 10PM - 6AM)
     useEffect(() => {
@@ -256,9 +265,69 @@ export default function RouteContentClient({
         const co = new Date(ci);
         co.setDate(ci.getDate() + Math.max(1, duration));
 
-        const fmt = (d: Date) => d.toISOString().split('T')[0];
-        return { checkIn: fmt(ci), checkOut: fmt(co) };
+        return {
+            checkIn: ci.toISOString().split('T')[0],
+            checkOut: co.toISOString().split('T')[0]
+        };
     }, [bookingTime, duration]);
+
+    // Intent Triggers Logic
+    const handleIntentTrigger = (type: 'DOUBLE_TAP' | 'RESERVE' | 'IDLE' | '1AM') => {
+        if (!authSheetOpen) {
+            setAuthSheetOpen(true);
+            console.log(`[AUTH_AGENT] Triggered soft auth: ${type}`);
+        }
+    };
+
+    // Idle Detection
+    useEffect(() => {
+        if (loading || hasTriggeredIdle) return;
+
+        const resetTimer = () => {
+            if (idleTimer) clearTimeout(idleTimer);
+            const timer = setTimeout(() => {
+                setHasTriggeredIdle(true);
+                handleIntentTrigger('IDLE');
+            }, 35000); // 35s idle fatigue signal
+            setIdleTimer(timer);
+        };
+
+        window.addEventListener('mousemove', resetTimer);
+        window.addEventListener('scroll', resetTimer);
+        resetTimer();
+
+        return () => {
+            window.removeEventListener('mousemove', resetTimer);
+            window.removeEventListener('scroll', resetTimer);
+            if (idleTimer) clearTimeout(idleTimer);
+        };
+    }, [loading, hasTriggeredIdle, idleTimer]);
+
+    // 1AM Mode Protection
+    useEffect(() => {
+        if (is1AM && !loading) {
+            // Late night travelers are high-intent and likely fatigued
+            const timer = setTimeout(() => handleIntentTrigger('1AM'), 15000);
+            return () => clearTimeout(timer);
+        }
+    }, [is1AM, loading]);
+
+    const handleCardInteraction = (hotelId: string) => {
+        const now = Date.now();
+        const current = tapCounts[hotelId] || { count: 0, last: 0 };
+
+        if (now - current.last < 30000) { // 30s window
+            const newCount = current.count + 1;
+            if (newCount >= 2) {
+                handleIntentTrigger('DOUBLE_TAP');
+                setTapCounts({ ...tapCounts, [hotelId]: { count: 0, last: now } }); // Reset
+            } else {
+                setTapCounts({ ...tapCounts, [hotelId]: { count: newCount, last: now } });
+            }
+        } else {
+            setTapCounts({ ...tapCounts, [hotelId]: { count: 1, last: now } });
+        }
+    };
 
     useEffect(() => {
         let cancelled = false;
@@ -472,6 +541,12 @@ export default function RouteContentClient({
                     </section>
                 </div>
             )}
+
+            <SoftAuthSheet
+                open={authSheetOpen}
+                onClose={() => setAuthSheetOpen(false)}
+                nextUrl={typeof window !== 'undefined' ? window.location.href : ''}
+            />
         </main>
     );
 }

@@ -1,4 +1,5 @@
 import RouteContentClient from "./RouteContentClient";
+import { getOrSetGoSleepySessionId } from "@/lib/session";
 
 export default async function RouteResultsPage({ searchParams }: {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -10,6 +11,8 @@ export default async function RouteResultsPage({ searchParams }: {
     const bookingTime = String(params.bookingTime ?? "now");
     const duration = Number(params.duration ?? 1);
 
+    const sessionId = await getOrSetGoSleepySessionId();
+
     return (
         <RouteContentClient
             origin={origin}
@@ -17,6 +20,7 @@ export default async function RouteResultsPage({ searchParams }: {
             radius={radius}
             bookingTime={bookingTime}
             duration={duration}
+            sessionId={sessionId}
         />
     );
 }
