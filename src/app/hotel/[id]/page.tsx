@@ -158,7 +158,8 @@ export default function HotelDetailsPage() {
                         <div className="w-12 h-12 rounded-2xl bg-[#ff10f0]/10 flex items-center justify-center mb-3 group-hover:bg-[#ff10f0]/20 transition-colors">
                             <Phone className="w-6 h-6 text-[#ff10f0]" />
                         </div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Direct Comms</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Call Hotel</span>
+                        <span className="text-[10px] font-black text-[#ff10f0] mt-1 tracking-tighter">{offer.hotelPhone || 'Direct Line'}</span>
                     </a>
                     <a href={`https://maps.apple.com/?q=${offer.address}`} className="group flex flex-col items-center justify-center p-6 bg-[#111] rounded-3xl border border-gray-800 hover:border-[#ff10f0]/50 active:scale-95 transition-all">
                         <div className="w-12 h-12 rounded-2xl bg-[#ff10f0]/10 flex items-center justify-center mb-3 group-hover:bg-[#ff10f0]/20 transition-colors">
