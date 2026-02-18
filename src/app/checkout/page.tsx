@@ -5,7 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ShieldCheck, Zap, Lock } from "lucide-react";
 import Link from "next/link";
 
-export default function CheckoutPage() {
+import { Suspense } from "react";
+
+function CheckoutContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [loading, setLoading] = useState(false);
@@ -158,5 +160,17 @@ export default function CheckoutPage() {
                 </div>
             </form>
         </main>
+    );
+}
+
+export default function CheckoutPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <Zap className="w-12 h-12 text-yellow-400 animate-spin" />
+            </div>
+        }>
+            <CheckoutContent />
+        </Suspense>
     );
 }

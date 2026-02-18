@@ -7,7 +7,9 @@ import { Offer } from "@/types/hotel";
 import { Moon, Zap, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-export default function ResultsPage() {
+import { Suspense } from "react";
+
+function ResultsContent() {
     const searchParams = useSearchParams();
     const [offers, setOffers] = useState<Offer[]>([]);
     const [loading, setLoading] = useState(true);
@@ -85,5 +87,17 @@ export default function ResultsPage() {
                 </div>
             )}
         </main>
+    );
+}
+
+export default function ResultsPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <Zap className="w-12 h-12 text-yellow-400 animate-spin" />
+            </div>
+        }>
+            <ResultsContent />
+        </Suspense>
     );
 }
