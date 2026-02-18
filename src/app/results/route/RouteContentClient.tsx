@@ -38,11 +38,11 @@ function TacticalMap({ stops, is1AM, origin, destination }: { stops: RouteStop[]
     const destCity = destination.split(',')[0].trim();
 
     return (
-        <div className="relative w-full h-56 bg-zinc-900/50 rounded-[40px] border border-white/5 overflow-hidden mb-12 shadow-2xl">
+        <div className="relative w-full h-56 lg:h-[420px] bg-zinc-900/50 rounded-[40px] border border-white/5 overflow-hidden shadow-2xl">
             {/* Mission Grid */}
-            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
-            <svg viewBox="0 0 400 200" className="absolute inset-0 w-full h-full p-10">
+            <svg viewBox="0 0 400 200" className="absolute inset-0 w-full h-full p-12 lg:p-20">
                 {/* Tactical Trace */}
                 <path
                     d="M 20 100 Q 100 20, 200 100 T 380 100"
@@ -54,10 +54,10 @@ function TacticalMap({ stops, is1AM, origin, destination }: { stops: RouteStop[]
                 />
 
                 {/* Origin */}
-                <g>
+                <g className="translate-y-[-10px] lg:translate-y-0">
                     <circle cx="20" cy="100" r="8" fill={is1AM ? "#ff10f0" : "#fff"} className="animate-pulse" />
                     <text x="20" y="130" textAnchor="middle" className="text-[7px] font-black fill-[#ff10f0] uppercase tracking-tighter">Origin</text>
-                    <text x="20" y="142" textAnchor="middle" className="text-[9px] font-black fill-white uppercase tracking-tighter">{originCity}</text>
+                    <text x="20" y="142" textAnchor="middle" className="text-[9px] lg:text-[10px] font-black fill-white uppercase tracking-tighter">{originCity}</text>
                 </g>
 
                 {/* Waypoints */}
@@ -74,7 +74,7 @@ function TacticalMap({ stops, is1AM, origin, destination }: { stops: RouteStop[]
                             x={80 + i * 110}
                             cy={i === 1 ? 25 : 125}
                             textAnchor="middle"
-                            className="text-[8px] font-black fill-white uppercase tracking-tighter"
+                            className="text-[8px] lg:text-[9px] font-black fill-white uppercase tracking-tighter"
                         >
                             {stop.label}
                         </text>
@@ -82,19 +82,19 @@ function TacticalMap({ stops, is1AM, origin, destination }: { stops: RouteStop[]
                 ))}
 
                 {/* Destination */}
-                <g>
+                <g className="translate-y-[-10px] lg:translate-y-0">
                     <circle cx="380" cy="100" r="8" fill={is1AM ? "#ff10f0" : "#fff"} />
                     <text x="380" y="130" textAnchor="middle" className="text-[7px] font-black fill-emerald-400 uppercase tracking-tighter">Terminal</text>
-                    <text x="380" y="142" textAnchor="middle" className="text-[9px] font-black fill-white uppercase tracking-tighter">{destCity}</text>
+                    <text x="380" y="142" textAnchor="middle" className="text-[9px] lg:text-[10px] font-black fill-white uppercase tracking-tighter">{destCity}</text>
                 </g>
             </svg>
 
             {/* Radar Sweep Effect */}
             <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-[shimmer_3s_infinite]`} />
 
-            <div className="absolute bottom-4 right-6 flex items-center gap-2">
+            <div className="absolute bottom-6 right-8 flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[8px] font-black uppercase tracking-widest text-white/40 italic">Live Vector Trace Active</span>
+                <span className="text-[9px] lg:text-[10px] font-black uppercase tracking-[0.2em] text-white/40 italic">Live Vector Trace — Intercepting Rates</span>
             </div>
         </div>
     );
@@ -200,7 +200,7 @@ export default function RouteContentClient({
 
             {/* Tactical Header */}
             <header className={`sticky ${is1AM ? 'top-[31px]' : 'top-0'} z-40 bg-black/60 backdrop-blur-xl border-b border-white/5 px-6 py-6`}>
-                <div className="flex items-center justify-between max-w-xl mx-auto">
+                <div className="flex items-center justify-between max-w-7xl mx-auto">
                     <button onClick={() => router.back()} className="p-3 bg-white/5 border border-white/10 rounded-2xl active:scale-90 transition-all">
                         <ArrowLeft className="w-5 h-5 text-[#ff10f0]" />
                     </button>
@@ -262,25 +262,41 @@ export default function RouteContentClient({
                     </Link>
                 </div>
             ) : (
-                <div className="max-w-xl mx-auto px-6 pt-10 space-y-16">
+                <div className="max-w-7xl mx-auto px-6 pt-10 space-y-20">
 
-                    {/* Sleep Radar Strip */}
-                    <section className="relative">
-                        {is1AM && <div className="absolute inset-0 bg-[#ff10f0]/5 blur-3xl -z-10" />}
-                        <div className="flex items-center gap-10 mb-12 bg-white/5 border border-white/10 rounded-[35px] p-6 justify-between overflow-hidden relative">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-400/5 blur-3xl" />
-                            <div className="flex flex-col gap-1">
-                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Total Distance</span>
-                                <span className="text-3xl font-black tracking-tighter italic">{data?.distance || '---'} <span className="text-sm not-italic opacity-40">MI</span></span>
-                            </div>
-                            <div className="flex flex-col gap-1 items-end text-right">
-                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Arrival Approx.</span>
-                                <span className="text-3xl font-black tracking-tighter italic text-[#ff10f0]">{data?.durationHours || '--'} <span className="text-sm not-italic opacity-40">HRS</span></span>
+                    {/* Mission Dashboard: Metrics + Map */}
+                    <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start relative">
+                        {is1AM && <div className="absolute inset-x-0 top-0 h-64 bg-[#ff10f0]/5 blur-[100px] -z-10" />}
+
+                        {/* Global Metrics Panel */}
+                        <div className="lg:col-span-1 space-y-6">
+                            <div className="bg-white/5 border border-white/10 rounded-[35px] p-8 flex flex-col gap-8 relative overflow-hidden h-full">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-400/5 blur-3xl" />
+                                <div className="flex flex-col gap-1">
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">Total Mission Distance</span>
+                                    <span className="text-5xl font-black tracking-tighter italic">{data?.distance || '---'} <span className="text-lg not-italic opacity-40">MI</span></span>
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">Arrival Approx.</span>
+                                    <span className="text-5xl font-black tracking-tighter italic text-[#ff10f0]">{data?.durationHours || '--'} <span className="text-lg not-italic opacity-40">HRS</span></span>
+                                </div>
+                                <div className="pt-4 border-t border-white/5">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400/80 italic">Vector Synchronization Active</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Tactical Map */}
-                        <TacticalMap stops={data?.stops || []} is1AM={is1AM} origin={origin} destination={destination} />
+                        {/* Tactical Map Panel */}
+                        <div className="lg:col-span-2">
+                            <TacticalMap stops={data?.stops || []} is1AM={is1AM} origin={origin} destination={destination} />
+                        </div>
+                    </section>
+
+                    {/* Sleep Radar Strip (Fast Comparison) */}
+                    <section className="space-y-8">
 
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-3">
@@ -407,7 +423,7 @@ export default function RouteContentClient({
                                     )}
 
                                     {stop.status === 'OK' && stop.offers && stop.offers.length > 0 ? (
-                                        <div className="space-y-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                             {stop.offers.map((offer, j) => (
                                                 <HotelCard key={j} offer={offer} duration={duration} />
                                             ))}
