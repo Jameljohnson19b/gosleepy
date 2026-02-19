@@ -18,7 +18,7 @@ export function SiteFooter() {
                             <span className="text-[#ff10f0] font-black tracking-tighter text-2xl uppercase">Go Sleepy</span>
                         </Link>
                         <p className="text-gray-500 text-xs font-medium leading-relaxed max-w-[200px]">
-                            The fastest way for tired travelers to find a safe place to rest.
+                            Intercepting high-value rest windows for the tired traveler.
                         </p>
                     </div>
 
@@ -28,13 +28,13 @@ export function SiteFooter() {
                             <li>
                                 <Link href="/results" className="text-xs text-gray-500 hover:text-[#ff10f0] transition-colors flex items-center gap-2 group">
                                     <MapPin className="w-3 h-3 text-gray-600 group-hover:text-[#ff10f0]" />
-                                    Find Rooms Near Me
+                                    Find Low-Cost Stops
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/safety" className="text-xs text-gray-500 hover:text-[#ff10f0] transition-colors flex items-center gap-2 group">
                                     <Shield className="w-3 h-3 text-gray-600 group-hover:text-[#ff10f0]" />
-                                    Safety First
+                                    Economic Radar
                                 </Link>
                             </li>
                         </ul>
