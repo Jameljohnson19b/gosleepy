@@ -102,44 +102,44 @@ export default function LandingPage() {
         is1AM ? "bg-[#050005]" : "bg-black",
       ].join(" ")}
     >
-      {/* HERO — TOOL FIRST */}
-      <section className="relative min-h-[90vh] flex flex-col items-center justify-center p-6 text-center overflow-hidden border-b border-white/5">
-        {/* Background (keep, but dim a touch so tool feels primary) */}
+      {/* HERO — UNBLOCKED VIEW */}
+      <section className="relative min-h-[95vh] flex flex-col items-center justify-end pb-24 px-6 text-center overflow-hidden border-b border-white/5">
+        {/* Background */}
         <div className="absolute inset-0 pointer-events-none">
           <img
             src="/hero-resort.png"
             alt="Night drive rest"
-            className="w-full h-full object-cover opacity-45 scale-105"
+            className="w-full h-full object-cover opacity-60 scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/70" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,black_100%)] opacity-70" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,black_100%)] opacity-40" />
         </div>
 
-        <div className="z-10 max-w-2xl w-full pt-12 pb-10">
-          {/* Brand (smaller, less dominant) */}
-          <div className="flex justify-center mb-6">
+        {/* Content - Shifted lower to unblock the view */}
+        <div className="z-10 max-w-2xl w-full">
+          {/* Brand - Transparent Blend Mode */}
+          <div className="flex justify-center mb-4">
             <div className="relative">
-              <div className="absolute inset-0 blur-3xl bg-[#ff10f0]/20 animate-pulse-slow" />
+              <div className="absolute inset-0 blur-3xl bg-[#ff10f0]/30 animate-pulse-slow" />
               <img
                 src="/logo-sheep.png"
                 alt="Go Sleepy Logo"
-                className="w-24 h-24 object-contain relative animate-pulse-slow"
+                className="w-20 h-20 object-contain relative mix-blend-screen animate-pulse-slow"
               />
             </div>
           </div>
 
-          {/* Primary Promise (single, dominant) */}
-          <h1 className="text-5xl md:text-7xl font-black tracking-[-0.05em] mb-3 uppercase leading-none">
+          <h1 className="text-4xl md:text-6xl font-black tracking-[-0.05em] mb-2 uppercase leading-none text-white drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)]">
             GO SLEEPY
           </h1>
 
-          <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-xl mx-auto font-medium lowercase tracking-tight">
-            Find <span className="text-[#ff10f0] font-black uppercase">low-cost stays</span> worth pulling over for —
-            <span className="text-white italic"> right when you need them.</span>
+          <p className="text-base md:text-lg text-gray-200 mb-10 max-w-xl mx-auto font-medium lowercase tracking-tight drop-shadow-md">
+            Find <span className="text-[#ff10f0] font-black uppercase">low-cost stays</span> —
+            <span className="text-white italic font-bold"> before you hit the wall.</span>
           </p>
 
-          {/* Tool Box (featured immediately) */}
-          <div className="bg-[#111]/80 backdrop-blur-2xl p-2 rounded-[32px] mb-4 border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+          {/* Tool Box — Glassmorphism */}
+          <div className="bg-black/40 backdrop-blur-3xl p-2 rounded-[32px] border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
             {/* Mode switch (secondary, but clear) */}
             <div className="flex bg-black/40 p-1.5 rounded-2xl mb-4">
               <button
