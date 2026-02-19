@@ -32,6 +32,8 @@ interface RouteResults {
     stops: RouteStop[];
     distance?: number;
     durationHours?: number;
+    origin?: { lat: number; lng: number };
+    destination?: { lat: number; lng: number };
     error?: string;
 }
 
@@ -181,9 +183,30 @@ function RouteStopComponent({ index, stop, offer, duration, radius, is1AM }: { i
     );
 }
 
-function TacticalMap({ stops, is1AM, origin, destination }: { stops: RouteStop[], is1AM: boolean, origin: string, destination: string }) {
+function TacticalMap({ stops, is1AM, origin, destination, originCoords, destCoords }: { stops: RouteStop[], is1AM: boolean, origin: string, destination: string, originCoords?: { lat: number, lng: number }, destCoords?: { lat: number, lng: number } }) {
     const originCity = origin.split(',')[0].trim();
     const destCity = destination.split(',')[0].trim();
+
+    // Geography Check: NYC (-74) is EAST of Seattle (-122). 
+    // In negative longitudes (Western Hemisphere), larger values are further EAST.
+    const isWestbound = originCoords && destCoords ? originCoords.lng > destCoords.lng : false;
+
+    // Mapping logic:
+    // Eastbound: Origin (Left/20) -> Destination (Right/380)
+    // Westbound: Origin (Right/380) -> Destination (Left/20)
+    const getX = (t: number) => {
+        // t is normalized distance (0 to 1)
+        if (isWestbound) return 380 - (t * 360);
+        return 20 + (t * 360);
+    };
+
+    const originX = getX(0);
+    const destX = getX(1);
+
+    // Path Curve (Flip based on orientation)
+    const pathD = isWestbound
+        ? "M 380 100 Q 300 180, 200 100 T 20 100"
+        : "M 20 100 Q 100 20, 200 100 T 380 100";
 
     return (
         <div className="relative w-full h-56 lg:h-[420px] bg-zinc-900/50 rounded-[40px] border border-white/5 overflow-hidden shadow-2xl">
@@ -193,56 +216,75 @@ function TacticalMap({ stops, is1AM, origin, destination }: { stops: RouteStop[]
             <svg viewBox="0 0 400 200" className="absolute inset-0 w-full h-full p-12 lg:p-20">
                 {/* Tactical Trace */}
                 <path
-                    d="M 20 100 Q 100 20, 200 100 T 380 100"
+                    d={pathD}
                     fill="none"
                     stroke={is1AM ? "#ff10f0" : "#fff"}
                     strokeWidth="3"
                     strokeDasharray="8 4"
-                    className="animate-[dash_60s_linear_infinite]"
+                    className="animate-[dash_60s_linear_infinite] opacity-30"
                 />
 
                 {/* Origin */}
-                <g className="translate-y-[-10px] lg:translate-y-0">
-                    <circle cx="20" cy="100" r="8" fill={is1AM ? "#ff10f0" : "#fff"} className="animate-pulse" />
-                    <text x="20" y="130" textAnchor="middle" className="text-[7px] font-black fill-[#ff10f0] uppercase tracking-tighter">Origin</text>
-                    <text x="20" y="142" textAnchor="middle" className="text-[9px] lg:text-[10px] font-black fill-white uppercase tracking-tighter">{originCity}</text>
+                <g transform={`translate(${originX}, 100)`}>
+                    <circle r="8" fill={is1AM ? "#ff10f0" : "#fff"} className="animate-pulse" />
+                    <text y="30" textAnchor="middle" className="text-[7px] font-black fill-[#ff10f0] uppercase tracking-tighter">Origin</text>
+                    <text y="42" textAnchor="middle" className="text-[9px] lg:text-[10px] font-black fill-white uppercase tracking-tighter">{originCity}</text>
                 </g>
 
-                {/* Waypoints */}
-                {stops.map((stop, i) => (
-                    <g key={i}>
-                        <circle
-                            cx={80 + i * 110}
-                            cy={i === 1 ? 40 : 100}
-                            r="5"
-                            fill={is1AM ? "#ff10f0" : "#fff"}
-                            className="opacity-50"
-                        />
-                        <text
-                            x={80 + i * 110}
-                            cy={i === 1 ? 25 : 125}
-                            textAnchor="middle"
-                            className="text-[8px] lg:text-[9px] font-black fill-white uppercase tracking-tighter"
-                        >
-                            {stop.label}
-                        </text>
-                    </g>
-                ))}
+                {/* Waypoints (Hotels/Motels) */}
+                {stops.map((stop, i) => {
+                    // Waypoints are at 0.25, 0.5, 0.75 along the trip
+                    const t = (i + 1) * 0.25;
+                    const x = getX(t);
+                    const y = i === 1 ? 40 : 100; // Keep the wiggle for visual interest
+                    const price = stop.bestOffer?.rates?.[0]?.totalAmount;
+
+                    return (
+                        <g key={i} transform={`translate(${x}, ${y})`}>
+                            {/* Glow Effect */}
+                            <circle r="12" fill="#ff10f0" className="opacity-10 animate-pulse" />
+
+                            {/* Hotel Pin */}
+                            <rect x="-15" y="-12" width="30" height="24" rx="4" fill="#111" stroke="#ff10f0" strokeWidth="1" />
+                            <Zap className="w-3 h-3 text-[#ff10f0] -translate-x-1.5 -translate-y-6 fill-[#ff10f0]" />
+
+                            {/* Price Label */}
+                            <text
+                                textAnchor="middle"
+                                className="text-[8px] font-black fill-white uppercase tracking-tighter"
+                                dy="4"
+                            >
+                                {price ? `$${price}` : 'MOTEL'}
+                            </text>
+
+                            {/* Stop Name Label */}
+                            <text
+                                y={i === 1 ? -25 : 25}
+                                textAnchor="middle"
+                                className="text-[7px] lg:text-[8px] font-bold fill-gray-400 uppercase tracking-tighter whitespace-nowrap"
+                            >
+                                {stop.label}
+                            </text>
+                        </g>
+                    );
+                })}
 
                 {/* Destination */}
-                <g className="translate-y-[-10px] lg:translate-y-0">
-                    <circle cx="380" cy="100" r="8" fill={is1AM ? "#ff10f0" : "#fff"} />
-                    <text x="380" y="130" textAnchor="middle" className="text-[7px] font-black fill-emerald-400 uppercase tracking-tighter">Terminal</text>
-                    <text x="380" y="142" textAnchor="middle" className="text-[9px] lg:text-[10px] font-black fill-white uppercase tracking-tighter">{destCity}</text>
+                <g transform={`translate(${destX}, 100)`}>
+                    <circle r="8" fill={is1AM ? "#ff10f0" : "#fff"} />
+                    <text y="30" textAnchor="middle" className="text-[7px] font-black fill-emerald-400 uppercase tracking-tighter">Terminal</text>
+                    <text y="42" textAnchor="middle" className="text-[9px] lg:text-[10px] font-black fill-white uppercase tracking-tighter">{destCity}</text>
                 </g>
             </svg>
 
-            {/* Radar Sweep Effect */}
-            <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-[shimmer_3s_infinite]`} />
+            <div className="absolute top-6 left-8 flex items-center gap-2 px-3 py-1 bg-black/40 border border-[#ff10f0]/30 rounded-full backdrop-blur-md">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#ff10f0] animate-pulse" />
+                <span className="text-[8px] font-black uppercase text-white tracking-widest">{isWestbound ? 'WESTBOUND VECTOR' : 'EASTBOUND VECTOR'}</span>
+            </div>
 
             <div className="absolute bottom-6 right-8 flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[9px] lg:text-[10px] font-black uppercase tracking-[0.2em] text-white/40 italic">Scanning for the low-cost smart stop ahead</span>
+                <span className="text-[9px] lg:text-[10px] font-black uppercase tracking-[0.2em] text-white/40 italic">Real-time low-cost intelligence active</span>
             </div>
         </div>
     );
@@ -446,14 +488,14 @@ export default function RouteContentClient({
                         <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest animate-pulse max-w-[200px]">Intercepting mission-critical rates from suppliers...</p>
                     </div>
                 </div>
-            ) : (data as any)?.error ? (
+            ) : data?.error ? (
                 <div className="flex flex-col items-center justify-center py-24 gap-8 px-10 text-center">
                     <div className="w-24 h-24 rounded-full bg-red-500/10 flex items-center justify-center border border-red-500/20 shadow-[0_0_50px_rgba(239,68,68,0.1)]">
                         <Info className="w-12 h-12 text-red-500" />
                     </div>
                     <div>
                         <h2 className="text-3xl font-black uppercase tracking-tighter mb-3">Vector Lost</h2>
-                        <p className="text-gray-500 text-sm italic">{(data as any).error}</p>
+                        <p className="text-gray-500 text-sm italic">{data.error}</p>
                     </div>
                     <Link href="/" className="px-12 py-5 bg-[#ff10f0] text-white font-black uppercase tracking-widest text-xs rounded-3xl shadow-[0_0_30px_rgba(255,16,240,0.4)]">
                         Calculate New Mission
@@ -504,7 +546,14 @@ export default function RouteContentClient({
 
                         {/* Tactical Map Panel */}
                         <div className="lg:col-span-2">
-                            <TacticalMap stops={data?.stops || []} is1AM={is1AM} origin={origin} destination={destination} />
+                            <TacticalMap
+                                stops={data?.stops || []}
+                                is1AM={is1AM}
+                                origin={origin}
+                                destination={destination}
+                                originCoords={data?.origin}
+                                destCoords={data?.destination}
+                            />
                         </div>
                     </section>
 
