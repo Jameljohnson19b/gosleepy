@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { randomUUID } from "crypto";
 
 export function middleware(request: NextRequest) {
     const response = NextResponse.next();
@@ -8,7 +7,7 @@ export function middleware(request: NextRequest) {
     const sessionId = request.cookies.get('gs_session')?.value;
 
     if (!sessionId) {
-        const newSessionId = randomUUID();
+        const newSessionId = crypto.randomUUID();
         response.cookies.set('gs_session', newSessionId, {
             httpOnly: true,
             sameSite: 'lax',
