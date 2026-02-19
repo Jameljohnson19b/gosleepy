@@ -36,11 +36,15 @@ export default function SoftAuthSheet({
         const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
         setErr(null);
         setLoading(true);
+        const siteUrl = typeof window !== 'undefined'
+            ? (window.location.hostname === 'localhost' ? window.location.origin : 'https://gosleepy.xyz')
+            : 'https://gosleepy.xyz';
+
         try {
             const { error } = await supabase.auth.signInWithOtp({
                 email,
                 options: {
-                    emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextUrl)}`,
+                    emailRedirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent(nextUrl)}`,
                 },
             });
             if (error) throw error;
@@ -56,7 +60,7 @@ export default function SoftAuthSheet({
 
     return createPortal(
         <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
-            <div 
+            <div
                 className="absolute inset-0 bg-black/90 backdrop-blur-md"
                 onClick={onClose}
             />
