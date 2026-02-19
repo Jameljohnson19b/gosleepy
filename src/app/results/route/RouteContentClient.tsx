@@ -80,59 +80,51 @@ function RadarCard({ stop, offer, index, is1AM }: { stop: RouteStop; offer?: Off
     );
 }
 
-function RouteStopComponent({ index, stop, offer, duration, radius, is1AM }: { index: number; stop: RouteStop; offer?: Offer; duration: number; radius: number; is1AM: boolean }) {
-    const price = offer?.rates?.[0]?.totalAmount;
-    const currency = offer?.rates?.[0]?.currency ?? "USD";
+function RouteStopComponent({ index, stop, duration, radius, is1AM }: { index: number; stop: RouteStop; duration: number; radius: number; is1AM: boolean }) {
+    const mainOffer = stop.bestOffer;
+    const allOffers = stop.offers || (mainOffer ? [mainOffer] : []);
+    const hasOffers = allOffers.length > 0;
 
     return (
         <div className="relative pl-10 group">
             {/* Trace Indicator */}
-            <div className={`absolute left-[20px] top-3 w-1.5 h-1.5 rounded-full ${offer ? 'bg-[#ff10f0]' : 'bg-gray-800'} z-10`} />
+            <div className={`absolute left-[20px] top-3 w-1.5 h-1.5 rounded-full ${hasOffers ? 'bg-[#ff10f0]' : 'bg-gray-800'} z-10`} />
 
-            <div className="mb-10">
-                <div className="flex flex-col gap-1 mb-4">
+            <div className="mb-14">
+                <div className="flex flex-col gap-1 mb-6">
                     <div className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-500 italic">Stop {index}</div>
                     <h3 className="text-2xl font-black uppercase tracking-tighter">
-                        {stop.label} {typeof price === 'number' ? `— $${price}` : ''}
+                        {stop.label} {mainOffer?.rates?.[0]?.totalAmount ? `— from $${mainOffer.rates[0].totalAmount}` : ''}
                     </h3>
                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic">
-                        {typeof price === 'number' ? "Affordable place to sleep nearby." : "Looking for budget hotels ahead..."}
+                        {hasOffers ? `${allOffers.length} low-cost missions found nearby.` : "Looking for budget hotels ahead..."}
                     </p>
                 </div>
 
-                {offer ? (
-                    <div className="space-y-6">
-                        <div className="flex flex-wrap items-center gap-3">
-                            {typeof price === 'number' && (
-                                <>
-                                    <div className="bg-emerald-400 text-black text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-lg">
-                                        ${price} {currency}
-                                    </div>
-                                    <div className="text-[9px] font-bold text-emerald-400 border border-emerald-400/20 px-2 py-0.5 rounded uppercase">
-                                        ≈ ${Math.round(price / 6)}/hour rest
-                                    </div>
-                                </>
-                            )}
-                            <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                                {offer.hotelName}
-                            </div>
-                            <div className="text-[9px] font-bold text-blue-400 border border-blue-400/20 px-2 py-0.5 rounded uppercase">
-                                Pay at Hotel
-                            </div>
-                        </div>
+                {hasOffers ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {allOffers.map((offer, i) => {
+                            const price = offer.rates?.[0]?.totalAmount;
+                            const currency = offer.rates?.[0]?.currency ?? "USD";
+                            const isBest = i === 0;
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <HotelCard offer={offer} duration={duration} />
-                            <div className="flex flex-col justify-center gap-4">
-                                <div className="space-y-1">
-                                    <div className="text-[10px] font-black uppercase text-gray-500 tracking-widest">Recommended</div>
-                                    <p className="text-xs text-gray-400 italic">Stopping here is a great budget-friendly move for your trip.</p>
+                            return (
+                                <div key={offer.hotelId || i} className="space-y-4">
+                                    <div className="flex items-center gap-2">
+                                        <div className={`${isBest ? 'bg-emerald-400 text-black' : 'bg-white/10 text-gray-400'} text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded`}>
+                                            ${price} {currency}
+                                        </div>
+                                        {isBest && (
+                                            <span className="text-[8px] font-black text-emerald-400 uppercase tracking-widest animate-pulse">Lowest</span>
+                                        )}
+                                    </div>
+                                    <HotelCard offer={offer} duration={duration} />
+                                    <button className={`w-full ${isBest ? 'bg-[#ff10f0] shadow-[0_0_20px_rgba(255,16,240,0.3)]' : 'bg-white/10'} text-white font-black uppercase tracking-widest py-3 rounded-xl hover:scale-[1.02] transition-all text-[10px]`}>
+                                        {isBest ? 'Reserve Best Rate' : 'View Mission'}
+                                    </button>
                                 </div>
-                                <button className="w-full bg-[#ff10f0] text-white font-black uppercase tracking-widest py-3 rounded-xl shadow-[0_0_20px_rgba(255,16,240,0.3)] hover:scale-[1.02] transition-all">
-                                    Reserve This Stop
-                                </button>
-                            </div>
-                        </div>
+                            );
+                        })}
                     </div>
                 ) : (
                     <div className="text-[10px] font-black uppercase text-gray-600 italic">
@@ -596,7 +588,6 @@ export default function RouteContentClient({
                                 key={i}
                                 index={i + 1}
                                 stop={stop}
-                                offer={stop.bestOffer}
                                 duration={duration}
                                 radius={radius}
                                 is1AM={is1AM}

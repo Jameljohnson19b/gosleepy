@@ -87,7 +87,7 @@ export async function POST(req: Request) {
                 waypoint: wp,
                 radiusUsed: usedRadius,
                 bestOffer: enrichedOffers[0] || null,
-                offers: enrichedOffers.slice(0, 3), // Return Top 3 options
+                offers: enrichedOffers.slice(0, 4), // Return Top 4 options
                 pitStops
             };
         }));
