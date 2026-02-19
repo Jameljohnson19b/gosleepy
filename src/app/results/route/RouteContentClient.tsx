@@ -272,7 +272,7 @@ function TacticalMap({ stops, is1AM, origin, destination, originCoords, destCoor
                 {/* Destination */}
                 <g transform={`translate(${destX}, 100)`}>
                     <circle r="8" fill={is1AM ? "#ff10f0" : "#fff"} />
-                    <text y="30" textAnchor="middle" className="text-[7px] font-black fill-emerald-400 uppercase tracking-tighter">Terminal</text>
+                    <text y="30" textAnchor="middle" className="text-[7px] font-black fill-emerald-400 uppercase tracking-tighter">Destination</text>
                     <text y="42" textAnchor="middle" className="text-[9px] lg:text-[10px] font-black fill-white uppercase tracking-tighter">{destCity}</text>
                 </g>
             </svg>
@@ -484,8 +484,8 @@ export default function RouteContentClient({
                         <Zap className="w-12 h-12 text-[#ff10f0] animate-bounce relative top-6 left-6" />
                     </div>
                     <div className="text-center space-y-3">
-                        <h2 className="text-2xl font-black uppercase tracking-tighter italic">Scanning Orbit</h2>
-                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest animate-pulse max-w-[200px]">Intercepting mission-critical rates from suppliers...</p>
+                        <h2 className="text-2xl font-black uppercase tracking-tighter italic">Searching Road Ahead</h2>
+                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest animate-pulse max-w-[200px]">Finding the lowest prices from hotels and suppliers...</p>
                     </div>
                 </div>
             ) : data?.error ? (
@@ -538,7 +538,7 @@ export default function RouteContentClient({
                                 <div className="pt-4 border-t border-white/5">
                                     <div className="flex items-center gap-3">
                                         <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400/80 italic">Vector Synchronization Active</span>
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400/80 italic">Live Rate Synchronization Active</span>
                                     </div>
                                 </div>
                             </div>
@@ -609,7 +609,7 @@ export default function RouteContentClient({
                                 <Flag className="w-5 h-5 text-gray-500" />
                             </div>
                             <div className="pt-1">
-                                <h2 className="text-[11px] font-black uppercase text-gray-600 tracking-widest mb-1.5">Mission Terminal</h2>
+                                <h2 className="text-[11px] font-black uppercase text-gray-600 tracking-widest mb-1.5">Destination</h2>
                                 <p className="text-xl font-black uppercase tracking-tight">{destination}</p>
                             </div>
                         </div>

@@ -31,9 +31,9 @@ export async function POST(req: Request) {
 
         // 2. Compute tactical waypoints (lerp approach for MVP)
         const waypoints = [
-            { ...lerp(originCoords, destCoords, 0.25), label: 'Vortex Alpha' },
-            { ...lerp(originCoords, destCoords, 0.50), label: 'Vortex Beta' },
-            { ...lerp(originCoords, destCoords, 0.75), label: 'Vortex Gamma' }
+            { ...lerp(originCoords, destCoords, 0.25), label: 'Stop 1' },
+            { ...lerp(originCoords, destCoords, 0.50), label: 'Stop 2' },
+            { ...lerp(originCoords, destCoords, 0.75), label: 'Stop 3' }
         ];
 
         // 3. Resilient stop scanning with Promise.allSettled
