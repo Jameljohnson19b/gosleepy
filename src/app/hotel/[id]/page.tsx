@@ -104,7 +104,7 @@ export default function HotelDetailsPage() {
                         <ArrowLeft className="w-6 h-6 text-[#ff10f0]" />
                     </button>
                     <div className="flex items-center gap-3">
-                        <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
+                        <img src="/logo-sheep.png" alt="Logo" className="w-10 h-10 object-contain drop-shadow-[0_0_10px_rgba(255,16,240,0.4)]" />
                         <div className="bg-black/80 backdrop-blur-xl p-3 rounded-2xl border border-white/10 shadow-2xl">
                             <Zap className="w-6 h-6 text-[#ff10f0] fill-[#ff10f0]" />
                         </div>

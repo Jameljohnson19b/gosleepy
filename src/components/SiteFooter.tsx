@@ -11,9 +11,9 @@ export function SiteFooter() {
                     <div className="col-span-2 md:col-span-1">
                         <Link href="/" className="flex items-center gap-3 mb-6">
                             <img
-                                src="/logo.png"
-                                alt=""
-                                className="w-10 h-10 object-contain drop-shadow-[0_0_15px_rgba(255,16,240,0.4)]"
+                                src="/logo-sheep.png"
+                                alt="Go Sleepy Logo"
+                                className="w-12 h-12 object-contain drop-shadow-[0_0_10px_rgba(255,16,240,0.4)]"
                             />
                             <span className="text-[#ff10f0] font-black tracking-tighter text-2xl uppercase">Go Sleepy</span>
                         </Link>
