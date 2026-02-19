@@ -10,6 +10,7 @@ export class MockSupplierAdapter implements SupplierAdapter {
             {
                 hotelId: 'mock-1',
                 hotelName: 'The Roadside Inn',
+                hotelPhone: '+18045550199',
                 distanceMiles: 1.2,
                 address: '123 Highway Ave, Richmond, VA 23219',
                 lat: 37.5407,
@@ -37,6 +38,7 @@ export class MockSupplierAdapter implements SupplierAdapter {
             {
                 hotelId: 'mock-2',
                 hotelName: 'Late Night Suites',
+                hotelPhone: '+18045550244',
                 distanceMiles: 3.5,
                 rating: 3.8,
                 stars: 2,

@@ -18,7 +18,7 @@ export default function HotelDetailsPage() {
     const passedAddress = searchParams.get("address") || "123 Highway Ave, Richmond, VA";
     const passedRating = parseFloat(searchParams.get("rating") || "4.2");
     const passedStars = parseInt(searchParams.get("stars") || "3");
-    const passedPhone = searchParams.get("phone") || "555-0123";
+    const passedPhone = searchParams.get("phone") || "";
     const lat = parseFloat(searchParams.get("lat") || "0");
     const lng = parseFloat(searchParams.get("lng") || "0");
     const duration = parseInt(searchParams.get("duration") || "1");

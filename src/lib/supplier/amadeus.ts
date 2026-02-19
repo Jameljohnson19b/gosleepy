@@ -122,10 +122,13 @@ export class AmadeusAdapter implements SupplierAdapter {
                     allGalleryAssets[(hotelIndex + 2) % allGalleryAssets.length]
                 ];
 
+                const rawPhone = offerHotel.contact?.phone || geoHotel.contact?.phone || offerHotel.phones?.[0]?.number;
+                const hotelPhone = rawPhone ? rawPhone.toString().replace(/[^+0-9]/g, '') : undefined;
+
                 const normalizedOffer: Offer = {
                     hotelId: offerHotel.hotelId,
                     hotelName,
-                    hotelPhone: offerHotel.contact?.phone || geoHotel.contact?.phone,
+                    hotelPhone,
                     distanceMiles,
                     address: offerHotel.address ? `${offerHotel.address.lines?.[0] || ''}, ${offerHotel.address.cityName || ''}, ${offerHotel.address.countryCode || ''}` :
                         (geoHotel.address ? `${geoHotel.address.lines?.[0] || ''}, ${geoHotel.address.cityName || ''}` : 'Address available at desk'),
