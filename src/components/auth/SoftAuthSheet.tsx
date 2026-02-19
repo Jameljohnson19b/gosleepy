@@ -36,8 +36,10 @@ export default function SoftAuthSheet({
         const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
         setErr(null);
         setLoading(true);
-        const siteUrl = typeof window !== 'undefined'
-            ? (window.location.hostname === 'localhost' ? window.location.origin : 'https://gosleepy.xyz')
+        const currentOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://gosleepy.xyz';
+        // Use current origin if it's localhost or the main domain/subdomain, otherwise fallback
+        const siteUrl = (currentOrigin.includes('localhost') || currentOrigin.includes('gosleepy.xyz'))
+            ? currentOrigin
             : 'https://gosleepy.xyz';
 
         try {

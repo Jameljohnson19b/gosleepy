@@ -22,9 +22,7 @@ export async function GET(req: Request) {
                             cookieStore.set(name, value, options)
                         )
                     } catch {
-                        // The `setAll` method was called from a Server Component.
-                        // This can be ignored if you have middleware refreshing
-                        // user sessions.
+                        // ignore set errors
                     }
                 },
             },
@@ -32,17 +30,47 @@ export async function GET(req: Request) {
     );
 
     if (code) {
-        try {
-            await supabase.auth.exchangeCodeForSession(code);
-        } catch (error) {
-            console.error('Auth exchange error:', error);
+        const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+        if (!error && data.user) {
+            // Success! Attach anonymous session data immediately
+            const sessionId = cookieStore.get("gs_session")?.value;
+            if (sessionId) {
+                try {
+                    // Update route sessions
+                    await supabase
+                        .from("route_sessions")
+                        .update({ user_id: data.user.id })
+                        .eq("session_id", sessionId);
+
+                    // Update booking drafts
+                    await supabase
+                        .from("booking_drafts")
+                        .update({ user_id: data.user.id })
+                        .eq("session_id", sessionId);
+                } catch (attachError) {
+                    console.error('Session mapping failed:', attachError);
+                }
+            }
+        } else {
+            console.error('Auth exchange failed:', error);
         }
     }
 
-    // Attach anonymous session data to this user
-    // This is a server-side redirect to our internal attachment service
-    const attachUrl = new URL("/api/attach-session", url.origin);
-    attachUrl.searchParams.set("next", next);
+    // Determine final redirect URL
+    // If next is an absolute URL and matches our domain, use it
+    // Otherwise, construct a new URL to avoid open redirect vulnerabilities
+    let finalUrl: string;
+    try {
+        const nextUrl = new URL(next, url.origin);
+        // Ensure we don't redirect to a different domain unless intended
+        if (nextUrl.hostname === url.hostname || nextUrl.hostname === 'localhost') {
+            finalUrl = nextUrl.toString();
+        } else {
+            finalUrl = url.origin + "/";
+        }
+    } catch {
+        finalUrl = url.origin + "/";
+    }
 
-    return NextResponse.redirect(attachUrl.toString());
+    return NextResponse.redirect(finalUrl);
 }
