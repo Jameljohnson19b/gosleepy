@@ -58,6 +58,7 @@ export const metadata: Metadata = {
 
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import Script from "next/script";
 
 export default function RootLayout({
   children,
@@ -66,6 +67,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="bg-black">
+      <head>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-3J5V4L3KJ3"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-3J5V4L3KJ3');
+          `}
+        </Script>
+      </head>
       <body className={`${inter.className} antialiased bg-black flex flex-col min-h-screen`}>
         <SiteHeader />
         <main className="flex-grow">
