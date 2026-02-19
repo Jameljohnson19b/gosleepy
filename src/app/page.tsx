@@ -172,13 +172,13 @@ export default function LandingPage() {
                 </form>
               )}
 
-              {/* MISSION AIM STATEMENT */}
+              {/* OUR GOAL STATEMENT */}
               <div className="mt-6 flex items-start gap-3 text-left p-4 bg-[#ff10f0]/5 border border-[#ff10f0]/20 rounded-2xl">
                 <Target className="w-5 h-5 text-[#ff10f0] shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-[11px] font-black uppercase tracking-widest text-[#ff10f0] mb-0.5">Mission Aim</p>
+                  <p className="text-[11px] font-black uppercase tracking-widest text-[#ff10f0] mb-0.5">Our Goal</p>
                   <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-relaxed">
-                    To intercept the lowest-cost rest windows ahead, so travelers don't waste budget on fatigue-driven premiums.
+                    To find the cheapest places to sleep nearby, so you can rest without overpaying when you're tired.
                   </p>
                 </div>
               </div>
@@ -186,9 +186,9 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Tactical Scroll Hint */}
+        {/* Scroll Hint */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
-          <span className="text-[8px] font-black uppercase tracking-[0.4em]">Intelligence Report</span>
+          <span className="text-[8px] font-black uppercase tracking-[0.4em]">How it works</span>
           <div className="w-0.5 h-12 bg-gradient-to-b from-[#ff10f0] to-transparent" />
         </div>
       </section>
@@ -201,21 +201,21 @@ export default function LandingPage() {
               <div className="w-8 h-8 rounded-full bg-[#ff10f0]/10 border border-[#ff10f0]/30 flex items-center justify-center">
                 <Info className="w-4 h-4 text-[#ff10f0]" />
               </div>
-              <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ff10f0]">Intelligence Unit</h2>
+              <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ff10f0]">About Us</h2>
             </div>
             <h3 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-8 italic">
-              Built by tired travelers.<br /><span className="text-gray-600">for tired travelers.</span>
+              Built for travelers who<br /><span className="text-gray-600">just need a place to sleep.</span>
             </h3>
             <div className="space-y-6 text-gray-400 font-medium leading-[1.6]">
               <p>
-                We’ve all been there: It’s midnight, you’re 4 hours from the destination, and fatigue is setting in.
-                The generic booking apps show you "luxury suites" or overpriced "last-minute deals" that exploit your exhaustion.
+                We’ve all been there: It’s late, you’re hours from home, and you're getting tired.
+                Other apps show you fancy hotels or expensive last-minute rooms that cost too much.
               </p>
               <p className="text-white">
-                <span className="text-[#ff10f0] font-black uppercase">Go Sleepy is the intercept.</span> We use real-time data to find the smart, low-cost waypoints between where you are and where you’re going.
+                <span className="text-[#ff10f0] font-black uppercase">Go Sleepy is the solution.</span> We find the best budget-friendly hotels located right where you are or along your route.
               </p>
               <p>
-                No fluff. No aspirational travel photography. Just the lowest price for a clean room and a safe place to park—delivered in a high-contrast 1AM interface that doesn't strain your eyes.
+                No complicated filters. No distracting photos. Just the lowest price for a clean room and safe parking—shown in a high-contrast design that's easy to read at night.
               </p>
             </div>
           </div>
@@ -224,23 +224,23 @@ export default function LandingPage() {
             {[
               {
                 icon: <ShieldCheck className="w-6 h-6" />,
-                title: "Pay at Property",
-                desc: "Zero prepayment. We secure the room, you pay when you walk in the door."
+                title: "Pay at the Hotel",
+                desc: "No need to pay now. We book the room, and you pay when you arrive."
               },
               {
                 icon: <TrendingDown className="w-6 h-6" />,
-                title: "Micro-Stay Math",
-                desc: "We show you the cost per hour of sleep. Stopping is cheaper than pushing."
+                title: "Hourly Sleep Math",
+                desc: "We show you the cost per hour of rest. It's often cheaper to stop than to keep driving."
               },
               {
                 icon: <Clock className="w-6 h-6" />,
-                title: "1AM Optimized",
-                desc: "High-contrast, no-friction UI designed for travelers operating at their limit."
+                title: "Made for Night",
+                desc: "Simple, high-contrast design that's easy on the eyes during late-night drives."
               },
               {
                 icon: <Zap className="w-6 h-6" />,
-                title: "Live Intel",
-                desc: "Direct integration with global hospitality chains for confirmed late-night logic."
+                title: "Real-Time Deals",
+                desc: "We check with hotel chains directly for the latest availability and lowest prices."
               }
             ].map((feat, i) => (
               <div key={i} className="bg-[#111] p-8 rounded-[32px] border border-white/5 hover:border-[#ff10f0]/30 transition-all group">
@@ -253,15 +253,15 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Decision Engine Stat Box */}
+      {/* Stat Box */}
       <section className="bg-[#ff10f0] py-1">
         <div className="flex overflow-hidden whitespace-nowrap bg-black border-y border-white/10 py-6">
           <div className="flex animate-dash gap-12 px-12 items-center">
             {[...Array(10)].map((_, i) => (
               <div key={i} className="flex items-center gap-12">
-                <span className="text-2xl font-black uppercase tracking-tighter text-white">LOW-COST INTELLIGENCE</span>
+                <span className="text-2xl font-black uppercase tracking-tighter text-white">FIND CHEAP HOTELS FAST</span>
                 <Zap className="w-6 h-6 text-[#ff10f0]" />
-                <span className="text-2xl font-black uppercase tracking-tighter text-gray-800">STOPPING IS SMARTER THAN PUSHING</span>
+                <span className="text-2xl font-black uppercase tracking-tighter text-gray-800">STOPPING IS SMARTER THAN DRIVING TIRED</span>
                 <div className="w-2 h-2 rounded-full bg-[#ff10f0]" />
               </div>
             ))}
@@ -269,11 +269,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Drive Mode Indicator */}
+      {/* Version Indicator */}
       <div className="py-12 flex flex-col items-center gap-4 opacity-40 grayscale">
         <div className="flex items-center gap-3">
           <div className="w-1 h-1 rounded-full bg-white animate-ping" />
-          <span className="text-[10px] font-black uppercase tracking-[0.4em]">Tactical Engine v1.02</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.4em]">Go Sleepy v1.02</span>
         </div>
       </div>
     </main>

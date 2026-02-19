@@ -85,7 +85,7 @@ function ResultsContent() {
                     <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
                             <div className="w-1 h-1 bg-[#ff10f0] rounded-full animate-pulse" />
-                            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest italic">Economic Radar active</span>
+                            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest italic">Nearby search active</span>
                         </div>
                         <div className="text-[9px] font-bold text-[#ff10f0] uppercase tracking-[0.2em] flex items-center gap-2">
                             <span className="font-black">LOWEST PRICE TODAY</span> · {bookingTime === 'now' ? 'Tonight' : 'Tomorrow'} · {duration} {duration === 1 ? 'Night' : 'Nights'}
@@ -108,7 +108,7 @@ function ResultsContent() {
             {loading ? (
                 <div className="flex flex-col items-center justify-center py-20 gap-4">
                     <Zap className="w-12 h-12 text-[#ff10f0] animate-spin" />
-                    <p className="text-gray-400 font-bold uppercase tracking-widest text-xs italic">Scanning for low-cost smart stops...</p>
+                    <p className="text-gray-400 font-bold uppercase tracking-widest text-xs italic">Finding the cheapest hotels nearby...</p>
                 </div>
             ) : (
                 <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 pb-20">
@@ -127,7 +127,7 @@ function ResultsContent() {
             {/* 1AM Mode Status Bar */}
             {!loading && (
                 <div className="fixed bottom-0 left-0 w-full bg-[#ff10f0] text-white py-2 text-center font-bold text-xs uppercase tracking-widest px-4 truncate">
-                    Prices updated {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · Pay at Property only
+                    Prices updated {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · Pay at the hotel
                 </div>
             )}
         </main>

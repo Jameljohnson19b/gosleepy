@@ -18,7 +18,7 @@ export function SiteFooter() {
                             <span className="text-[#ff10f0] font-black tracking-tighter text-2xl uppercase">Go Sleepy</span>
                         </Link>
                         <p className="text-gray-500 text-xs font-medium leading-relaxed max-w-[200px]">
-                            Intercepting high-value rest windows for the tired traveler.
+                            Finding the best places to sleep for tired travelers.
                         </p>
                     </div>
 
@@ -28,13 +28,13 @@ export function SiteFooter() {
                             <li>
                                 <Link href="/results" className="text-xs text-gray-500 hover:text-[#ff10f0] transition-colors flex items-center gap-2 group">
                                     <MapPin className="w-3 h-3 text-gray-600 group-hover:text-[#ff10f0]" />
-                                    Find Low-Cost Stops
+                                    Find Cheap Hotels
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/safety" className="text-xs text-gray-500 hover:text-[#ff10f0] transition-colors flex items-center gap-2 group">
                                     <Shield className="w-3 h-3 text-gray-600 group-hover:text-[#ff10f0]" />
-                                    Economic Radar
+                                    Nearby Searches
                                 </Link>
                             </li>
                         </ul>
@@ -84,7 +84,7 @@ export function SiteFooter() {
                     <div className="flex items-center gap-6">
                         <div className="h-1 w-1 rounded-full bg-gray-800" />
                         <div className="text-[10px] text-[#ff10f0] font-black uppercase tracking-widest animate-pulse">
-                            1AM Mode Active
+                            Night mode active
                         </div>
                     </div>
                 </div>

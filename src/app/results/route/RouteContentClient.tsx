@@ -68,10 +68,10 @@ function RadarCard({ stop, offer, index, is1AM }: { stop: RouteStop; offer?: Off
 
             <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
                 <div className="text-[9px] font-black text-gray-400 uppercase italic">
-                    {offer?.hotelName ? 'Found Intel' : 'Pending Vector'}
+                    {offer?.hotelName ? 'Room found' : 'Searching...'}
                 </div>
                 <div className={`text-[8px] font-black uppercase tracking-wider ${isLowest ? 'text-emerald-400' : 'text-gray-500'}`}>
-                    {isLowest ? 'LOWEST COST AHEAD' : 'PAY AT PROPERTY'}
+                    {isLowest ? 'BEST PRICE AHEAD' : 'PAY AT HOTEL'}
                 </div>
             </div>
         </div>
@@ -94,7 +94,7 @@ function RouteStopComponent({ index, stop, offer, duration, radius, is1AM }: { i
                         {stop.label} {typeof price === 'number' ? `— $${price}` : ''}
                     </h3>
                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic">
-                        {typeof price === 'number' ? "Low-cost sleep window nearby." : "Scanning for smart stops ahead..."}
+                        {typeof price === 'number' ? "Affordable place to sleep nearby." : "Looking for budget hotels ahead..."}
                     </p>
                 </div>
 
@@ -115,7 +115,7 @@ function RouteStopComponent({ index, stop, offer, duration, radius, is1AM }: { i
                                 {offer.hotelName}
                             </div>
                             <div className="text-[9px] font-bold text-blue-400 border border-blue-400/20 px-2 py-0.5 rounded uppercase">
-                                Pay at Property
+                                Pay at Hotel
                             </div>
                         </div>
 
@@ -123,8 +123,8 @@ function RouteStopComponent({ index, stop, offer, duration, radius, is1AM }: { i
                             <HotelCard offer={offer} duration={duration} />
                             <div className="flex flex-col justify-center gap-4">
                                 <div className="space-y-1">
-                                    <div className="text-[10px] font-black uppercase text-gray-500 tracking-widest">Decision Logic</div>
-                                    <p className="text-xs text-gray-400 italic">"Low-cost intelligence suggests stopping here is the smarter move for your budget."</p>
+                                    <div className="text-[10px] font-black uppercase text-gray-500 tracking-widest">Recommended</div>
+                                    <p className="text-xs text-gray-400 italic">Stopping here is a great budget-friendly move for your trip.</p>
                                 </div>
                                 <button className="w-full bg-[#ff10f0] text-white font-black uppercase tracking-widest py-3 rounded-xl shadow-[0_0_20px_rgba(255,16,240,0.3)] hover:scale-[1.02] transition-all">
                                     Reserve This Stop
@@ -134,14 +134,14 @@ function RouteStopComponent({ index, stop, offer, duration, radius, is1AM }: { i
                     </div>
                 ) : (
                     <div className="text-[10px] font-black uppercase text-gray-600 italic">
-                        {stop.status === "NO_OFFERS" ? "Expanding search to find lower prices ahead..." : stop.status}
+                        {stop.status === "NO_OFFERS" ? "Searching further down the road for better prices..." : stop.status}
                     </div>
                 )}
 
                 {/* Pit Stops Supply Chain */}
                 {stop.pitStops && stop.pitStops.length > 0 && (
                     <div className="mt-8 space-y-3">
-                        <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 border-b border-white/5 pb-2">Fuel & Essentials Nearby</div>
+                        <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 border-b border-white/5 pb-2">Gas and food nearby</div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {stop.pitStops.map((pit, j) => (
                                 <div key={j} className={`rounded-2xl ${pit.type === 'CHARGING_STATION' ? 'bg-[#ff10f0]/5 border-[#ff10f0]/20' : 'bg-white/5 border-white/10'} border p-4 text-[11px] relative overflow-hidden group`}>

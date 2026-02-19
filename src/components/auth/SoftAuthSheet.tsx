@@ -60,8 +60,8 @@ export default function SoftAuthSheet({
                             <Zap className="w-5 h-5 text-[#ff10f0] fill-[#ff10f0]" />
                         </div>
                         <div>
-                            <h3 className="text-xl font-black uppercase tracking-tighter">Accelerate Mission</h3>
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Soft Authorization Active</p>
+                            <h3 className="text-xl font-black uppercase tracking-tighter">Save your trip</h3>
+                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Connect your email to save progress</p>
                         </div>
                     </div>
                     <button
@@ -76,14 +76,14 @@ export default function SoftAuthSheet({
                     <div className="space-y-6">
                         <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
                             <p className="text-sm text-gray-400 leading-relaxed italic mb-6">
-                                "We'll send your route confirmation and travel metrics directly to your terminal. No passwords, no friction—just mission synchronization."
+                                Enter your email and we'll send you a link to save your route and upcoming bookings. No passwords needed.
                             </p>
 
                             <div className="relative">
                                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                                 <input
-                                    className="w-full bg-black border border-white/10 rounded-2xl p-4 pl-12 text-white outline-none focus:border-[#ff10f0] transition-colors font-mono text-sm"
-                                    placeholder="TERMINAL_EMAIL@EXAMPLE.COM"
+                                    className="w-full bg-black border border-white/10 rounded-2xl p-4 pl-12 text-white outline-none focus:border-[#ff10f0] transition-colors text-sm"
+                                    placeholder="your.email@example.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     inputMode="email"
@@ -106,12 +106,12 @@ export default function SoftAuthSheet({
                             {loading ? (
                                 <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
                             ) : (
-                                <>Send Magic Link</>
+                                <>Send Login Link</>
                             )}
                         </button>
 
                         <p className="text-center text-[9px] font-bold text-gray-600 uppercase tracking-widest">
-                            You can keep browsing. This just makes the final destination booking 10x faster.
+                            You can keep browsing while we send the link.
                         </p>
                     </div>
                 ) : (
@@ -121,9 +121,9 @@ export default function SoftAuthSheet({
                         </div>
 
                         <div className="space-y-2">
-                            <h4 className="text-2xl font-black uppercase tracking-tighter italic">Check Your Terminal</h4>
+                            <h4 className="text-2xl font-black uppercase tracking-tighter italic">Check your email</h4>
                             <p className="text-sm text-gray-500 max-w-[280px] mx-auto italic">
-                                We've dispatched a secure access vector to <span className="text-white font-mono not-italic">{email}</span>.
+                                We've sent a secure login link to <span className="text-white font-mono not-italic">{email}</span>.
                             </p>
                         </div>
 

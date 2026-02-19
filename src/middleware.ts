@@ -2,13 +2,23 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-    const response = NextResponse.next();
-
-    const sessionId = request.cookies.get('gs_session')?.value;
+    let sessionId = request.cookies.get('gs_session')?.value;
+    let response = NextResponse.next();
 
     if (!sessionId) {
-        const newSessionId = crypto.randomUUID();
-        response.cookies.set('gs_session', newSessionId, {
+        sessionId = crypto.randomUUID();
+
+        // Add the cookie to the request headers so Server Components can see it immediately
+        const requestHeaders = new Headers(request.headers);
+        requestHeaders.set('Cookie', `gs_session=${sessionId}`);
+
+        response = NextResponse.next({
+            request: {
+                headers: requestHeaders,
+            },
+        });
+
+        response.cookies.set('gs_session', sessionId, {
             httpOnly: true,
             sameSite: 'lax',
             secure: process.env.NODE_ENV === 'production',

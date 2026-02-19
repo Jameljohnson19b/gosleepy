@@ -21,7 +21,7 @@ export function HotelCard({ offer, duration = 1 }: HotelCardProps) {
         >
             {is1AM && (
                 <div className="absolute top-0 right-0 px-3 py-1 bg-[#ff10f0] text-white text-[8px] font-black uppercase tracking-widest z-10 rounded-bl-xl shadow-lg animate-pulse">
-                    Economical Target
+                    Best price
                 </div>
             )}
 
@@ -35,7 +35,7 @@ export function HotelCard({ offer, duration = 1 }: HotelCardProps) {
                 {!offer.hasOfficialMedia && (
                     <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center">
                         <div className="bg-black/80 border border-white/5 px-3 py-1.5 rounded-full">
-                            <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em] italic">Practical Selection</span>
+                            <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em] italic">Standard choice</span>
                         </div>
                     </div>
                 )}
@@ -50,7 +50,7 @@ export function HotelCard({ offer, duration = 1 }: HotelCardProps) {
                 {offer.rating && (
                     <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-md px-2 py-1 rounded-full flex items-center gap-1 border border-white/10">
                         <Star className="w-3 h-3 text-emerald-400 fill-emerald-400" />
-                        <span className="text-[10px] font-bold text-white">{offer.rating} Hub Score</span>
+                        <span className="text-[10px] font-bold text-white">{offer.rating} Rating</span>
                     </div>
                 )}
             </div>
@@ -73,7 +73,7 @@ export function HotelCard({ offer, duration = 1 }: HotelCardProps) {
                     </div>
                     <div className="flex flex-col items-end gap-1">
                         <div className="flex items-center gap-1 text-emerald-400 font-black text-[9px] bg-emerald-400/10 px-2 py-1 rounded-lg border border-emerald-400/20">
-                            Worth the stop
+                            Great value
                         </div>
                     </div>
                 </div>
@@ -82,7 +82,7 @@ export function HotelCard({ offer, duration = 1 }: HotelCardProps) {
                 <div className="flex flex-wrap items-center gap-2 pt-4 border-t border-gray-900">
                     <div className="flex items-center gap-1.5 text-blue-400 font-bold text-[9px] uppercase tracking-tighter">
                         <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                        Pay at Property
+                        Pay at the hotel
                     </div>
 
                     {offer.pressureLabel && (
