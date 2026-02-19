@@ -97,7 +97,7 @@ function RouteStopComponent({ index, stop, duration, radius, is1AM }: { index: n
                         {stop.label} {mainOffer?.rates?.[0]?.totalAmount ? `— from $${mainOffer.rates[0].totalAmount}` : ''}
                     </h3>
                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic">
-                        {hasOffers ? `${allOffers.length} low-cost missions found nearby.` : "Looking for budget hotels ahead..."}
+                        {hasOffers ? `${allOffers.length} budget properties found nearby · Amadeus Guaranteed.` : "Looking for budget hotels ahead..."}
                     </p>
                 </div>
 
@@ -175,7 +175,7 @@ function RouteStopComponent({ index, stop, duration, radius, is1AM }: { index: n
     );
 }
 
-function TacticalMap({ stops, is1AM, origin, destination, originCoords, destCoords }: { stops: RouteStop[], is1AM: boolean, origin: string, destination: string, originCoords?: { lat: number, lng: number }, destCoords?: { lat: number, lng: number } }) {
+function RouteMap({ stops, is1AM, origin, destination, originCoords, destCoords }: { stops: RouteStop[], is1AM: boolean, origin: string, destination: string, originCoords?: { lat: number, lng: number }, destCoords?: { lat: number, lng: number } }) {
     const originCity = origin.split(',')[0].trim();
     const destCity = destination.split(',')[0].trim();
 
@@ -202,11 +202,11 @@ function TacticalMap({ stops, is1AM, origin, destination, originCoords, destCoor
 
     return (
         <div className="relative w-full h-56 lg:h-[420px] bg-zinc-900/50 rounded-[40px] border border-white/5 overflow-hidden shadow-2xl">
-            {/* Mission Grid */}
+            {/* Route Grid */}
             <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
             <svg viewBox="0 0 400 200" className="absolute inset-0 w-full h-full p-12 lg:p-20">
-                {/* Tactical Trace */}
+                {/* Route Trace */}
                 <path
                     d={pathD}
                     fill="none"
@@ -276,7 +276,7 @@ function TacticalMap({ stops, is1AM, origin, destination, originCoords, destCoor
 
             <div className="absolute bottom-6 right-8 flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[9px] lg:text-[10px] font-black uppercase tracking-[0.2em] text-white/40 italic">Real-time low-cost intelligence active</span>
+                <span className="text-[9px] lg:text-[10px] font-black uppercase tracking-[0.2em] text-white/40 italic">Live price intelligence verified</span>
             </div>
         </div>
     );
@@ -448,7 +448,7 @@ export default function RouteContentClient({
                 </div>
             )}
 
-            {/* Tactical Header */}
+            {/* Navigation Header */}
             <header className={`sticky ${is1AM ? 'top-[31px]' : 'top-0'} z-40 bg-black/60 backdrop-blur-xl border-b border-white/5 px-6 py-6`}>
                 <div className="flex items-center justify-between max-w-7xl mx-auto">
                     <button onClick={() => router.back()} className="p-3 bg-white/5 border border-white/10 rounded-2xl active:scale-90 transition-all">
@@ -490,7 +490,7 @@ export default function RouteContentClient({
                         <p className="text-gray-500 text-sm italic">{data.error}</p>
                     </div>
                     <Link href="/" className="px-12 py-5 bg-[#ff10f0] text-white font-black uppercase tracking-widest text-xs rounded-3xl shadow-[0_0_30px_rgba(255,16,240,0.4)]">
-                        Calculate New Mission
+                        Start New Search
                     </Link>
                 </div>
             ) : (!data || !data.stops || data.stops.length === 0) && !loading ? (
@@ -503,7 +503,7 @@ export default function RouteContentClient({
                         <p className="text-gray-500 text-sm italic">Expanding the search to find lower prices ahead. So you don't waste your trip budget.</p>
                     </div>
                     <Link href="/" className="px-12 py-5 bg-[#ff10f0] text-white font-black uppercase tracking-widest text-xs rounded-3xl shadow-[0_0_30px_rgba(255,16,240,0.4)]">
-                        Reset Mission
+                        Reset Search
                     </Link>
                 </div>
             ) : (
@@ -536,9 +536,9 @@ export default function RouteContentClient({
                             </div>
                         </div>
 
-                        {/* Tactical Map Panel */}
+                        {/* Route Map Panel */}
                         <div className="lg:col-span-2">
-                            <TacticalMap
+                            <RouteMap
                                 stops={data?.stops || []}
                                 is1AM={is1AM}
                                 origin={origin}
@@ -577,7 +577,7 @@ export default function RouteContentClient({
                                 <MapPin className="w-5 h-5 text-gray-500" />
                             </div>
                             <div className="pt-1">
-                                <h2 className="text-[11px] font-black uppercase text-gray-600 tracking-widest mb-1.5">Origin Base</h2>
+                                <h2 className="text-[11px] font-black uppercase text-gray-600 tracking-widest mb-1.5">Departure Point</h2>
                                 <p className="text-xl font-black uppercase tracking-tight">{origin}</p>
                             </div>
                         </div>

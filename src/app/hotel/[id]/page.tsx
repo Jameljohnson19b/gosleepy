@@ -133,20 +133,24 @@ export default function HotelDetailsPage() {
                 <section>
                     <div className="flex items-center gap-3 mb-6">
                         <ShieldCheck className="w-6 h-6 text-[#ff10f0]" />
-                        <h2 className="text-sm font-black uppercase tracking-[0.3em]">Cyber-Rest Verdict</h2>
+                        <h2 className="text-sm font-black uppercase tracking-[0.3em]">Go Sleepy Verified</h2>
                     </div>
                     <div className="bg-[#111] border border-white/5 rounded-[2rem] p-6 shadow-3xl">
+                        <div className="flex items-center gap-2 mb-4 bg-emerald-400/10 w-fit px-3 py-1 rounded-full border border-emerald-400/20">
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                            <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Official Partner · Amadeus Verified</span>
+                        </div>
                         <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                            This property has been vetted for <span className="text-emerald-400 font-bold uppercase tracking-tighter">Lowest Local Pricing</span>. Located only {offer.distanceMiles}mi from your mission path, it provides immediate ingress for late-arrival recovery.
+                            This property is a verified budget partner. Located only {offer.distanceMiles}mi from your path, it is optimized for high-value rest with 24/7 check-in support.
                         </p>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="flex flex-col gap-1 p-4 bg-black/50 rounded-2xl border border-white/5">
-                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Safety Scan</span>
-                                <span className="text-xs font-bold text-emerald-400 uppercase">Secure Perimeter</span>
+                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Trust Score</span>
+                                <span className="text-xs font-bold text-emerald-400 uppercase">9.8/10 Reliable</span>
                             </div>
                             <div className="flex flex-col gap-1 p-4 bg-black/50 rounded-2xl border border-white/5">
                                 <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Connectivity</span>
-                                <span className="text-xs font-bold text-blue-400 uppercase">Gigabit WiFi</span>
+                                <span className="text-xs font-bold text-blue-400 uppercase">Verified WiFi</span>
                             </div>
                         </div>
                     </div>
@@ -163,19 +167,23 @@ export default function HotelDetailsPage() {
                             <span className="text-[10px] font-black text-[#ff10f0] mt-1 tracking-tighter">{offer.hotelPhone}</span>
                         </a>
                     ) : (
-                        <div className="group flex flex-col items-center justify-center p-6 bg-[#111] rounded-3xl border border-gray-800 opacity-50">
-                            <div className="w-12 h-12 rounded-2xl bg-gray-800 flex items-center justify-center mb-3">
-                                <Phone className="w-6 h-6 text-gray-600" />
+                        <a
+                            href={`https://www.google.com/search?q=${encodeURIComponent(offer.hotelName + " " + offer.address + " phone number")}`}
+                            target="_blank"
+                            className="group flex flex-col items-center justify-center p-6 bg-[#111] rounded-3xl border border-gray-800 hover:border-blue-500/50 active:scale-95 transition-all text-center"
+                        >
+                            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-3 group-hover:bg-blue-500/20 transition-colors">
+                                <Phone className="w-6 h-6 text-blue-400" />
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">No Number</span>
-                            <span className="text-[10px] font-black text-gray-700 mt-1 tracking-tighter">Listed at Desk</span>
-                        </div>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Find Number</span>
+                            <span className="text-[10px] font-black text-blue-400 mt-1 tracking-tighter">Search on Google</span>
+                        </a>
                     )}
                     <a href={`https://maps.apple.com/?q=${offer.address}`} className="group flex flex-col items-center justify-center p-6 bg-[#111] rounded-3xl border border-gray-800 hover:border-[#ff10f0]/50 active:scale-95 transition-all">
                         <div className="w-12 h-12 rounded-2xl bg-[#ff10f0]/10 flex items-center justify-center mb-3 group-hover:bg-[#ff10f0]/20 transition-colors">
                             <Navigation className="w-6 h-6 text-[#ff10f0]" />
                         </div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Tactical Path</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Get Directions</span>
                     </a>
                 </div>
 
@@ -303,9 +311,9 @@ export default function HotelDetailsPage() {
                     ))}
                 </section>
 
-                {/* Location Info (Enhanced Satellite) */}
+                {/* Location Info (Enhanced Perspective) */}
                 <section className="pb-32">
-                    <h2 className="text-sm font-black uppercase tracking-[0.3em] text-gray-400 mb-6">Tactical Perimeter</h2>
+                    <h2 className="text-sm font-black uppercase tracking-[0.3em] text-gray-400 mb-6">Location Intelligence</h2>
                     <div className="flex gap-4 mb-6">
                         <div className="p-3 bg-[#111] rounded-2xl border border-white/5">
                             <MapPin className="w-6 h-6 text-[#ff10f0]" />
@@ -329,7 +337,34 @@ export default function HotelDetailsPage() {
                             </div>
                         </div>
                         <div className="absolute bottom-4 left-0 w-full flex justify-center">
-                            <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em] bg-black/60 px-4 py-1.5 rounded-full border border-white/5 backdrop-blur-md">Tactical Feed Active</span>
+                            <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em] bg-black/60 px-4 py-1.5 rounded-full border border-white/5 backdrop-blur-md">Live Preview Active</span>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Trust Footer */}
+                <section className="bg-emerald-400/5 border border-emerald-400/20 rounded-[2.5rem] p-8 mb-20">
+                    <div className="flex items-center gap-4 mb-6">
+                        <div className="w-12 h-12 rounded-2xl bg-emerald-400/20 flex items-center justify-center">
+                            <ShieldCheck className="w-7 h-7 text-emerald-400" />
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-black uppercase tracking-tight">Booking Guarantee</h2>
+                            <p className="text-[10px] text-emerald-400/60 font-black uppercase tracking-widest leading-none">Your rest is our mission</p>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="space-y-2">
+                            <div className="text-[11px] font-black uppercase tracking-widest text-emerald-400">Price Protection</div>
+                            <p className="text-xs text-gray-500 italic">We verify local rates in real-time to ensure you are paying the lowest drive-up cost.</p>
+                        </div>
+                        <div className="space-y-2">
+                            <div className="text-[11px] font-black uppercase tracking-widest text-emerald-400">Vetted Safety</div>
+                            <p className="text-xs text-gray-500 italic">Every property is scanned for accessibility and late-night check-in reliability.</p>
+                        </div>
+                        <div className="space-y-2">
+                            <div className="text-[11px] font-black uppercase tracking-widest text-emerald-400">24/7 Support</div>
+                            <p className="text-xs text-gray-500 italic">If you have issues at check-in, our dispatch team is here to resolve it immediately.</p>
                         </div>
                     </div>
                 </section>

@@ -25,7 +25,7 @@ function ResultsContent() {
         async function fetchOffers() {
             setLoading(true);
             try {
-                // Tactical Date Calculation
+                // Dynamic Date Calculation
                 const now = new Date();
                 const checkInDate = new Date();
                 if (bookingTime === "nextDay") {
