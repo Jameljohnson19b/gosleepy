@@ -12,14 +12,10 @@ export default function AuthButton() {
     const [showAuth, setShowAuth] = useState(false);
 
     useEffect(() => {
-        // Only initialize client on the client-side to avoid build-time environment variable errors
         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
         const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-        if (!supabaseUrl || !supabaseAnonKey) {
-            console.warn("Supabase credentials missing, auth button disabled.");
-            return;
-        }
+        if (!supabaseUrl || !supabaseAnonKey) return;
 
         const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
 
@@ -35,6 +31,13 @@ export default function AuthButton() {
 
         return () => subscription.unsubscribe();
     }, []);
+
+    const toggleAuth = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("Toggle Auth clicked");
+        setShowAuth(true);
+    };
 
     if (user) {
         return (
@@ -52,17 +55,20 @@ export default function AuthButton() {
     return (
         <>
             <button
-                onClick={() => setShowAuth(true)}
-                className="text-[10px] font-black uppercase tracking-widest text-[#ff10f0] border border-[#ff10f0]/30 px-5 py-2 rounded-full hover:bg-[#ff10f0]/10 hover:shadow-[0_0_15px_rgba(255,16,240,0.2)] transition-all active:scale-95"
+                type="button"
+                onClick={toggleAuth}
+                className="text-[10px] font-black uppercase tracking-widest text-[#ff10f0] border border-[#ff10f0]/30 px-5 py-2 rounded-full hover:bg-[#ff10f0]/10 hover:shadow-[0_0_15px_rgba(255,16,240,0.2)] transition-all active:scale-95 cursor-pointer z-[1001]"
             >
                 Sign In
             </button>
 
-            <SoftAuthSheet
-                open={showAuth}
-                onClose={() => setShowAuth(false)}
-                nextUrl={pathname || "/"}
-            />
+            {showAuth && (
+                <SoftAuthSheet
+                    open={showAuth}
+                    onClose={() => setShowAuth(false)}
+                    nextUrl={pathname || "/"}
+                />
+            )}
         </>
     );
 }
