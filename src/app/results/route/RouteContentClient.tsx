@@ -35,34 +35,45 @@ interface RouteResults {
     error?: string;
 }
 
-function RadarCard({ stop, offer, is1AM }: { stop: RouteStop; offer?: Offer; is1AM: boolean }) {
+function RadarCard({ stop, offer, index, is1AM }: { stop: RouteStop; offer?: Offer; index: number; is1AM: boolean }) {
     const price = offer?.rates?.[0]?.totalAmount;
     const currency = offer?.rates?.[0]?.currency ?? "USD";
+    const isLowest = index === 0;
 
     return (
         <div className={`flex-none w-[260px] ${is1AM ? 'bg-[#111]' : 'bg-zinc-900'} border border-white/10 rounded-2xl p-4 snap-start relative overflow-hidden group hover:border-[#ff10f0]/50 transition-all`}>
             <div className="absolute top-0 right-0 w-16 h-16 bg-[#ff10f0]/10 rounded-bl-[40px] -mr-4 -mt-4 transition-colors group-hover:bg-[#ff10f0]/20" />
-            <div className="text-sm font-black uppercase tracking-tighter mb-1">{stop.label}</div>
-            <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3">{stop.status}</div>
 
-            {price ? (
-                <div className="mt-2 text-2xl font-black tracking-tighter font-mono leading-none">
-                    ${price} <span className="text-[10px] opacity-40 font-mono italic">{currency}</span>
+            <div className="flex items-center justify-between mb-2">
+                <div className="text-sm font-black uppercase tracking-tighter truncate max-w-[140px]">{stop.label}</div>
+                {isLowest && (
+                    <div className="px-2 py-0.5 bg-emerald-400 text-black text-[7px] font-black uppercase tracking-widest rounded animate-pulse">
+                        Lowest Today
+                    </div>
+                )}
+            </div>
+
+            {typeof price === 'number' ? (
+                <div className="mt-2 space-y-1">
+                    <div className="text-2xl font-black tracking-tighter font-mono leading-none">
+                        ${price} <span className="text-[10px] opacity-40 font-mono italic">{currency}</span>
+                    </div>
+                    <div className="text-[9px] font-bold text-gray-500 uppercase tracking-widest leading-none">
+                        ≈ ${Math.round(price / 6)}/hour rest
+                    </div>
                 </div>
             ) : (
-                <div className="mt-2 text-xs font-black uppercase text-gray-600 italic">No Intel Found</div>
+                <div className="mt-2 text-xs font-black uppercase text-gray-600 italic">Scanning Prices...</div>
             )}
 
-            {offer && (
-                <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
-                    <div className="text-[9px] font-black text-emerald-400 uppercase italic">
-                        {offer.confidenceScore?.toFixed(1) || '—'}/10 CONFIRMS
-                    </div>
-                    <div className={`text-[8px] font-black uppercase tracking-wider ${offer.pressureLabel === 'LIMITED' ? 'text-blue-400' : 'text-gray-500'}`}>
-                        {offer.pressureLabel || 'STABLE'}
-                    </div>
+            <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
+                <div className="text-[9px] font-black text-gray-400 uppercase italic">
+                    {offer?.hotelName ? 'Found Intel' : 'Pending Vector'}
                 </div>
-            )}
+                <div className={`text-[8px] font-black uppercase tracking-wider ${isLowest ? 'text-emerald-400' : 'text-gray-500'}`}>
+                    {isLowest ? 'LOWEST COST AHEAD' : 'PAY AT PROPERTY'}
+                </div>
+            </div>
         </div>
     );
 }
@@ -79,40 +90,58 @@ function RouteStopComponent({ index, stop, offer, duration, radius, is1AM }: { i
             <div className="mb-10">
                 <div className="flex flex-col gap-1 mb-4">
                     <div className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-500 italic">Stop {index}</div>
-                    <h3 className="text-2xl font-black uppercase tracking-tighter">{stop.label}</h3>
+                    <h3 className="text-2xl font-black uppercase tracking-tighter">
+                        {stop.label} {typeof price === 'number' ? `— $${price}` : ''}
+                    </h3>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic">
+                        {typeof price === 'number' ? "Low-cost sleep window nearby." : "Scanning for smart stops ahead..."}
+                    </p>
                 </div>
 
                 {offer ? (
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                         <div className="flex flex-wrap items-center gap-3">
-                            <div className="bg-emerald-400 text-black text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-lg shadow-[0_0_20px_rgba(52,211,153,0.2)]">
-                                ${price} {currency}
-                            </div>
+                            {typeof price === 'number' && (
+                                <>
+                                    <div className="bg-emerald-400 text-black text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-lg">
+                                        ${price} {currency}
+                                    </div>
+                                    <div className="text-[9px] font-bold text-emerald-400 border border-emerald-400/20 px-2 py-0.5 rounded uppercase">
+                                        ≈ ${Math.round(price / 6)}/hour rest
+                                    </div>
+                                </>
+                            )}
                             <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">
                                 {offer.hotelName}
                             </div>
-                            <div className="text-[9px] font-bold text-emerald-400 border border-emerald-400/20 px-2 py-0.5 rounded">
-                                {offer.confidenceScore?.toFixed(1) || '—'}/10 CONFIRMS
-                            </div>
                             <div className="text-[9px] font-bold text-blue-400 border border-blue-400/20 px-2 py-0.5 rounded uppercase">
-                                {offer.pressureLabel}
+                                Pay at Property
                             </div>
                         </div>
 
-                        <div className="text-[9px] font-black text-gray-600 uppercase tracking-widest flex items-center gap-2">
-                            SUPPORT RISK: <span className={offer.supportRisk?.label === 'HIGH' ? 'text-[#ff10f0]' : 'text-blue-400'}>{offer.supportRisk?.label} ({offer.supportRisk?.riskScore})</span>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <HotelCard offer={offer} duration={duration} />
+                            <div className="flex flex-col justify-center gap-4">
+                                <div className="space-y-1">
+                                    <div className="text-[10px] font-black uppercase text-gray-500 tracking-widest">Decision Logic</div>
+                                    <p className="text-xs text-gray-400 italic">"Low-cost intelligence suggests stopping here is the smarter move for your budget."</p>
+                                </div>
+                                <button className="w-full bg-[#ff10f0] text-white font-black uppercase tracking-widest py-3 rounded-xl shadow-[0_0_20px_rgba(255,16,240,0.3)] hover:scale-[1.02] transition-all">
+                                    Reserve This Stop
+                                </button>
+                            </div>
                         </div>
                     </div>
                 ) : (
                     <div className="text-[10px] font-black uppercase text-gray-600 italic">
-                        {stop.status === "NO_OFFERS" ? "No tactical lodging identified at this vector." : stop.status}
+                        {stop.status === "NO_OFFERS" ? "Expanding search to find lower prices ahead..." : stop.status}
                     </div>
                 )}
 
                 {/* Pit Stops Supply Chain */}
                 {stop.pitStops && stop.pitStops.length > 0 && (
                     <div className="mt-8 space-y-3">
-                        <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 border-b border-white/5 pb-2">Supply Points Nearby</div>
+                        <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 border-b border-white/5 pb-2">Fuel & Essentials Nearby</div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {stop.pitStops.map((pit, j) => (
                                 <div key={j} className={`rounded-2xl ${pit.type === 'CHARGING_STATION' ? 'bg-[#ff10f0]/5 border-[#ff10f0]/20' : 'bg-white/5 border-white/10'} border p-4 text-[11px] relative overflow-hidden group`}>
@@ -213,7 +242,7 @@ function TacticalMap({ stops, is1AM, origin, destination }: { stops: RouteStop[]
 
             <div className="absolute bottom-6 right-8 flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[9px] lg:text-[10px] font-black uppercase tracking-[0.2em] text-white/40 italic">Live Vector Trace — Intercepting Rates</span>
+                <span className="text-[9px] lg:text-[10px] font-black uppercase tracking-[0.2em] text-white/40 italic">Scanning for the low-cost smart stop ahead</span>
             </div>
         </div>
     );
@@ -381,7 +410,7 @@ export default function RouteContentClient({
             {/* 1AM Mode Status Bar */}
             {is1AM && (
                 <div className="bg-[#ff10f0] text-black py-1.5 px-4 text-center sticky top-0 z-50 shadow-[0_4px_30px_rgba(255,16,240,0.3)]">
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] animate-pulse">1AM MODE ACTIVE · HIGH CONTRAST · LOW FRICTION</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] animate-pulse">1AM MODE: Showing the lowest-cost stops worth pulling over for</span>
                 </div>
             )}
 
@@ -392,20 +421,15 @@ export default function RouteContentClient({
                         <ArrowLeft className="w-5 h-5 text-[#ff10f0]" />
                     </button>
 
-                    <div className="flex flex-col items-center">
-                        <div className="flex items-center gap-2 mb-1">
-                            <Zap className="w-3 h-3 text-[#ff10f0] fill-[#ff10f0]" />
-                            <span className="text-[10px] font-black tracking-[0.2em] text-[#ff10f0] uppercase italic">Sleep Radar Engine</span>
-                            <Zap className="w-3 h-3 text-[#ff10f0] fill-[#ff10f0]" />
-                        </div>
-                        <h1 className="text-sm font-black uppercase tracking-tight flex items-center gap-3">
+                    <div className="flex flex-col items-center text-center">
+                        <h1 className="text-base font-black uppercase tracking-tight flex items-center gap-3 mb-1">
                             {origin.split(',')[0]} <span className="text-gray-600 text-[8px]">→</span> {destination.split(',')[0]}
                         </h1>
+                        <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Find the low-cost smart stop ahead</p>
                     </div>
 
                     <div className="p-3 bg-white/5 border border-white/10 rounded-2xl">
-                        <div className="w-5 h-5 bg-[#ff10f0] rounded-full animate-ping opacity-20 absolute" />
-                        <MapPin className="w-5 h-5 text-[#ff10f0] relative" />
+                        <span className="text-[8px] font-black uppercase text-[#ff10f0] leading-none block">Tonight</span>
                     </div>
                 </div>
             </header>
@@ -441,11 +465,11 @@ export default function RouteContentClient({
                         <MapPin className="w-12 h-12 text-[#ff10f0]" />
                     </div>
                     <div>
-                        <h2 className="text-3xl font-black uppercase tracking-tighter mb-3">No Mission Active</h2>
-                        <p className="text-gray-500 text-sm italic">Define an origin and destination to begin scanning waypoints.</p>
+                        <h2 className="text-3xl font-black uppercase tracking-tighter mb-3">No low-cost stops nearby</h2>
+                        <p className="text-gray-500 text-sm italic">Expanding the search to find lower prices ahead. So you don't waste your trip budget.</p>
                     </div>
                     <Link href="/" className="px-12 py-5 bg-[#ff10f0] text-white font-black uppercase tracking-widest text-xs rounded-3xl shadow-[0_0_30px_rgba(255,16,240,0.4)]">
-                        Initialize Mission
+                        Reset Mission
                     </Link>
                 </div>
             ) : (
@@ -460,12 +484,14 @@ export default function RouteContentClient({
                             <div className="bg-white/5 border border-white/10 rounded-[35px] p-8 flex flex-col gap-8 relative overflow-hidden h-full">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-400/5 blur-3xl" />
                                 <div className="flex flex-col gap-1">
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">Total Mission Distance</span>
-                                    <span className="text-5xl font-black tracking-tighter italic">{data?.distance || '---'} <span className="text-lg not-italic opacity-40">MI</span></span>
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">Lowest Price Today</span>
+                                    <span className="text-5xl font-black tracking-tighter italic text-emerald-400">
+                                        $<span className="animate-pulse">{data?.stops?.find(s => s.bestOffer)?.bestOffer?.rates?.[0]?.totalAmount || '---'}</span>
+                                    </span>
                                 </div>
                                 <div className="flex flex-col gap-1">
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">Arrival Approx.</span>
-                                    <span className="text-5xl font-black tracking-tighter italic text-[#ff10f0]">{data?.durationHours || '--'} <span className="text-lg not-italic opacity-40">HRS</span></span>
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">Travel Duration</span>
+                                    <span className="text-5xl font-black tracking-tighter italic text-white">{data?.durationHours || '--'} <span className="text-lg not-italic opacity-40">HRS</span></span>
                                 </div>
                                 <div className="pt-4 border-t border-white/5">
                                     <div className="flex items-center gap-3">
@@ -488,13 +514,13 @@ export default function RouteContentClient({
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-3">
                                 <div className="w-2 h-2 rounded-full bg-[#ff10f0] animate-ping" />
-                                <h2 className="text-[11px] font-black uppercase tracking-[0.25em] text-gray-300">Fast Comparison</h2>
+                                <h2 className="text-[11px] font-black uppercase tracking-[0.25em] text-gray-300">Economic Radar</h2>
                             </div>
-                            <span className="text-[9px] font-black text-[#ff10f0] uppercase tracking-widest bg-[#ff10f0]/10 px-2 py-1 rounded">Radar Feed</span>
+                            <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest bg-emerald-400/10 px-2 py-1 rounded">Lowest Ahead</span>
                         </div>
                         <div className="flex gap-5 overflow-x-auto pb-6 scrollbar-hide snap-x">
                             {data?.stops?.filter(s => s.status === 'OK').map((stop, i) => (
-                                <RadarCard key={i} stop={stop} offer={stop.bestOffer} is1AM={is1AM} />
+                                <RadarCard key={i} stop={stop} offer={stop.bestOffer} index={i} is1AM={is1AM} />
                             ))}
                         </div>
                     </section>

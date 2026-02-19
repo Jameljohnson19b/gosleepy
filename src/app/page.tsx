@@ -88,7 +88,7 @@ export default function LandingPage() {
         </h1>
 
         <p className="text-xl text-gray-400 mb-12">
-          Find the <span className="text-[#ff10f0] font-black">LOWEST PRICE</span> hospitality stays for tired travelers — <span className="text-white italic">FAST.</span>
+          Find the <span className="text-[#ff10f0] font-black uppercase">Low-Cost Stays</span> worth the stop — <span className="text-white italic">so you don't push too far or waste the trip budget.</span>
         </p>
 
         <div className="flex bg-[#111] p-1 rounded-xl mb-8 border border-white/5">
@@ -166,14 +166,14 @@ export default function LandingPage() {
             ) : (
               <>
                 <MapPin className="w-8 h-8" />
-                FIND ROOMS NEAR ME
+                FIND LOW-COST STOPS
               </>
             )}
           </button>
         ) : (
           <form onSubmit={handleRouteSearch} className="space-y-4">
             <div className="space-y-2 text-left">
-              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-4">Start City</label>
+              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-4">Origin</label>
               <input
                 required
                 type="text"
@@ -184,7 +184,7 @@ export default function LandingPage() {
               />
             </div>
             <div className="space-y-2 text-left">
-              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-4">End City</label>
+              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-4">Destination</label>
               <input
                 required
                 type="text"
@@ -204,7 +204,7 @@ export default function LandingPage() {
               ) : (
                 <>
                   <Zap className="w-8 h-8" />
-                  FIND STOPS ALONG ROUTE
+                  SCAN FOR LOW-COST STOPS
                 </>
               )}
             </button>
