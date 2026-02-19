@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import AuthButton from "./auth/AuthButton";
 
 export function SiteHeader() {
     const pathname = usePathname();
@@ -25,9 +26,11 @@ export function SiteHeader() {
                     <Link href="/results" className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-[#ff10f0] transition-colors">Find Rooms</Link>
                     <Link href="/safety" className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-[#ff10f0] transition-colors">Safety</Link>
                     <Link href="/support" className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-[#ff10f0] transition-colors">Support</Link>
+                    <AuthButton />
                 </nav>
 
-                <div className="md:hidden">
+                <div className="md:hidden flex items-center gap-4">
+                    <AuthButton />
                     {/* Mobile menu could go here, but keeping it minimalist for now */}
                     <div className="w-8 h-8" />
                 </div>

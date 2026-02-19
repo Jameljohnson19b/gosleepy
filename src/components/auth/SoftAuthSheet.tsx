@@ -13,16 +13,21 @@ export default function SoftAuthSheet({
     onClose: () => void;
     nextUrl: string;
 }) {
-    const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
     const [email, setEmail] = useState("");
     const [sent, setSent] = useState(false);
     const [loading, setLoading] = useState(false);
     const [err, setErr] = useState<string | null>(null);
 
     async function sendLink() {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+        if (!supabaseUrl || !supabaseAnonKey) {
+            setErr("Auth system unavailable. Please contact support.");
+            return;
+        }
+
+        const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
         setErr(null);
         setLoading(true);
         try {
