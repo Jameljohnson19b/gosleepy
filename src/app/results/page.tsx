@@ -73,7 +73,7 @@ function ResultsContent() {
                     </Link>
 
                     <div className="flex items-center gap-3 mx-auto">
-                        <img src="/logo.png" alt="" className="w-8 h-8 object-contain filter invert-[.5] sepia-[1] saturate-[5000%] hue-rotate-[290deg]" />
+                        <img src="/logo-sheep.png" alt="" className="w-10 h-10 object-contain drop-shadow-[0_0_10px_rgba(255,16,240,0.4)]" />
                         <div className="text-center">
                             <h1 className="text-[#ff10f0] font-black tracking-tighter text-2xl leading-none">GO SLEEPY</h1>
                             <p className="text-[10px] text-gray-400 uppercase tracking-[0.3em] font-bold">NEARBY</p>

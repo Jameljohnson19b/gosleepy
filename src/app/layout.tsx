@@ -19,17 +19,17 @@ export const metadata: Metadata = {
   description: "Roadside-optimized hotel booking for tired travelers. Find safe, highly-rated rooms nearby with Pay at Property convenience. 1AM mode enabled.",
   applicationName: "Go Sleepy",
   keywords: ["hotels nearby", "last minute hotels", "roadside hotels", "pay at property", "safe hotels", "go sleepy", "fast booking"],
-  authors: [{ name: "19B PROJECTS" }],
-  creator: "19B PROJECTS",
-  publisher: "19B PROJECTS",
+  authors: [{ name: "prpl. travel" }],
+  creator: "prpl. travel",
+  publisher: "prpl. travel",
   robots: {
     index: true,
     follow: true,
   },
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.png",
   },
   openGraph: {
     type: "website",

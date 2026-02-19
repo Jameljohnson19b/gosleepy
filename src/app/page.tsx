@@ -88,9 +88,9 @@ export default function LandingPage() {
             <div className="relative">
               <div className="absolute inset-0 blur-3xl bg-[#ff10f0]/30 animate-pulse-slow" />
               <img
-                src="/logo.png"
+                src="/logo-sheep.png"
                 alt="Go Sleepy Logo"
-                className="w-32 h-32 object-contain relative animate-pulse-slow"
+                className="w-40 h-40 object-contain relative animate-pulse-slow"
               />
             </div>
           </div>
@@ -199,7 +199,7 @@ export default function LandingPage() {
           <div>
             <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 rounded-full bg-[#ff10f0]/10 border border-[#ff10f0]/30 flex items-center justify-center">
-                <Info className="w-4 h-4 text-[#ff10f0]" />
+                <img src="/logo-sheep.png" alt="" className="w-10 h-10 object-contain drop-shadow-[0_0_10px_rgba(255,16,240,0.4)]" />
               </div>
               <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ff10f0]">About Us</h2>
             </div>

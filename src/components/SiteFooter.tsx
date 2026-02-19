@@ -79,7 +79,7 @@ export function SiteFooter() {
 
                 <div className="flex flex-col md:flex-row items-center justify-between pt-12 border-t border-white/5 gap-6">
                     <div className="text-[10px] text-gray-600 font-black uppercase tracking-widest">
-                        © {new Date().getFullYear()} 19B PROJECTS · ALL RIGHTS RESERVED
+                        © {new Date().getFullYear()} prpl. travel · ALL RIGHTS RESERVED
                     </div>
                     <div className="flex items-center gap-6">
                         <div className="h-1 w-1 rounded-full bg-gray-800" />
