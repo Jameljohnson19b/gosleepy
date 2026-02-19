@@ -6,13 +6,8 @@ export async function getOrSetGoSleepySessionId() {
     const existing = cookieStore.get("gs_session")?.value;
     if (existing) return existing;
 
-    const id = randomUUID();
-    cookieStore.set("gs_session", id, {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
-        path: "/",
-        maxAge: 60 * 60 * 24 * 30, // 30 days
-    });
-    return id;
+    // Fallback: This should ideally be handled by middleware
+    // but we return a random ID to prevent crashes if something prevents 
+    // middleware from running (like edge cases in some environments)
+    return randomUUID();
 }
