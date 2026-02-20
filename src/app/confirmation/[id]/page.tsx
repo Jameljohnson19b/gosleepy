@@ -23,7 +23,9 @@ function ConfirmationContent() {
         ? `https://maps.apple.com/?q=${encodeURIComponent(address)}`
         : "https://maps.apple.com";
 
-    const callLink = phone ? `tel:${phone}` : "#";
+    const callLink = phone
+        ? `tel:${phone}`
+        : `https://www.google.com/search?q=${encodeURIComponent(hotelName + " " + address + " phone number")}`;
 
     useEffect(() => {
         // Simulate loading
@@ -74,9 +76,13 @@ function ConfirmationContent() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 mb-8">
-                    <a href={callLink} className="btn-large bg-white text-black h-20 text-lg gap-3">
+                    <a
+                        href={callLink}
+                        target={phone ? undefined : "_blank"}
+                        className="btn-large bg-white text-black h-20 text-lg gap-3"
+                    >
                         <Phone className="w-6 h-6" />
-                        CALL HOTEL
+                        {phone ? 'CALL HOTEL' : 'FIND PHONE'}
                     </a>
                     <a href={navLink} className="btn-large bg-yellow-400 text-black h-20 text-lg gap-3">
                         <Navigation className="w-6 h-6" />
