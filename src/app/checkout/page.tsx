@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ShieldCheck, Zap, Lock } from "lucide-react";
 import Link from "next/link";
-
 import { Suspense } from "react";
+import { useResolvedPhone } from "@/hooks/usePhoneResolution";
 
 function CheckoutContent() {
     const router = useRouter();
@@ -27,6 +27,8 @@ function CheckoutContent() {
     const hotelAddress = searchParams.get("address") || "";
     const hotelLat = searchParams.get("lat") || "";
     const hotelLng = searchParams.get("lng") || "";
+
+    const { phone: resolvedPhone, resolving: resolvingPhone } = useResolvedPhone(hotelPhone, hotelName, hotelAddress);
 
     const [isVerifying, setIsVerifying] = useState(riskLabel === 'HIGH');
 
@@ -64,7 +66,7 @@ function CheckoutContent() {
 
             const data = await res.json();
             if (res.ok) {
-                const confirmUrl = `/confirmation/${data.id}?name=${encodeURIComponent(hotelName)}&amount=${amount}&address=${encodeURIComponent(hotelAddress)}&phone=${encodeURIComponent(hotelPhone)}&lat=${hotelLat}&lng=${hotelLng}`;
+                const confirmUrl = `/confirmation/${data.id}?name=${encodeURIComponent(hotelName)}&amount=${amount}&address=${encodeURIComponent(hotelAddress)}&phone=${encodeURIComponent(resolvedPhone || '')}&lat=${hotelLat}&lng=${hotelLng}`;
                 router.push(confirmUrl);
             } else {
                 alert("Booking failed: " + (data.error || "Unknown error"));
@@ -105,18 +107,18 @@ function CheckoutContent() {
                         <span className="text-[10px] font-black text-[#ff10f0] uppercase tracking-widest">Late Arrival Tip</span>
                         <span className="text-xs text-gray-400 font-medium">Call front desk to confirm 1AM check-in.</span>
                     </div>
-                    {hotelPhone ? (
-                        <a href={`tel:${hotelPhone}`} className="bg-[#ff10f0] text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase inline-block">
+                    {resolvingPhone ? (
+                        <span className="bg-[#ff10f0]/50 text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase inline-block animate-pulse">
+                            Resolving...
+                        </span>
+                    ) : resolvedPhone && !resolvedPhone.includes('Property') && resolvedPhone !== "5550123" && resolvedPhone !== "0" ? (
+                        <a href={`tel:${resolvedPhone}`} className="bg-[#ff10f0] text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase inline-block">
                             View Phone
                         </a>
                     ) : (
-                        <a
-                            href={`https://www.google.com/search?q=${encodeURIComponent(hotelName + " " + hotelAddress + " phone number")}`}
-                            target="_blank"
-                            className="bg-[#ff10f0] text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase inline-block"
-                        >
-                            Find Phone
-                        </a>
+                        <span className="bg-red-500/50 text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase inline-block cursor-not-allowed">
+                            Unlisted
+                        </span>
                     )}
                 </div>
             )}

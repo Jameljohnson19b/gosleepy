@@ -6,6 +6,7 @@ import { Offer } from "@/types/hotel";
 import { ArrowLeft, Star, MapPin, ShieldCheck, Clock, Phone, Navigation, Zap } from "lucide-react";
 import Link from "next/link";
 import { PriceTrendBar } from "@/components/PriceTrendBar";
+import { useResolvedPhone } from "@/hooks/usePhoneResolution";
 
 export default function HotelDetailsPage() {
     const { id } = useParams();
@@ -24,6 +25,8 @@ export default function HotelDetailsPage() {
     const duration = parseInt(searchParams.get("duration") || "1");
 
     const hasOfficialMedia = searchParams.get("official") === "true";
+    const { phone: resolvedPhone, resolving: resolvingPhone } = useResolvedPhone(passedPhone, passedName, passedAddress);
+
     const [offer, setOffer] = useState<Offer | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -62,13 +65,13 @@ export default function HotelDetailsPage() {
             ]
         });
         setLoading(false);
-    }, [id, passedName, passedAmount, passedAddress, passedRating, passedStars, passedPhone, lat, lng, hasOfficialMedia]);
+    }, [id, passedName, passedAmount, passedAddress, passedRating, passedStars, resolvedPhone, lat, lng, hasOfficialMedia]);
 
     if (loading) return null;
     if (!offer) return <div>Hotel not found</div>;
 
     const checkoutUrl = (rateId: string, amount: number) =>
-        `/checkout?hotelId=${offer.hotelId}&rateId=${rateId}&risk=${riskLabel}&hotelName=${encodeURIComponent(offer.hotelName)}&amount=${amount}&address=${encodeURIComponent(offer.address || '')}&phone=${encodeURIComponent(offer.hotelPhone || '')}&lat=${offer.lat}&lng=${offer.lng}`;
+        `/checkout?hotelId=${offer.hotelId}&rateId=${rateId}&risk=${riskLabel}&hotelName=${encodeURIComponent(offer.hotelName)}&amount=${amount}&address=${encodeURIComponent(offer.address || '')}&phone=${encodeURIComponent(resolvedPhone || '')}&lat=${offer.lat}&lng=${offer.lng}`;
 
     return (
         <main className="min-h-screen bg-black text-white">
@@ -158,26 +161,28 @@ export default function HotelDetailsPage() {
 
                 {/* Quick Actions */}
                 <div className="grid grid-cols-2 gap-4">
-                    {offer.hotelPhone && !offer.hotelPhone.includes('Property') ? (
-                        <a href={`tel:${offer.hotelPhone}`} className="group flex flex-col items-center justify-center p-6 bg-[#111] rounded-3xl border border-gray-800 hover:border-[#ff10f0]/50 active:scale-95 transition-all">
-                            <div className="w-12 h-12 rounded-2xl bg-[#ff10f0]/10 flex items-center justify-center mb-3 group-hover:bg-[#ff10f0]/20 transition-colors">
-                                <Phone className="w-6 h-6 text-[#ff10f0]" />
+                    {resolvingPhone ? (
+                        <div className="group flex flex-col items-center justify-center p-6 bg-[#111] rounded-3xl border border-gray-800 transition-all">
+                            <div className="w-12 h-12 rounded-2xl bg-[#ff10f0]/10 flex items-center justify-center mb-3">
+                                <Zap className="w-6 h-6 text-[#ff10f0] animate-spin" />
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-[#ff10f0] animate-pulse">Resolving Number...</span>
+                        </div>
+                    ) : resolvedPhone && !resolvedPhone.includes('Property') && resolvedPhone !== "5550123" && resolvedPhone !== "0" ? (
+                        <a href={`tel:${resolvedPhone}`} className="group flex flex-col items-center justify-center p-6 bg-[#111] rounded-3xl border border-emerald-400/20 hover:border-emerald-400/50 active:scale-95 transition-all">
+                            <div className="w-12 h-12 rounded-2xl bg-emerald-400/10 flex items-center justify-center mb-3 group-hover:bg-emerald-400/20 transition-colors">
+                                <Phone className="w-6 h-6 text-emerald-400" />
                             </div>
                             <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Call Hotel</span>
-                            <span className="text-[10px] font-black text-[#ff10f0] mt-1 tracking-tighter">{offer.hotelPhone}</span>
+                            <span className="text-[10px] font-black text-emerald-400 mt-1 tracking-tighter">{resolvedPhone}</span>
                         </a>
                     ) : (
-                        <a
-                            href={`https://www.google.com/search?q=${encodeURIComponent(offer.hotelName + " " + offer.address + " phone number")}`}
-                            target="_blank"
-                            className="group flex flex-col items-center justify-center p-6 bg-[#111] rounded-3xl border border-gray-800 hover:border-blue-500/50 active:scale-95 transition-all text-center"
-                        >
-                            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-3 group-hover:bg-blue-500/20 transition-colors">
-                                <Phone className="w-6 h-6 text-blue-400" />
+                        <div className="group flex flex-col items-center justify-center p-6 bg-[#111] rounded-3xl border border-red-500/20 text-center opacity-75">
+                            <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center mb-3">
+                                <Phone className="w-6 h-6 text-red-500" />
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Find Number</span>
-                            <span className="text-[10px] font-black text-blue-400 mt-1 tracking-tighter">Search on Google</span>
-                        </a>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-red-500">Unlisted Number</span>
+                        </div>
                     )}
                     <a href={`https://maps.apple.com/?q=${offer.address}`} className="group flex flex-col items-center justify-center p-6 bg-[#111] rounded-3xl border border-gray-800 hover:border-[#ff10f0]/50 active:scale-95 transition-all">
                         <div className="w-12 h-12 rounded-2xl bg-[#ff10f0]/10 flex items-center justify-center mb-3 group-hover:bg-[#ff10f0]/20 transition-colors">

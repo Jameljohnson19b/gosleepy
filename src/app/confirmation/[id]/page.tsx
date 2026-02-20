@@ -5,6 +5,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, Phone, Navigation, Share2, ArrowLeft, Info, Zap } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
+import { useResolvedPhone } from "@/hooks/usePhoneResolution";
 
 function ConfirmationContent() {
     const { id } = useParams();
@@ -23,9 +24,11 @@ function ConfirmationContent() {
         ? `https://maps.apple.com/?q=${encodeURIComponent(address)}`
         : "https://maps.apple.com";
 
-    const callLink = phone
-        ? `tel:${phone}`
-        : `https://www.google.com/search?q=${encodeURIComponent(hotelName + " " + address + " phone number")}`;
+    const { phone: resolvedPhone, resolving: resolvingPhone } = useResolvedPhone(phone, hotelName, address);
+
+    const callLink = resolvedPhone && resolvedPhone !== "5550123" && resolvedPhone !== "0"
+        ? `tel:${resolvedPhone}`
+        : "#";
 
     useEffect(() => {
         // Simulate loading
@@ -76,14 +79,22 @@ function ConfirmationContent() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 mb-8">
-                    <a
-                        href={callLink}
-                        target={phone ? undefined : "_blank"}
-                        className="btn-large bg-white text-black h-20 text-lg gap-3"
-                    >
-                        <Phone className="w-6 h-6" />
-                        {phone ? 'CALL HOTEL' : 'FIND PHONE'}
-                    </a>
+                    {resolvingPhone ? (
+                        <div className="btn-large bg-gray-200 text-gray-500 h-20 text-lg gap-3 animate-pulse cursor-not-allowed">
+                            <Zap className="w-6 h-6 animate-spin text-gray-400" />
+                            RESOLVING...
+                        </div>
+                    ) : resolvedPhone && resolvedPhone !== "5550123" && resolvedPhone !== "0" && !resolvedPhone.includes('Property') ? (
+                        <a href={callLink} className="btn-large bg-white text-black h-20 text-lg gap-3">
+                            <Phone className="w-6 h-6" />
+                            CALL HOTEL
+                        </a>
+                    ) : (
+                        <div className="btn-large bg-red-500/10 text-red-500 border border-red-500/20 h-20 text-lg gap-3 cursor-not-allowed">
+                            <Phone className="w-6 h-6" />
+                            UNLISTED
+                        </div>
+                    )}
                     <a href={navLink} className="btn-large bg-yellow-400 text-black h-20 text-lg gap-3">
                         <Navigation className="w-6 h-6" />
                         NAVIGATE
