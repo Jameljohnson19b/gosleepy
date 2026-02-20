@@ -1,14 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { CheckCircle2, Phone, Navigation, Share2, ArrowLeft, Info } from "lucide-react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { CheckCircle2, Phone, Navigation, Share2, ArrowLeft, Info, Zap } from "lucide-react";
 import Link from "next/link";
+import { Suspense } from "react";
 
-export default function ConfirmationPage() {
+function ConfirmationContent() {
     const { id } = useParams();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [loading, setLoading] = useState(true);
+
+    const hotelName = searchParams.get("name") || "The Roadside Inn";
+    const amount = searchParams.get("amount") || "89.00";
+    const address = searchParams.get("address") || "123 Highway Ave, Richmond, VA";
+    const phone = searchParams.get("phone") || "5550123";
+    const lat = searchParams.get("lat") || "0";
+    const lng = searchParams.get("lng") || "0";
+
+    const navLink = lat && lng && lat !== "0"
+        ? `https://maps.apple.com/?q=${encodeURIComponent(address)}`
+        : "https://maps.apple.com";
+
+    const callLink = phone ? `tel:${phone}` : "#";
 
     useEffect(() => {
         // Simulate loading
@@ -37,14 +52,14 @@ export default function ConfirmationPage() {
                         <CheckCircle2 className="w-16 h-16 fill-black/10" />
                     </div>
                     <h1 className="text-4xl font-black tracking-tighter uppercase leading-none mb-2">Room Secured</h1>
-                    <p className="font-bold text-black/60 uppercase tracking-widest text-sm">Confirmation #CONF-789</p>
+                    <p className="font-bold text-black/60 uppercase tracking-widest text-sm">Confirmation #{id?.toString().slice(0, 8).toUpperCase() || 'CONF-789'}</p>
                 </div>
             </div>
 
             <div className="p-6 -mt-8 relative z-20">
                 <div className="bg-[#111] border border-gray-800 rounded-3xl p-6 shadow-2xl mb-8">
-                    <h2 className="text-xl font-black uppercase tracking-tighter mb-1">The Roadside Inn</h2>
-                    <p className="text-sm text-gray-500 font-medium mb-6">123 Highway Ave, Richmond, VA</p>
+                    <h2 className="text-xl font-black uppercase tracking-tighter mb-1">{hotelName}</h2>
+                    <p className="text-sm text-gray-500 font-medium mb-6">{address}</p>
 
                     <div className="grid grid-cols-2 gap-4 border-t border-gray-900 pt-6">
                         <div>
@@ -59,11 +74,11 @@ export default function ConfirmationPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 mb-8">
-                    <a href="tel:5550123" className="btn-large bg-white text-black h-20 text-lg gap-3">
+                    <a href={callLink} className="btn-large bg-white text-black h-20 text-lg gap-3">
                         <Phone className="w-6 h-6" />
                         CALL HOTEL
                     </a>
-                    <a href="https://maps.apple.com" className="btn-large bg-yellow-400 text-black h-20 text-lg gap-3">
+                    <a href={navLink} className="btn-large bg-yellow-400 text-black h-20 text-lg gap-3">
                         <Navigation className="w-6 h-6" />
                         NAVIGATE
                     </a>
@@ -75,7 +90,7 @@ export default function ConfirmationPage() {
                         <div>
                             <h3 className="text-sm font-black text-blue-400 uppercase tracking-widest mb-1">Pay at Front Desk</h3>
                             <p className="text-xs text-gray-400 leading-relaxed font-medium">
-                                Show your ID at check-in. The total due is <span className="text-white">$89.00</span>. Your room is held until 6 AM tomorrow.
+                                Show your ID at check-in. The total due is <span className="text-white">${parseFloat(amount).toFixed(2)}</span>. Your room is held until 6 AM tomorrow.
                             </p>
                         </div>
                     </div>
@@ -101,5 +116,17 @@ export default function ConfirmationPage() {
                 </div>
             </div>
         </main>
+    );
+}
+
+export default function ConfirmationPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <Zap className="w-12 h-12 text-[#ff10f0] animate-spin" />
+            </div>
+        }>
+            <ConfirmationContent />
+        </Suspense>
     );
 }

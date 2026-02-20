@@ -23,6 +23,10 @@ function CheckoutContent() {
     const riskLabel = searchParams.get("risk") || "LOW";
     const hotelName = searchParams.get("hotelName") || "The Roadside Inn";
     const amount = parseFloat(searchParams.get("amount") || "89.00");
+    const hotelPhone = searchParams.get("phone") || "";
+    const hotelAddress = searchParams.get("address") || "";
+    const hotelLat = searchParams.get("lat") || "";
+    const hotelLng = searchParams.get("lng") || "";
 
     const [isVerifying, setIsVerifying] = useState(riskLabel === 'HIGH');
 
@@ -60,7 +64,8 @@ function CheckoutContent() {
 
             const data = await res.json();
             if (res.ok) {
-                router.push(`/confirmation/${data.id}`);
+                const confirmUrl = `/confirmation/${data.id}?name=${encodeURIComponent(hotelName)}&amount=${amount}&address=${encodeURIComponent(hotelAddress)}&phone=${encodeURIComponent(hotelPhone)}&lat=${hotelLat}&lng=${hotelLng}`;
+                router.push(confirmUrl);
             } else {
                 alert("Booking failed: " + (data.error || "Unknown error"));
             }
@@ -100,9 +105,19 @@ function CheckoutContent() {
                         <span className="text-[10px] font-black text-[#ff10f0] uppercase tracking-widest">Late Arrival Tip</span>
                         <span className="text-xs text-gray-400 font-medium">Call front desk to confirm 1AM check-in.</span>
                     </div>
-                    <button className="bg-[#ff10f0] text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase">
-                        View Phone
-                    </button>
+                    {hotelPhone ? (
+                        <a href={`tel:${hotelPhone}`} className="bg-[#ff10f0] text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase inline-block">
+                            View Phone
+                        </a>
+                    ) : (
+                        <a
+                            href={`https://www.google.com/search?q=${encodeURIComponent(hotelName + " " + hotelAddress + " phone number")}`}
+                            target="_blank"
+                            className="bg-[#ff10f0] text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase inline-block"
+                        >
+                            Find Phone
+                        </a>
+                    )}
                 </div>
             )}
 

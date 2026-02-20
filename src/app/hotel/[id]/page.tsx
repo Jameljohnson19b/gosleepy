@@ -68,7 +68,7 @@ export default function HotelDetailsPage() {
     if (!offer) return <div>Hotel not found</div>;
 
     const checkoutUrl = (rateId: string, amount: number) =>
-        `/checkout?hotelId=${offer.hotelId}&rateId=${rateId}&risk=${riskLabel}&hotelName=${encodeURIComponent(offer.hotelName)}&amount=${amount}`;
+        `/checkout?hotelId=${offer.hotelId}&rateId=${rateId}&risk=${riskLabel}&hotelName=${encodeURIComponent(offer.hotelName)}&amount=${amount}&address=${encodeURIComponent(offer.address || '')}&phone=${encodeURIComponent(offer.hotelPhone || '')}&lat=${offer.lat}&lng=${offer.lng}`;
 
     return (
         <main className="min-h-screen bg-black text-white">
