@@ -13,17 +13,47 @@ function ResultsContent() {
     const searchParams = useSearchParams();
     const [offers, setOffers] = useState<Offer[]>([]);
     const [loading, setLoading] = useState(true);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-    const lat = searchParams.get("lat");
-    const lng = searchParams.get("lng");
+    const [lat, setLat] = useState<string | null>(searchParams.get("lat"));
+    const [lng, setLng] = useState<string | null>(searchParams.get("lng"));
     const [radius, setRadius] = useState(parseInt(searchParams.get("radius") || "10"));
 
     const bookingTime = searchParams.get("bookingTime") || "now";
     const duration = parseInt(searchParams.get("duration") || "1");
 
     useEffect(() => {
+        if (!lat || !lng) {
+            if (typeof window !== 'undefined' && "geolocation" in navigator) {
+                setLoading(true);
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const newLat = position.coords.latitude.toString();
+                        const newLng = position.coords.longitude.toString();
+                        setLat(newLat);
+                        setLng(newLng);
+                        const newUrl = new URL(window.location.href);
+                        newUrl.searchParams.set("lat", newLat);
+                        newUrl.searchParams.set("lng", newLng);
+                        window.history.replaceState(null, '', newUrl.toString());
+                    },
+                    (error) => {
+                        console.error("Geolocation error:", error);
+                        setLoading(false);
+                        setErrorMsg("We need your location to find nearby hotels. Please enable location services or return to the home screen to enter a city manually.");
+                    },
+                    { timeout: 10000, maximumAge: 60000 }
+                );
+            } else {
+                setLoading(false);
+                setErrorMsg("Location services are not available on this device.");
+            }
+            return;
+        }
+
         async function fetchOffers() {
             setLoading(true);
+            setErrorMsg(null);
             try {
                 // Dynamic Date Calculation
                 const now = new Date();
@@ -54,14 +84,13 @@ function ResultsContent() {
                 setOffers(data.offers || []);
             } catch (error) {
                 console.error("Search failed:", error);
+                setErrorMsg("Failed to connect to the supplier network. Please try again.");
             } finally {
                 setLoading(false);
             }
         }
 
-        if (lat && lng) {
-            fetchOffers();
-        }
+        fetchOffers();
     }, [lat, lng, radius, bookingTime, duration]);
 
     return (
@@ -110,6 +139,19 @@ function ResultsContent() {
                     <Zap className="w-12 h-12 text-[#ff10f0] animate-spin" />
                     <p className="text-gray-400 font-bold uppercase tracking-widest text-xs italic">Finding the cheapest hotels nearby...</p>
                 </div>
+            ) : errorMsg ? (
+                <div className="flex flex-col items-center justify-center py-24 gap-6 px-6 text-center">
+                    <div className="w-20 h-20 rounded-full bg-red-500/10 flex items-center justify-center border border-red-500/20">
+                        <Zap className="w-10 h-10 text-red-500" />
+                    </div>
+                    <div>
+                        <h2 className="text-2xl font-black uppercase tracking-tighter mb-2">Location Required</h2>
+                        <p className="text-gray-500 text-sm max-w-sm mx-auto">{errorMsg}</p>
+                    </div>
+                    <Link href="/" className="px-8 py-4 mt-4 bg-[#ff10f0] text-white font-black uppercase tracking-widest text-xs rounded-2xl shadow-[0_0_20px_rgba(255,16,240,0.4)]">
+                        Return to Search
+                    </Link>
+                </div>
             ) : (
                 <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 pb-20">
                     {offers.length > 0 ? (
@@ -117,7 +159,7 @@ function ResultsContent() {
                             <HotelCard key={offer.hotelId} offer={offer} duration={duration} />
                         ))
                     ) : (
-                        <div className="text-center py-20">
+                        <div className="text-center py-20 col-span-full">
                             <p className="text-gray-400">No rooms found in this area tonight.</p>
                         </div>
                     )}
