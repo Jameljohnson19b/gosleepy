@@ -2,6 +2,14 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
+    // Intercept Supabase Auth magic links that fallback to the site root
+    // Supabase often strips the /auth/callback path if it's not strictly matched in the dashboard Redirect URLs
+    if (request.nextUrl.searchParams.has('code') && request.nextUrl.pathname !== '/auth/callback') {
+        const authUrl = request.nextUrl.clone();
+        authUrl.pathname = '/auth/callback';
+        return NextResponse.redirect(authUrl);
+    }
+
     let sessionId = request.cookies.get('gs_session')?.value;
     let response = NextResponse.next();
 
