@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { HotelCard } from "@/components/HotelCard";
 import { Offer } from "@/types/hotel";
-import { Zap, ArrowLeft, MapPin, Flag, Info } from "lucide-react";
+import { Zap, ArrowLeft, MapPin, Flag, Info, Grid, List as ListIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import SoftAuthSheet from "@/components/auth/SoftAuthSheet";
@@ -80,7 +80,7 @@ function RadarCard({ stop, offer, index, is1AM }: { stop: RouteStop; offer?: Off
     );
 }
 
-function RouteStopComponent({ index, stop, duration, radius, is1AM }: { index: number; stop: RouteStop; duration: number; radius: number; is1AM: boolean }) {
+function RouteStopComponent({ index, stop, duration, radius, is1AM, viewMode = 'grid' }: { index: number; stop: RouteStop; duration: number; radius: number; is1AM: boolean; viewMode?: 'grid' | 'list' }) {
     const mainOffer = stop.bestOffer;
     const allOffers = stop.offers || (mainOffer ? [mainOffer] : []);
     const hasOffers = allOffers.length > 0;
@@ -102,7 +102,7 @@ function RouteStopComponent({ index, stop, duration, radius, is1AM }: { index: n
                 </div>
 
                 {hasOffers ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className={viewMode === 'list' ? 'flex flex-col gap-6' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'}>
                         {allOffers.map((offer, i) => {
                             const price = offer.rates?.[0]?.totalAmount;
                             const currency = offer.rates?.[0]?.currency ?? "USD";
@@ -118,7 +118,7 @@ function RouteStopComponent({ index, stop, duration, radius, is1AM }: { index: n
                                             <span className="text-[8px] font-black text-emerald-400 uppercase tracking-widest animate-pulse">Lowest</span>
                                         )}
                                     </div>
-                                    <HotelCard offer={offer} duration={duration} />
+                                    <HotelCard offer={offer} duration={duration} viewMode={viewMode} />
                                     <button className={`w-full ${isBest ? 'bg-[#ff10f0] shadow-[0_0_20px_rgba(255,16,240,0.3)]' : 'bg-white/10'} text-white font-black uppercase tracking-widest py-3 rounded-xl hover:scale-[1.02] transition-all text-[10px]`}>
                                         {isBest ? 'Reserve Best Rate' : 'View Mission'}
                                     </button>
@@ -301,6 +301,7 @@ export default function RouteContentClient({
     const [data, setData] = useState<RouteResults | null>(null);
     const [loading, setLoading] = useState(true);
     const [is1AM, setIs1AM] = useState(false);
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
     // Auth Intent State
     const [authSheetOpen, setAuthSheetOpen] = useState(false);
@@ -568,8 +569,26 @@ export default function RouteContentClient({
 
                     {/* Detailed Route Intelligence */}
                     <section className="space-y-4 relative pb-20">
+                        <div className="flex items-center justify-between mb-8">
+                            <h2 className="text-[11px] font-black uppercase tracking-[0.25em] text-gray-300">Detailed Route Intelligence</h2>
+                            <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 gap-0.5 z-10 relative">
+                                <button
+                                    onClick={() => setViewMode('grid')}
+                                    className={`p-1.5 rounded-lg transition-all ${viewMode === 'grid' ? "bg-[#ff10f0] text-white shadow-[0_0_15px_rgba(255,16,240,0.4)]" : "text-gray-500 hover:text-white"}`}
+                                >
+                                    <Grid className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('list')}
+                                    className={`p-1.5 rounded-lg transition-all ${viewMode === 'list' ? "bg-[#ff10f0] text-white shadow-[0_0_15px_rgba(255,16,240,0.4)]" : "text-gray-500 hover:text-white"}`}
+                                >
+                                    <ListIcon className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+
                         {/* The High-Speed Trace Line */}
-                        <div className={`absolute left-[23px] top-6 bottom-6 w-[2px] ${is1AM ? 'bg-gradient-to-b from-[#ff10f0] via-[#ff10f0]/40 to-emerald-400' : 'bg-gray-800'} opacity-30`} />
+                        <div className={`absolute left-[23px] top-[72px] bottom-6 w-[2px] ${is1AM ? 'bg-gradient-to-b from-[#ff10f0] via-[#ff10f0]/40 to-emerald-400' : 'bg-gray-800'} opacity-30`} />
 
                         {/* Starting Location */}
                         <div className="relative pl-16 mb-12">
@@ -591,6 +610,7 @@ export default function RouteContentClient({
                                 duration={duration}
                                 radius={radius}
                                 is1AM={is1AM}
+                                viewMode={viewMode}
                             />
                         ))}
 

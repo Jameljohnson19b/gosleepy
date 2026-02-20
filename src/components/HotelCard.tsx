@@ -8,16 +8,17 @@ import { PriceTrendBar } from "./PriceTrendBar";
 interface HotelCardProps {
     offer: Offer;
     duration?: number;
+    viewMode?: 'grid' | 'list';
 }
 
-export function HotelCard({ offer, duration = 1 }: HotelCardProps) {
+export function HotelCard({ offer, duration = 1, viewMode = 'grid' }: HotelCardProps) {
     const lowestRate = offer.rates[0];
     const is1AM = typeof window !== 'undefined' && (new Date().getHours() >= 23 || new Date().getHours() <= 4);
 
     return (
         <Link
             href={`/hotel/${offer.hotelId}?risk=${offer.supportRisk?.label || 'LOW'}&name=${encodeURIComponent(offer.hotelName)}&amount=${lowestRate.totalAmount}&address=${encodeURIComponent(offer.address || '')}&rating=${offer.rating || ''}&stars=${offer.stars || ''}&phone=${encodeURIComponent(offer.hotelPhone || '')}&lat=${offer.lat}&lng=${offer.lng}&official=${offer.hasOfficialMedia}&duration=${duration}`}
-            className={`block group bg-[#111] border ${is1AM ? 'border-[#ff10f0]/30' : 'border-gray-800'} rounded-2xl lg:rounded-3xl overflow-hidden active:scale-[0.98] transition-all hover:border-[#ff10f0]/60 relative`}
+            className={`group bg-[#111] border ${is1AM ? 'border-[#ff10f0]/30' : 'border-gray-800'} rounded-2xl lg:rounded-3xl overflow-hidden active:scale-[0.98] transition-all hover:border-[#ff10f0]/60 relative ${viewMode === 'list' ? 'flex flex-row' : 'block'}`}
         >
             {is1AM && (
                 <div className="absolute top-0 right-0 px-3 py-1 bg-[#ff10f0] text-white text-[8px] font-black uppercase tracking-widest z-10 rounded-bl-xl shadow-lg animate-pulse">
@@ -25,7 +26,7 @@ export function HotelCard({ offer, duration = 1 }: HotelCardProps) {
                 </div>
             )}
 
-            <div className="relative h-28 lg:h-44 w-full border-b border-gray-800">
+            <div className={`relative ${viewMode === 'list' ? 'w-2/5 shrink-0 border-r border-gray-800' : 'h-28 lg:h-44 w-full border-b border-gray-800'}`}>
                 <img
                     src={offer.images?.[0] || "/hotel-placeholder.jpg"}
                     alt={offer.hotelName}
@@ -55,16 +56,16 @@ export function HotelCard({ offer, duration = 1 }: HotelCardProps) {
                 )}
             </div>
 
-            <div className="p-4 lg:p-6">
-                <div className="flex justify-between items-start mb-3">
-                    <h3 className="text-base lg:text-lg font-black tracking-tighter leading-[1.1] uppercase group-hover:text-[#ff10f0] transition-colors">
+            <div className={`p-4 lg:p-6 ${viewMode === 'list' ? 'flex-1 flex flex-col justify-between overflow-hidden' : ''}`}>
+                <div className={`flex justify-between items-start ${viewMode === 'list' ? 'mb-1' : 'mb-3'}`}>
+                    <h3 className={`font-black tracking-tighter leading-[1.1] uppercase group-hover:text-[#ff10f0] transition-colors ${viewMode === 'list' ? 'text-sm lg:text-base truncate' : 'text-base lg:text-lg'}`}>
                         {offer.hotelName}
                     </h3>
                 </div>
 
-                <div className="flex items-end justify-between mb-4">
+                <div className={`flex items-end justify-between ${viewMode === 'list' ? 'mb-2 mt-4' : 'mb-4'}`}>
                     <div className="flex flex-col">
-                        <div className="text-2xl lg:text-3xl font-black text-white leading-none tracking-tighter">
+                        <div className={`${viewMode === 'list' ? 'text-xl lg:text-2xl' : 'text-2xl lg:text-3xl'} font-black text-white leading-none tracking-tighter`}>
                             ${lowestRate.totalAmount}
                         </div>
                         <div className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">
@@ -79,7 +80,7 @@ export function HotelCard({ offer, duration = 1 }: HotelCardProps) {
                 </div>
 
                 {/* Intelligence Layer */}
-                <div className="flex flex-wrap items-center gap-2 pt-4 border-t border-gray-900">
+                <div className={`flex flex-wrap items-center gap-2 ${viewMode === 'list' ? 'pt-2' : 'pt-4'} border-t border-gray-900`}>
                     <div className="flex items-center gap-1.5 text-blue-400 font-bold text-[9px] uppercase tracking-tighter">
                         <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
                         Pay at the hotel

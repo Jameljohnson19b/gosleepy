@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { HotelCard } from "@/components/HotelCard";
 import { Offer } from "@/types/hotel";
-import { Moon, Zap, ArrowLeft } from "lucide-react";
+import { Moon, Zap, ArrowLeft, Grid, List as ListIcon } from "lucide-react";
 import Link from "next/link";
 
 import { Suspense } from "react";
@@ -18,6 +18,7 @@ function ResultsContent() {
     const [lat, setLat] = useState<string | null>(searchParams.get("lat"));
     const [lng, setLng] = useState<string | null>(searchParams.get("lng"));
     const [radius, setRadius] = useState(parseInt(searchParams.get("radius") || "10"));
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
     const bookingTime = searchParams.get("bookingTime") || "now";
     const duration = parseInt(searchParams.get("duration") || "1");
@@ -120,16 +121,34 @@ function ResultsContent() {
                             <span className="font-black">LOWEST PRICE TODAY</span> · {bookingTime === 'now' ? 'Tonight' : 'Tomorrow'} · {duration} {duration === 1 ? 'Night' : 'Nights'}
                         </div>
                     </div>
-                    <div className="flex bg-[#111] p-1 rounded-xl border border-white/5 gap-1">
-                        {[10, 25, 50].map((r) => (
+                    <div className="flex items-center gap-3">
+                        {/* View Toggle */}
+                        <div className="flex bg-[#111] p-1 rounded-xl border border-white/5 gap-0.5">
                             <button
-                                key={r}
-                                onClick={() => setRadius(r)}
-                                className={`py-1.5 px-4 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all ${radius === r ? "bg-[#ff10f0] text-white shadow-[0_0_15px_rgba(255,16,240,0.4)]" : "text-gray-500 hover:text-white"}`}
+                                onClick={() => setViewMode('grid')}
+                                className={`p-1.5 rounded-lg transition-all ${viewMode === 'grid' ? "bg-[#ff10f0] text-white shadow-[0_0_15px_rgba(255,16,240,0.4)]" : "text-gray-500 hover:text-white"}`}
                             >
-                                {r}mi
+                                <Grid className="w-4 h-4" />
                             </button>
-                        ))}
+                            <button
+                                onClick={() => setViewMode('list')}
+                                className={`p-1.5 rounded-lg transition-all ${viewMode === 'list' ? "bg-[#ff10f0] text-white shadow-[0_0_15px_rgba(255,16,240,0.4)]" : "text-gray-500 hover:text-white"}`}
+                            >
+                                <ListIcon className="w-4 h-4" />
+                            </button>
+                        </div>
+                        {/* Radius Toggle */}
+                        <div className="flex bg-[#111] p-1 rounded-xl border border-white/5 gap-1">
+                            {[10, 25, 50].map((r) => (
+                                <button
+                                    key={r}
+                                    onClick={() => setRadius(r)}
+                                    className={`py-1.5 px-4 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all ${radius === r ? "bg-[#ff10f0] text-white shadow-[0_0_15px_rgba(255,16,240,0.4)]" : "text-gray-500 hover:text-white"}`}
+                                >
+                                    {r}mi
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </header>
@@ -153,10 +172,10 @@ function ResultsContent() {
                     </Link>
                 </div>
             ) : (
-                <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 pb-20">
+                <div className={`max-w-7xl mx-auto ${viewMode === 'grid' ? 'grid grid-cols-2 lg:grid-cols-4' : 'flex flex-col'} gap-4 lg:gap-6 pb-20`}>
                     {offers.length > 0 ? (
                         offers.map((offer) => (
-                            <HotelCard key={offer.hotelId} offer={offer} duration={duration} />
+                            <HotelCard key={offer.hotelId} offer={offer} duration={duration} viewMode={viewMode} />
                         ))
                     ) : (
                         <div className="text-center py-20 col-span-full">
