@@ -119,11 +119,10 @@ export default function LandingPage() {
         <div className="z-10 max-w-2xl w-full">
           <div className="flex justify-center mb-0">
             <div className="relative">
-              <div className="absolute inset-0 blur-3xl bg-[#ff10f0]/20 animate-pulse-slow rounded-full" />
               <img
                 src="/logo-main.png"
                 alt="Go Sleepy Logo"
-                className="h-44 w-auto object-contain relative animate-pulse-slow drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)]"
+                className="h-44 w-auto object-contain relative drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)]"
               />
             </div>
           </div>
@@ -300,7 +299,7 @@ export default function LandingPage() {
                 <img
                   src="/logo-main.png"
                   alt=""
-                  className="w-16 h-16 object-contain drop-shadow-[0_0_10px_rgba(255,16,240,0.4)]"
+                  className="w-16 h-16 object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]"
                 />
               </div>
               <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ff10f0]">
@@ -394,6 +393,6 @@ export default function LandingPage() {
           <span className="text-[10px] font-black uppercase tracking-[0.4em]">Go Sleepy v1.02</span>
         </div>
       </div>
-    </main>
+    </main >
   );
 }
