@@ -117,14 +117,13 @@ export default function LandingPage() {
 
         {/* Content - Shifted lower to unblock the view */}
         <div className="z-10 max-w-2xl w-full">
-          {/* Brand - Transparent Blend Mode */}
           <div className="flex justify-center mb-0">
             <div className="relative">
-              <div className="absolute inset-0 blur-3xl bg-[#ff10f0]/30 animate-pulse-slow" />
+              <div className="absolute inset-0 blur-3xl bg-[#ff10f0]/20 animate-pulse-slow rounded-full" />
               <img
                 src="/logo-main.png"
                 alt="Go Sleepy Logo"
-                className="h-44 w-auto object-contain relative mix-blend-screen animate-pulse-slow drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)]"
+                className="h-44 w-auto object-contain relative animate-pulse-slow drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)]"
               />
             </div>
           </div>

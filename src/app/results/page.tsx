@@ -102,9 +102,9 @@ function ResultsContent() {
                         <ArrowLeft className="w-8 h-8 text-gray-400 hover:text-[#ff10f0] transition-colors" />
                     </Link>
 
-                    <div className="flex items-center mx-auto">
-                        <img src="/logo-horizontal.png" alt="Go Sleepy" className="h-8 w-auto object-contain drop-shadow-[0_0_10px_rgba(255,16,240,0.4)]" />
-                        <span className="text-[10px] text-gray-550 uppercase tracking-[0.3em] font-black italic ml-3 mt-4">NEARBY</span>
+                    <div className="flex items-center mx-auto scale-90">
+                        <img src="/logo-horizontal.png" alt="Go Sleepy" className="h-7 w-auto object-contain drop-shadow-[0_0_5px_rgba(255,255,255,0.1)]" />
+                        <span className="text-[10px] text-gray-500 uppercase tracking-[0.3em] font-black italic ml-3 mt-3">NEARBY</span>
                     </div>
                 </div>
 
