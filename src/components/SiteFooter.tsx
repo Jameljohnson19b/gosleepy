@@ -78,8 +78,9 @@ export function SiteFooter() {
                 </div>
 
                 <div className="flex flex-col md:flex-row items-center justify-between pt-12 border-t border-white/5 gap-6">
-                    <div className="text-[10px] text-gray-600 font-black uppercase tracking-widest">
-                        © {new Date().getFullYear()} prpl. travel · ALL RIGHTS RESERVED
+                    <div className="text-[10px] text-gray-600 font-black uppercase tracking-widest text-center md:text-left">
+                        © {new Date().getFullYear()} prpl. travel · ALL RIGHTS RESERVED <br />
+                        <span className="text-gray-700 mt-2 block">Powered by Amadeus</span>
                     </div>
                     <div className="flex items-center gap-6">
                         <div className="h-1 w-1 rounded-full bg-gray-800" />

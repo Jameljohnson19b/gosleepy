@@ -1,7 +1,7 @@
 import LegalLayout from "@/components/LegalLayout";
 
 export default function PrivacyPage() {
-    const content = `
+  const content = `
 Summary: We don't sell your data. Period.
 
 1. Data Collection: We collect necessary information to facilitate your booking, including name, email, and phone number. This data is passed directly to the hotel supplier to secure your room.
@@ -10,8 +10,10 @@ Summary: We don't sell your data. Period.
 
 3. Cookies: We use essential cookies to remember your search history and support your current session.
 
-4. Third Parties: Information is shared only with our hotel suppliers (e.g., Amadeus) for the purpose of fulfilling your reservation.
+4. Third Parties: Information is shared only with our hotel suppliers (e.g., Amadeus) for the purpose of fulfilling your reservation. To provide the services, your Personal Data will be shared by Amadeus IT Group, S.A.
+
+5. Data Rights & Opt-Out: Under applicable Data Protection Legislation, you have the right to access, correct, or opt-out of the processing of your Personal Data. To exercise these rights or request data deletion, please contact us at privacy@gosleepy.xyz.
   `;
 
-    return <LegalLayout title="Privacy Policy" content={content} />;
+  return <LegalLayout title="Privacy Policy" content={content} />;
 }

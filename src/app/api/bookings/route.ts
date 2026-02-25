@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase/client';
 import { MockSupplierAdapter } from '@/lib/supplier/mock';
 import { AmadeusAdapter } from '@/lib/supplier/amadeus';
+import { enforceCompliance } from '@/lib/compliance';
+import { sendBookingConfirmation } from '@/lib/email/resend';
 
 const supplier = process.env.AMADEUS_CLIENT_ID ? new AmadeusAdapter() : new MockSupplierAdapter();
 
@@ -11,16 +13,40 @@ export async function POST(req: NextRequest) {
         const {
             guestFirstName, guestLastName, email, phone,
             rateId, ratePayload, hotelName, supplierId,
-            checkIn, checkOut, guests, totalAmount, currency, paymentMethodId
+            checkIn, checkOut, guests, totalAmount, currency, paymentMethodId, idempotencyKey
         } = body;
 
-        // 1. Verify Quote Server-side (Enforce Guarantee)
         const quoteResult = await supplier.quote(ratePayload);
         if (!quoteResult.ok) {
             return NextResponse.json({ error: 'Selected rate is no longer available.' }, { status: 400 });
         }
-        if (quoteResult.guaranteeRequired && !paymentMethodId) {
-            return NextResponse.json({ error: 'A valid payment method is required to guarantee this reservation.' }, { status: 400 });
+
+        const ctx = {
+            offer: { fetchedAt: new Date().toISOString() }, // Simplified offer context for now
+            rate: ratePayload,
+            guaranteeRequired: Boolean(quoteResult.guaranteeRequired),
+            cancellationPolicyText: quoteResult.cancellationPolicyText,
+            acceptedPayments: {}
+        };
+
+        const reqForCompliance = {
+            offerId: hotelName,
+            rateKey: rateId,
+            guests: guests,
+            checkIn: checkIn,
+            checkOut: checkOut,
+            firstName: guestFirstName,
+            lastName: guestLastName,
+            email: email,
+            phone: phone,
+            paymentMethodId: paymentMethodId,
+            idempotencyKey: idempotencyKey
+        }
+
+        try {
+            await enforceCompliance(reqForCompliance, ctx);
+        } catch (complianceError: any) {
+            return NextResponse.json({ error: complianceError.message }, { status: complianceError.statusCode || 400 });
         }
 
         // Use updated payload from quote if needed
@@ -56,9 +82,16 @@ export async function POST(req: NextRequest) {
 
         // 3. Call Supplier
         try {
-            const result = await supplier.book({ guestFirstName, guestLastName, email, phone, ratePayload: actualRatePayload, paymentMethodId });
+            const result = await supplier.book({
+                guestFirstName,
+                guestLastName,
+                email,
+                phone,
+                ratePayload: actualRatePayload,
+                paymentMethodId,
+                paymentMetadata: ctx.acceptedPayments
+            });
 
-            // 4. Set CONFIRMED
             const { data: confirmed, error: confirmError } = await supabase
                 .from('bookings')
                 .update({
@@ -68,6 +101,24 @@ export async function POST(req: NextRequest) {
                 .eq('id', booking.id)
                 .select()
                 .single();
+
+            // 5. Send Transactional Confirmation Email
+            try {
+                await sendBookingConfirmation({
+                    to: email,
+                    firstName: guestFirstName,
+                    lastName: guestLastName,
+                    hotelName,
+                    checkIn,
+                    checkOut,
+                    confirmationNumber: result.confirmationNumber,
+                    totalAmount,
+                    currency
+                });
+            } catch (emailError) {
+                // Non-fatal error for the booking itself, so just log it.
+                console.error("Failed to sequence transaction email:", emailError);
+            }
 
             return NextResponse.json(confirmed);
         } catch (supplierError) {

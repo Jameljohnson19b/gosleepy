@@ -177,6 +177,10 @@ export class AmadeusAdapter implements SupplierAdapter {
 
     async book(params: BookingParams) {
         try {
+            // In accordance with PCI SAQ-A, we do not handle raw PANs. Since Amadeus hotelBookings explicitly
+            // requires cleartext PANs to guarantee, the compliance middleware halts execution before this point.
+            // Do not inject fake/dummy PANs.
+
             const response = await this.amadeus.booking.hotelBookings.post(
                 JSON.stringify({
                     data: {
@@ -192,17 +196,7 @@ export class AmadeusAdapter implements SupplierAdapter {
                                     email: params.email
                                 }
                             }
-                        ],
-                        payments: params.paymentMethodId ? [
-                            {
-                                method: 'creditCard',
-                                card: {
-                                    vendorCode: 'VI', // Map from Stripe token
-                                    cardNumber: '0000000000000000', // Mock PAN forwarding
-                                    expiryDate: '2026-12'
-                                }
-                            }
-                        ] : undefined
+                        ]
                     }
                 })
             );

@@ -8,6 +8,7 @@ import { Suspense } from "react";
 import { useResolvedPhone } from "@/hooks/usePhoneResolution";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { v4 as uuidv4 } from "uuid";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "pk_test_dummy");
 
@@ -21,6 +22,8 @@ function CheckoutContent() {
         email: "",
         phone: ""
     });
+
+    const [idempotencyKey] = useState(uuidv4());
 
     const hotelId = searchParams.get("hotelId");
     const rateId = searchParams.get("rateId");
@@ -130,7 +133,8 @@ function CheckoutContent() {
                     guests: 2,
                     totalAmount: amount,
                     currency: "USD",
-                    paymentMethodId
+                    paymentMethodId,
+                    idempotencyKey
                 })
             });
 
@@ -303,6 +307,9 @@ function CheckoutContent() {
 
                     <p className="text-center text-[10px] text-gray-600 font-bold uppercase tracking-widest mt-6 leading-relaxed">
                         By clicking secure room, you agree to pay <br /> {hotelName} ${amount.toFixed(2)} upon arrival.
+                    </p>
+                    <p className="text-center text-[9px] text-gray-700 font-bold uppercase mt-4 leading-relaxed max-w-sm mx-auto">
+                        By continuing, you acknowledge our <Link href="/privacy" className="text-[#ff10f0] hover:underline" target="_blank">Privacy Policy</Link>. To provide the services, your Personal Data will be shared by Amadeus IT Group, S.A.
                     </p>
                 </div>
             </form>

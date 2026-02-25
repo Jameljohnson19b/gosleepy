@@ -1,35 +1,104 @@
 import { Resend } from 'resend';
-import { Booking } from '@/types/hotel';
+import { BookingConfirmationEmail } from '@/components/emails/BookingConfirmation';
+import { SupportTicketEmail } from '@/components/emails/SupportTicket';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-export async function sendConfirmationEmail(booking: Booking) {
-    if (!process.env.RESEND_API_KEY) {
-        console.warn('Resend API Key missing. Skipping email.');
-        return;
+export async function sendBookingConfirmation({
+  to,
+  firstName,
+  lastName,
+  hotelName,
+  checkIn,
+  checkOut,
+  confirmationNumber,
+  totalAmount,
+  currency
+}: {
+  to: string;
+  firstName: string;
+  lastName: string;
+  hotelName: string;
+  checkIn: string;
+  checkOut: string;
+  confirmationNumber: string;
+  totalAmount: number;
+  currency: string;
+}) {
+  if (!resend) {
+    console.warn('⚠️ RESEND_API_KEY is missing. Mocking email send to:', to);
+    return { success: true, mock: true };
+  }
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'Go Sleepy <bookings@gosleepy.xyz>',
+      to: [to],
+      subject: `Confirmed: Your Stay at ${hotelName}`,
+      react: BookingConfirmationEmail({
+        firstName,
+        lastName,
+        hotelName,
+        checkIn,
+        checkOut,
+        confirmationNumber,
+        totalAmount,
+        currency
+      })
+    });
+
+    if (error) {
+      console.error('Failed to send booking confirmation email:', error);
+      return { success: false, error };
     }
 
-    try {
-        await resend.emails.send({
-            from: 'Go Sleepy <stay@gosleepy.xyz>',
-            to: booking.email,
-            subject: `Room Secured: ${booking.hotelName}`,
-            html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: auto; background: #000; color: #fff; padding: 20px;">
-          <h1 style="color: #ffd700; text-transform: uppercase;">Room Secured</h1>
-          <p>Your reservation at <strong>${booking.hotelName}</strong> is confirmed.</p>
-          <div style="background: #111; padding: 15px; border-radius: 10px; margin: 20px 0;">
-            <p><strong>Confirmation #:</strong> ${booking.supplierBookingId}</p>
-            <p><strong>Check-in:</strong> ${booking.checkIn}</p>
-            <p><strong>Total Due at Property:</strong> ${booking.totalAmount} ${booking.currency}</p>
-          </div>
-          <p style="color: #ffd700; font-weight: bold;">PAY AT PROPERTY - NO CARD CHARGED TODAY</p>
-          <hr style="border-color: #333;" />
-          <p style="font-size: 12px; color: #666;">Go Sleepy - Helping you find rest, fast.</p>
-        </div>
-      `
-        });
-    } catch (error) {
-        console.error('Failed to send confirmation email:', error);
-    }
+    return { success: true, data };
+  } catch (error) {
+    console.error('Resend Exception:', error);
+    return { success: false, error };
+  }
 }
+
+export async function sendSupportTicketConfirmation({
+  to,
+  ticketId,
+  category,
+  subject,
+  message
+}: {
+  to: string;
+  ticketId: string;
+  category: string;
+  subject: string;
+  message: string;
+}) {
+  if (!resend) {
+    console.warn('⚠️ RESEND_API_KEY is missing. Mocking support email send to:', to);
+    return { success: true, mock: true };
+  }
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'Go Sleepy Support <support@gosleepy.xyz>',
+      to: [to],
+      subject: `Support Ticket Received: #${ticketId}`,
+      react: SupportTicketEmail({
+        ticketId,
+        category,
+        subject,
+        message
+      })
+    });
+
+    if (error) {
+      console.error('Failed to send support ticket email:', error);
+      return { success: false, error };
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    console.error('Resend Support Exception:', error);
+    return { success: false, error };
+  }
+}
+

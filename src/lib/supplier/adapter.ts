@@ -16,6 +16,7 @@ export interface BookingParams {
     phone?: string;
     ratePayload: any;
     paymentMethodId?: string;
+    paymentMetadata?: any;
 }
 
 export interface SupplierAdapter {

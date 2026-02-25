@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase/client';
+import { sendSupportTicketConfirmation } from '@/lib/email/resend';
 
 export async function POST(req: Request) {
     try {
@@ -32,6 +33,19 @@ export async function POST(req: Request) {
                     ticket_category: category
                 }
             ]);
+        }
+
+        // 5. Send Support Confirmation Email
+        try {
+            await sendSupportTicketConfirmation({
+                to: email,
+                ticketId: data[0].id,
+                category,
+                subject,
+                message
+            });
+        } catch (emailError) {
+            console.error("Failed to send support confirmation email:", emailError);
         }
 
         return NextResponse.json({ success: true, ticketId: data[0].id });
