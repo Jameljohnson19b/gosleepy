@@ -9,13 +9,12 @@ export function SiteFooter() {
             <div className="max-w-7xl mx-auto">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-16">
                     <div className="col-span-2 md:col-span-1">
-                        <Link href="/" className="flex items-center gap-3 mb-6">
+                        <Link href="/" className="flex items-center mb-6">
                             <img
-                                src="/logo-sheep.png"
+                                src="/logo-main.png"
                                 alt="Go Sleepy Logo"
-                                className="w-12 h-12 object-contain drop-shadow-[0_0_10px_rgba(255,16,240,0.4)]"
+                                className="h-16 w-auto object-contain drop-shadow-[0_0_10px_rgba(255,16,240,0.4)]"
                             />
-                            <span className="text-[#ff10f0] font-black tracking-tighter text-2xl uppercase">Go Sleepy</span>
                         </Link>
                         <p className="text-gray-500 text-xs font-medium leading-relaxed max-w-[200px]">
                             Finding the best places to sleep for tired travelers.

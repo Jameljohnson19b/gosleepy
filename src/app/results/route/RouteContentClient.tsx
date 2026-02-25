@@ -7,6 +7,8 @@ import { Zap, ArrowLeft, MapPin, Flag, Info, Grid, List as ListIcon } from "luci
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import SoftAuthSheet from "@/components/auth/SoftAuthSheet";
+import { createBrowserClient } from "@supabase/ssr";
+import { useRef } from "react";
 
 interface PitStop {
     name: string;
@@ -306,8 +308,21 @@ export default function RouteContentClient({
     // Auth Intent State
     const [authSheetOpen, setAuthSheetOpen] = useState(false);
     const [tapCounts, setTapCounts] = useState<{ [key: string]: { count: number; last: number } }>({});
-    const [idleTimer, setIdleTimer] = useState<NodeJS.Timeout | null>(null);
+    const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
     const [hasTriggeredIdle, setHasTriggeredIdle] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    // Initial Auth Check
+    useEffect(() => {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+        if (supabaseUrl && supabaseAnonKey) {
+            const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
+            supabase.auth.getSession().then(({ data: { session } }) => {
+                if (session) setIsAuthenticated(true);
+            });
+        }
+    }, []);
 
     // 1AM Mode (Mission Spec: 10PM - 6AM)
     useEffect(() => {
@@ -337,7 +352,7 @@ export default function RouteContentClient({
 
     // Intent Triggers Logic
     const handleIntentTrigger = (type: 'DOUBLE_TAP' | 'RESERVE' | 'IDLE' | '1AM') => {
-        if (!authSheetOpen) {
+        if (!authSheetOpen && !isAuthenticated) {
             setAuthSheetOpen(true);
             console.log(`[AUTH_AGENT] Triggered soft auth: ${type}`);
         }
@@ -345,15 +360,14 @@ export default function RouteContentClient({
 
     // Idle Detection
     useEffect(() => {
-        if (loading || hasTriggeredIdle) return;
+        if (loading || hasTriggeredIdle || isAuthenticated) return;
 
         const resetTimer = () => {
-            if (idleTimer) clearTimeout(idleTimer);
-            const timer = setTimeout(() => {
+            if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+            idleTimerRef.current = setTimeout(() => {
                 setHasTriggeredIdle(true);
                 handleIntentTrigger('IDLE');
-            }, 35000); // 35s idle fatigue signal
-            setIdleTimer(timer);
+            }, 45000); // 45s idle fatigue signal (relaxed slightly)
         };
 
         window.addEventListener('mousemove', resetTimer);
@@ -363,18 +377,18 @@ export default function RouteContentClient({
         return () => {
             window.removeEventListener('mousemove', resetTimer);
             window.removeEventListener('scroll', resetTimer);
-            if (idleTimer) clearTimeout(idleTimer);
+            if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
         };
-    }, [loading, hasTriggeredIdle, idleTimer]);
+    }, [loading, hasTriggeredIdle, isAuthenticated]);
 
     // 1AM Mode Protection
     useEffect(() => {
-        if (is1AM && !loading) {
+        if (is1AM && !loading && !isAuthenticated) {
             // Late night travelers are high-intent and likely fatigued
-            const timer = setTimeout(() => handleIntentTrigger('1AM'), 15000);
+            const timer = setTimeout(() => handleIntentTrigger('1AM'), 25000);
             return () => clearTimeout(timer);
         }
-    }, [is1AM, loading]);
+    }, [is1AM, loading, isAuthenticated]);
 
     const handleCardInteraction = (hotelId: string) => {
         const now = Date.now();

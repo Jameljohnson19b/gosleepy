@@ -13,13 +13,12 @@ export function SiteHeader() {
     return (
         <header className="w-full bg-black/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-[100]">
             <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                <Link href="/" className="flex items-center gap-3 active:scale-95 transition-all">
+                <Link href="/" className="flex items-center active:scale-95 transition-all">
                     <img
-                        src="/logo-sheep.png"
-                        alt=""
-                        className="w-10 h-10 object-contain drop-shadow-[0_0_10px_rgba(255,16,240,0.6)]"
+                        src="/logo-main.png"
+                        alt="Go Sleepy"
+                        className="h-12 w-auto object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]"
                     />
-                    <span className="text-[#ff10f0] font-black tracking-tighter text-xl uppercase">Go Sleepy</span>
                 </Link>
 
                 <nav className="hidden md:flex items-center gap-8">

@@ -118,20 +118,16 @@ export default function LandingPage() {
         {/* Content - Shifted lower to unblock the view */}
         <div className="z-10 max-w-2xl w-full">
           {/* Brand - Transparent Blend Mode */}
-          <div className="flex justify-center mb-4">
+          <div className="flex justify-center mb-0">
             <div className="relative">
               <div className="absolute inset-0 blur-3xl bg-[#ff10f0]/30 animate-pulse-slow" />
               <img
-                src="/logo-sheep.png"
+                src="/logo-main.png"
                 alt="Go Sleepy Logo"
-                className="w-20 h-20 object-contain relative mix-blend-screen animate-pulse-slow"
+                className="h-44 w-auto object-contain relative mix-blend-screen animate-pulse-slow drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)]"
               />
             </div>
           </div>
-
-          <h1 className="text-4xl md:text-6xl font-black tracking-[-0.05em] mb-2 uppercase leading-none text-white drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)]">
-            GO SLEEPY
-          </h1>
 
           <p className="text-base md:text-lg text-gray-200 mb-10 max-w-xl mx-auto font-medium lowercase tracking-tight drop-shadow-md">
             Find <span className="text-[#ff10f0] font-black uppercase">low-cost stays</span> —
@@ -301,11 +297,11 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
           <div>
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 rounded-full bg-[#ff10f0]/10 border border-[#ff10f0]/30 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
                 <img
-                  src="/logo-sheep.png"
+                  src="/logo-main.png"
                   alt=""
-                  className="w-10 h-10 object-contain drop-shadow-[0_0_10px_rgba(255,16,240,0.4)]"
+                  className="w-16 h-16 object-contain drop-shadow-[0_0_10px_rgba(255,16,240,0.4)]"
                 />
               </div>
               <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ff10f0]">
