@@ -233,30 +233,26 @@ export class AmadeusAdapter implements SupplierAdapter {
             }
         };
 
-        // Attempt 1: Specific CITY search with clean name
-        let city = await trySearch(cleanName, 'CITY');
+        const subTypes = 'CITY,AIRPORT,DISTRICT';
 
-        // Attempt 2: Broader CITY/AIRPORT search if failed
-        if (!city) {
-            city = await trySearch(cleanName, 'CITY,AIRPORT');
+        // Attempt 1: Specific search with clean name (e.g. "Bronx")
+        let city = await trySearch(cleanName, subTypes);
+
+        // Attempt 2: Full string search if clean name failed (e.g. "Bronx, NY")
+        if (!city && cityName.includes(',')) {
+            city = await trySearch(cityName.trim(), subTypes);
         }
 
-        // Attempt 3: Specific fallback for "City" suffix (e.g., "New York City" -> "New York")
+        // Attempt 3: Specific fallback for "City" suffix
         if (!city && cleanName.toLowerCase().endsWith(' city')) {
             const shorterName = cleanName.slice(0, -5).trim();
-            city = await trySearch(shorterName, 'CITY');
+            city = await trySearch(shorterName, subTypes);
         }
 
-        // Attempt 4: Even broader search for shorter name if Attempt 3 failed
-        if (!city && cleanName.toLowerCase().endsWith(' city')) {
-            const shorterName = cleanName.slice(0, -5).trim();
-            city = await trySearch(shorterName, 'CITY,AIRPORT');
-        }
-
-        // Attempt 5: If still failed and name is long, try even shorter version (first word)
+        // Attempt 4: First word search for multi-word cities
         if (!city && cleanName.includes(' ')) {
             const firstWord = cleanName.split(' ')[0];
-            city = await trySearch(firstWord, 'CITY,AIRPORT');
+            city = await trySearch(firstWord, subTypes);
         }
 
         if (city) {
