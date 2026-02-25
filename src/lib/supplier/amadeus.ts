@@ -159,13 +159,15 @@ export class AmadeusAdapter implements SupplierAdapter {
         }
     }
 
-    async quote(ratePayload: any) {
+    async quote(ratePayload: any): Promise<{ ok: boolean; finalTotal?: number; updatedPayload?: any; guaranteeRequired?: boolean; cancellationPolicyText?: string; error?: string }> {
         try {
             const response = await this.amadeus.shopping.hotelOfferSearch(ratePayload.offerId).get();
             const offer = response.data.offers[0];
             return {
                 ok: true,
                 finalTotal: parseFloat(offer.price.total),
+                guaranteeRequired: offer.policies?.guarantee?.acceptedPayments ? true : false,
+                cancellationPolicyText: offer.policies?.cancellation?.description?.text || 'Standard cancellation policy applies.',
                 updatedPayload: { offerId: offer.id }
             };
         } catch (error) {

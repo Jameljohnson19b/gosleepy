@@ -20,7 +20,7 @@ export interface BookingParams {
 
 export interface SupplierAdapter {
     search(params: SearchParams): Promise<Offer[]>;
-    quote(ratePayload: any): Promise<{ ok: boolean; finalTotal?: number; updatedPayload?: any; error?: string }>;
+    quote(ratePayload: any): Promise<{ ok: boolean; finalTotal?: number; updatedPayload?: any; guaranteeRequired?: boolean; cancellationPolicyText?: string; error?: string }>;
     book(params: BookingParams): Promise<{ bookingId: string; confirmationNumber: string }>;
     cancel(bookingId: string): Promise<{ ok: boolean; error?: string }>;
 }

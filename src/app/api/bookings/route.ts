@@ -14,7 +14,19 @@ export async function POST(req: NextRequest) {
             checkIn, checkOut, guests, totalAmount, currency, paymentMethodId
         } = body;
 
-        // 1. Create DRAFT
+        // 1. Verify Quote Server-side (Enforce Guarantee)
+        const quoteResult = await supplier.quote(ratePayload);
+        if (!quoteResult.ok) {
+            return NextResponse.json({ error: 'Selected rate is no longer available.' }, { status: 400 });
+        }
+        if (quoteResult.guaranteeRequired && !paymentMethodId) {
+            return NextResponse.json({ error: 'A valid payment method is required to guarantee this reservation.' }, { status: 400 });
+        }
+
+        // Use updated payload from quote if needed
+        const actualRatePayload = quoteResult.updatedPayload || ratePayload;
+
+        // 2. Create DRAFT
         const { data: booking, error: draftError } = await supabase
             .from('bookings')
             .insert({
@@ -44,7 +56,7 @@ export async function POST(req: NextRequest) {
 
         // 3. Call Supplier
         try {
-            const result = await supplier.book({ guestFirstName, guestLastName, email, phone, ratePayload, paymentMethodId });
+            const result = await supplier.book({ guestFirstName, guestLastName, email, phone, ratePayload: actualRatePayload, paymentMethodId });
 
             // 4. Set CONFIRMED
             const { data: confirmed, error: confirmError } = await supabase

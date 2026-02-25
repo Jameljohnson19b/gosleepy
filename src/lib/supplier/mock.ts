@@ -94,8 +94,8 @@ export class MockSupplierAdapter implements SupplierAdapter {
         ];
     }
 
-    async quote(ratePayload: any) {
-        return { ok: true, finalTotal: 89.00, updatedPayload: ratePayload };
+    async quote(ratePayload: any): Promise<{ ok: boolean; finalTotal?: number; updatedPayload?: any; guaranteeRequired?: boolean; cancellationPolicyText?: string; error?: string }> {
+        return { ok: true, finalTotal: 89.00, updatedPayload: ratePayload, guaranteeRequired: true, cancellationPolicyText: 'Free cancellation until 4 PM today.' };
     }
 
     async book(params: BookingParams) {

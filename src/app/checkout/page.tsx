@@ -38,14 +38,47 @@ function CheckoutContent() {
 
     const { phone: resolvedPhone, resolving: resolvingPhone } = useResolvedPhone(hotelPhone, hotelName, hotelAddress);
 
-    const [isVerifying, setIsVerifying] = useState(riskLabel === 'HIGH');
+    const [isVerifying, setIsVerifying] = useState(true);
+    const [serverGuaranteeRequired, setServerGuaranteeRequired] = useState(guaranteeRequired);
+    const [serverRatePayload, setServerRatePayload] = useState({ token: "mock-token-1" });
 
     useEffect(() => {
-        if (isVerifying) {
-            const timer = setTimeout(() => setIsVerifying(false), 2500);
-            return () => clearTimeout(timer);
-        }
-    }, [isVerifying]);
+        let mounted = true;
+        const verifyQuote = async () => {
+            try {
+                // In production, we'd pull the actual payload from a cache or the user's session
+                // Since this is just a single route right now, we are simulating the payload passed 
+                // between the results page and the checkout. 
+                const ratePayload = { token: "mock-token-1", offerId: rateId };
+
+                const res = await fetch("/api/quote", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ ratePayload })
+                });
+
+                if (res.ok && mounted) {
+                    const data = await res.json();
+                    setServerGuaranteeRequired(data.guaranteeRequired ?? guaranteeRequired);
+                    if (data.updatedPayload) {
+                        setServerRatePayload(data.updatedPayload);
+                    }
+                }
+            } catch (err) {
+                console.error("Quote verification failed", err);
+            } finally {
+                if (mounted) {
+                    setIsVerifying(false);
+                }
+            }
+        };
+
+        verifyQuote();
+
+        return () => {
+            mounted = false;
+        };
+    }, [rateId]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -54,9 +87,10 @@ function CheckoutContent() {
         try {
             let paymentMethodId = undefined;
 
-            if (guaranteeRequired) {
+            if (serverGuaranteeRequired) {
                 if (!stripe || !elements) {
                     setLoading(false);
+                    alert("Payment system is still initializing.");
                     return;
                 }
                 const cardElement = elements.getElement(CardElement);
@@ -90,7 +124,7 @@ function CheckoutContent() {
                     hotelName: hotelName,
                     supplierId: "amadeus",
                     rateId: rateId,
-                    ratePayload: { token: "mock-token-1" },
+                    ratePayload: serverRatePayload,
                     checkIn: new Date().toISOString().split('T')[0],
                     checkOut: new Date(Date.now() + 86400000).toISOString().split('T')[0],
                     guests: 2,
@@ -219,7 +253,7 @@ function CheckoutContent() {
                     />
                 </div>
 
-                {guaranteeRequired && (
+                {serverGuaranteeRequired && (
                     <div className="space-y-3 p-5 bg-[#111] border border-[#ff10f0]/20 rounded-2xl">
                         <div className="flex items-center gap-2 mb-2">
                             <CreditCard className="w-4 h-4 text-[#ff10f0]" />
