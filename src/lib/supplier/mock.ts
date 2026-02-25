@@ -31,6 +31,7 @@ export class MockSupplierAdapter implements SupplierAdapter {
                         payType: 'PAY_AT_PROPERTY',
                         refundable: true,
                         cancellationPolicyText: 'Free cancellation until 4 PM today.',
+                        guaranteeRequired: true,
                         supplierPayload: { token: 'mock-token-1' }
                     },
                     {
@@ -41,6 +42,7 @@ export class MockSupplierAdapter implements SupplierAdapter {
                         payType: 'PAY_AT_PROPERTY',
                         refundable: true,
                         cancellationPolicyText: 'Free cancellation until 4 PM today.',
+                        guaranteeRequired: false,
                         supplierPayload: { token: 'mock-token-1' }
                     },
                     {
@@ -74,6 +76,7 @@ export class MockSupplierAdapter implements SupplierAdapter {
                         payType: 'PAY_AT_PROPERTY',
                         refundable: false,
                         cancellationPolicyText: 'Non-refundable.',
+                        guaranteeRequired: true,
                         supplierPayload: { token: 'mock-token-2' }
                     },
                     {

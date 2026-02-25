@@ -2,10 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ShieldCheck, Zap, Lock } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Zap, Lock, CreditCard } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { useResolvedPhone } from "@/hooks/usePhoneResolution";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "pk_test_dummy");
 
 function CheckoutContent() {
     const router = useRouter();
@@ -27,6 +31,10 @@ function CheckoutContent() {
     const hotelAddress = searchParams.get("address") || "";
     const hotelLat = searchParams.get("lat") || "";
     const hotelLng = searchParams.get("lng") || "";
+    const guaranteeRequired = searchParams.get("guarantee") === "true";
+
+    const stripe = useStripe();
+    const elements = useElements();
 
     const { phone: resolvedPhone, resolving: resolvingPhone } = useResolvedPhone(hotelPhone, hotelName, hotelAddress);
 
@@ -44,6 +52,33 @@ function CheckoutContent() {
         setLoading(true);
 
         try {
+            let paymentMethodId = undefined;
+
+            if (guaranteeRequired) {
+                if (!stripe || !elements) {
+                    setLoading(false);
+                    return;
+                }
+                const cardElement = elements.getElement(CardElement);
+                if (cardElement) {
+                    const { error, paymentMethod } = await stripe.createPaymentMethod({
+                        type: 'card',
+                        card: cardElement,
+                        billing_details: {
+                            name: `${formData.firstName} ${formData.lastName}`,
+                            email: formData.email,
+                            phone: formData.phone
+                        }
+                    });
+                    if (error) {
+                        alert(error.message);
+                        setLoading(false);
+                        return;
+                    }
+                    paymentMethodId = paymentMethod.id;
+                }
+            }
+
             const res = await fetch("/api/bookings", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -60,7 +95,8 @@ function CheckoutContent() {
                     checkOut: new Date(Date.now() + 86400000).toISOString().split('T')[0],
                     guests: 2,
                     totalAmount: amount,
-                    currency: "USD"
+                    currency: "USD",
+                    paymentMethodId
                 })
             });
 
@@ -183,6 +219,29 @@ function CheckoutContent() {
                     />
                 </div>
 
+                {guaranteeRequired && (
+                    <div className="space-y-3 p-5 bg-[#111] border border-[#ff10f0]/20 rounded-2xl">
+                        <div className="flex items-center gap-2 mb-2">
+                            <CreditCard className="w-4 h-4 text-[#ff10f0]" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-[#ff10f0]">Reservation Guarantee required</span>
+                        </div>
+                        <p className="text-xs text-gray-400 font-bold leading-relaxed mb-4">
+                            No charge now. This card just guarantees your reservation. You pay at the hotel.
+                        </p>
+                        <div className="p-4 bg-black rounded-xl border border-gray-800">
+                            <CardElement options={{
+                                style: {
+                                    base: {
+                                        fontSize: '16px',
+                                        color: '#ffffff',
+                                        '::placeholder': { color: '#4b5563' },
+                                    }
+                                }
+                            }} />
+                        </div>
+                    </div>
+                )}
+
                 <div className="pt-4">
                     <div className="mb-4 flex items-center justify-between px-2">
                         <span className="text-sm font-bold text-gray-500">Total Due Today</span>
@@ -224,7 +283,9 @@ export default function CheckoutPage() {
                 <Zap className="w-12 h-12 text-[#ff10f0] animate-spin" />
             </div>
         }>
-            <CheckoutContent />
+            <Elements stripe={stripePromise}>
+                <CheckoutContent />
+            </Elements>
         </Suspense>
     );
 }

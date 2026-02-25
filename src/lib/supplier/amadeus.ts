@@ -147,6 +147,7 @@ export class AmadeusAdapter implements SupplierAdapter {
                         payType: 'PAY_AT_PROPERTY',
                         refundable: true,
                         cancellationPolicyText: o.policies?.cancellation?.description?.text || 'Standard cancellation policy applies.',
+                        guaranteeRequired: o.policies?.guarantee?.acceptedPayments ? true : false,
                         supplierPayload: { offerId: o.id }
                     }))
                 };
@@ -190,16 +191,16 @@ export class AmadeusAdapter implements SupplierAdapter {
                                 }
                             }
                         ],
-                        payments: [
+                        payments: params.paymentMethodId ? [
                             {
-                                method: 'creditCard', // Amadeus often requires CC even for pay-at-property/guarantee
+                                method: 'creditCard',
                                 card: {
-                                    vendorCode: 'VI',
-                                    cardNumber: '0000000000000000', // Mocking for Agency model focus if applicable
+                                    vendorCode: 'VI', // Map from Stripe token
+                                    cardNumber: '0000000000000000', // Mock PAN forwarding
                                     expiryDate: '2026-12'
                                 }
                             }
-                        ]
+                        ] : undefined
                     }
                 })
             );

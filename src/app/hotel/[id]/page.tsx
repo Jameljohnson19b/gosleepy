@@ -70,8 +70,8 @@ export default function HotelDetailsPage() {
     if (loading) return null;
     if (!offer) return <div>Hotel not found</div>;
 
-    const checkoutUrl = (rateId: string, amount: number) =>
-        `/checkout?hotelId=${offer.hotelId}&rateId=${rateId}&risk=${riskLabel}&hotelName=${encodeURIComponent(offer.hotelName)}&amount=${amount}&address=${encodeURIComponent(offer.address || '')}&phone=${encodeURIComponent(resolvedPhone || '')}&lat=${offer.lat}&lng=${offer.lng}`;
+    const checkoutUrl = (rateId: string, amount: number, guaranteeRequired?: boolean) =>
+        `/checkout?hotelId=${offer.hotelId}&rateId=${rateId}&risk=${riskLabel}&hotelName=${encodeURIComponent(offer.hotelName)}&amount=${amount}&address=${encodeURIComponent(offer.address || '')}&phone=${encodeURIComponent(resolvedPhone || '')}&lat=${offer.lat}&lng=${offer.lng}&guarantee=${guaranteeRequired ? 'true' : 'false'}`;
 
     return (
         <main className="min-h-screen bg-black text-white">
@@ -307,7 +307,7 @@ export default function HotelDetailsPage() {
                             </div>
 
                             <button
-                                onClick={() => router.push(checkoutUrl(rate.rateId, rate.totalAmount))}
+                                onClick={() => router.push(checkoutUrl(rate.rateId, rate.totalAmount, rate.guaranteeRequired))}
                                 className="w-full bg-[#ff10f0] text-white py-5 rounded-2xl font-black text-xl active:scale-[0.98] transition-all shadow-[0_10px_25px_rgba(255,16,240,0.3)]"
                             >
                                 SECURE THIS ROOM
@@ -385,7 +385,7 @@ export default function HotelDetailsPage() {
                         </div>
                     </div>
                     <button
-                        onClick={() => router.push(checkoutUrl(offer.rates[0].rateId, offer.rates[0].totalAmount))}
+                        onClick={() => router.push(checkoutUrl(offer.rates[0].rateId, offer.rates[0].totalAmount, offer.rates[0].guaranteeRequired))}
                         className="flex-1 bg-[#ff10f0] text-white py-4 rounded-xl font-black text-xl active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(255,16,240,0.2)]"
                     >
                         BOOK NOW

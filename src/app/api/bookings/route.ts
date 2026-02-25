@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
         const {
             guestFirstName, guestLastName, email, phone,
             rateId, ratePayload, hotelName, supplierId,
-            checkIn, checkOut, guests, totalAmount, currency
+            checkIn, checkOut, guests, totalAmount, currency, paymentMethodId
         } = body;
 
         // 1. Create DRAFT
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
 
         // 3. Call Supplier
         try {
-            const result = await supplier.book({ guestFirstName, guestLastName, email, phone, ratePayload });
+            const result = await supplier.book({ guestFirstName, guestLastName, email, phone, ratePayload, paymentMethodId });
 
             // 4. Set CONFIRMED
             const { data: confirmed, error: confirmError } = await supabase

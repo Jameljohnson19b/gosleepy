@@ -16,6 +16,7 @@ export interface Rate {
   payType: PayType;
   refundable: boolean;
   cancellationPolicyText: string;
+  guaranteeRequired?: boolean;
   supplierPayload: any; // Opaque token needed to book
 }
 
