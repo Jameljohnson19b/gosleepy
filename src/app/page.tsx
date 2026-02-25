@@ -16,12 +16,13 @@ import {
 export default function LandingPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [mode, setMode] = useState<"nearby" | "route">("nearby");
+  const [mode, setMode] = useState<"nearby" | "city" | "route">("nearby");
   const [radius, setRadius] = useState(10);
   const [bookingTime, setBookingTime] = useState<"now" | "nextDay">("now");
   const [duration, setDuration] = useState(1);
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
+  const [cityName, setCityName] = useState("");
 
   // 1AM Mode Detection (10PM - 6AM) — used for subtle theme + copy
   const [is1AM, setIs1AM] = useState(false);
@@ -76,6 +77,37 @@ export default function LandingPage() {
       );
     } else {
       pushWithCoords("40.7128", "-74.0060");
+    }
+  };
+
+  const handleCitySearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!cityName.trim()) return;
+    setLoading(true);
+
+    try {
+      const res = await fetch(`/api/geocode?city=${encodeURIComponent(cityName.trim())}`);
+      const coords = await res.json();
+
+      if (coords.error) {
+        alert("Could not find that city. Please try being more specific (e.g. 'Austin, TX')");
+        setLoading(false);
+        return;
+      }
+
+      const sp = new URLSearchParams({
+        lat: coords.lat.toString(),
+        lng: coords.lng.toString(),
+        radius: radius.toString(),
+        bookingTime,
+        duration: duration.toString(),
+      });
+
+      router.push(`/results?${sp.toString()}`);
+    } catch (error) {
+      console.error("City search failed:", error);
+      alert("Mission Link Failed. Please try again.");
+      setLoading(false);
     }
   };
 
@@ -135,11 +167,11 @@ export default function LandingPage() {
           {/* Tool Box — Glassmorphism */}
           <div className="bg-black/40 backdrop-blur-3xl p-2 rounded-[32px] border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
             {/* Mode switch (secondary, but clear) */}
-            <div className="flex bg-black/40 p-1.5 rounded-2xl mb-4">
+            <div className="flex bg-black/40 p-1.5 rounded-2xl mb-4 gap-1">
               <button
                 onClick={() => setMode("nearby")}
                 className={[
-                  "flex-1 py-4 px-4 rounded-xl font-black text-xs uppercase tracking-[0.2em] transition-all",
+                  "flex-1 py-4 px-2 rounded-xl font-black text-[10px] uppercase tracking-[0.15em] transition-all",
                   mode === "nearby"
                     ? "bg-[#ff10f0] text-white shadow-[0_0_20px_rgba(255,16,240,0.4)]"
                     : "text-gray-500 hover:text-white",
@@ -149,9 +181,21 @@ export default function LandingPage() {
               </button>
 
               <button
+                onClick={() => setMode("city")}
+                className={[
+                  "flex-1 py-4 px-2 rounded-xl font-black text-[10px] uppercase tracking-[0.15em] transition-all",
+                  mode === "city"
+                    ? "bg-[#ff10f0] text-white shadow-[0_0_20px_rgba(255,16,240,0.4)]"
+                    : "text-gray-500 hover:text-white",
+                ].join(" ")}
+              >
+                City
+              </button>
+
+              <button
                 onClick={() => setMode("route")}
                 className={[
-                  "flex-1 py-4 px-4 rounded-xl font-black text-xs uppercase tracking-[0.2em] transition-all",
+                  "flex-1 py-4 px-2 rounded-xl font-black text-[10px] uppercase tracking-[0.15em] transition-all",
                   mode === "route"
                     ? "bg-[#ff10f0] text-white shadow-[0_0_20px_rgba(255,16,240,0.4)]"
                     : "text-gray-500 hover:text-white",
@@ -163,7 +207,7 @@ export default function LandingPage() {
 
             {/* Inputs + Primary CTA */}
             <div className="px-4 pb-4">
-              {mode === "nearby" ? (
+              {mode === "nearby" && (
                 <button
                   onClick={handleFindRooms}
                   disabled={loading}
@@ -178,7 +222,36 @@ export default function LandingPage() {
                     </>
                   )}
                 </button>
-              ) : (
+              )}
+
+              {mode === "city" && (
+                <form onSubmit={handleCitySearch} className="space-y-4">
+                  <input
+                    required
+                    type="text"
+                    autoFocus
+                    value={cityName}
+                    onChange={(e) => setCityName(e.target.value)}
+                    placeholder="ENTER CITY (e.g. Austin, TX)"
+                    className="w-full bg-black/60 border border-white/10 rounded-2xl p-5 text-white placeholder:text-gray-700 focus:border-[#ff10f0] outline-none transition-all text-sm font-black tracking-widest uppercase"
+                  />
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-white text-black font-black py-6 rounded-2xl text-xl flex items-center justify-center gap-3 transition-all active:scale-95 shadow-[0_10px_30px_rgba(255,255,255,0.1)]"
+                  >
+                    {loading ? (
+                      <Zap className="animate-spin w-6 h-6" />
+                    ) : (
+                      <>
+                        <Target className="w-6 h-6" />
+                        SEARCH CITY
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
+              {mode === "route" && (
                 <form onSubmit={handleRouteSearch} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <input
