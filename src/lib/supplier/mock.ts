@@ -25,12 +25,32 @@ export class MockSupplierAdapter implements SupplierAdapter {
                 rates: [
                     {
                         rateId: 'r1',
-                        roomName: 'Queen Bed Non-Smoking',
+                        roomName: 'Standard Queen Room',
                         totalAmount: 89.00,
                         currency: 'USD',
                         payType: 'PAY_AT_PROPERTY',
                         refundable: true,
                         cancellationPolicyText: 'Free cancellation until 4 PM today.',
+                        supplierPayload: { token: 'mock-token-1' }
+                    },
+                    {
+                        rateId: 'r1-2',
+                        roomName: 'Double Room - Two Double Beds',
+                        totalAmount: 105.00,
+                        currency: 'USD',
+                        payType: 'PAY_AT_PROPERTY',
+                        refundable: true,
+                        cancellationPolicyText: 'Free cancellation until 4 PM today.',
+                        supplierPayload: { token: 'mock-token-1' }
+                    },
+                    {
+                        rateId: 'r1-3',
+                        roomName: 'Executive Suite - King Bed',
+                        totalAmount: 145.00,
+                        currency: 'USD',
+                        payType: 'PAY_AT_PROPERTY',
+                        refundable: false,
+                        cancellationPolicyText: 'Non-refundable.',
                         supplierPayload: { token: 'mock-token-1' }
                     }
                 ]
@@ -54,6 +74,16 @@ export class MockSupplierAdapter implements SupplierAdapter {
                         payType: 'PAY_AT_PROPERTY',
                         refundable: false,
                         cancellationPolicyText: 'Non-refundable.',
+                        supplierPayload: { token: 'mock-token-2' }
+                    },
+                    {
+                        rateId: 'r2-2',
+                        roomName: 'Deluxe Suite with Jacuzzi',
+                        totalAmount: 175.00,
+                        currency: 'USD',
+                        payType: 'PAY_AT_PROPERTY',
+                        refundable: false,
+                        cancellationPolicyText: 'Non-refundable. Pay now.',
                         supplierPayload: { token: 'mock-token-2' }
                     }
                 ]
