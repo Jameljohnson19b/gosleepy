@@ -115,7 +115,10 @@ export class MockSupplierAdapter implements SupplierAdapter {
             'Richmond': { lat: 37.5407, lng: -77.4360 },
             'Washington': { lat: 38.9072, lng: -77.0369 },
             'Atlanta': { lat: 33.7490, lng: -84.3880 },
-            'Orlando': { lat: 28.5383, lng: -81.3792 }
+            'Orlando': { lat: 28.5383, lng: -81.3792 },
+            'Paris': { lat: 48.8566, lng: 2.3522 },
+            'London': { lat: 51.5074, lng: -0.1278 },
+            'Bronx': { lat: 40.8448, lng: -73.8648 }
         };
 
         const normalized = cityName.split(',')[0].trim();

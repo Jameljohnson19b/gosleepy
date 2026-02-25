@@ -235,12 +235,15 @@ export class AmadeusAdapter implements SupplierAdapter {
 
         const subTypes = 'CITY,AIRPORT,DISTRICT';
 
-        // Attempt 1: Specific search with clean name (e.g. "Bronx")
-        let city = await trySearch(cleanName, subTypes);
-
-        // Attempt 2: Full string search if clean name failed (e.g. "Bronx, NY")
-        if (!city && cityName.includes(',')) {
+        // Attempt 1: If it has a comma, try the full string first for high precision (e.g. "Paris, France")
+        let city = null;
+        if (cityName.includes(',')) {
             city = await trySearch(cityName.trim(), subTypes);
+        }
+
+        // Attempt 2: Clean name search (e.g. "Paris")
+        if (!city) {
+            city = await trySearch(cleanName, subTypes);
         }
 
         // Attempt 3: Specific fallback for "City" suffix
