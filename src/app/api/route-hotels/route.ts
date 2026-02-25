@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server';
 import { AmadeusAdapter } from '@/lib/supplier/amadeus';
-import { MockSupplierAdapter } from '@/lib/supplier/mock';
 
 type LatLng = { lat: number; lng: number };
 
-const supplier = process.env.AMADEUS_CLIENT_ID ? new AmadeusAdapter() : (new MockSupplierAdapter() as any);
+const supplier = new AmadeusAdapter();
 
 export async function POST(req: Request) {
+    if (!process.env.AMADEUS_CLIENT_ID) {
+        return NextResponse.json({ error: 'Travel Network Offline: Amadeus keys not configured.' }, { status: 503 });
+    }
     try {
         const body = await req.json();
         const { origin, destination, checkIn, checkOut } = body;
