@@ -15,9 +15,9 @@ export function SiteHeader() {
             <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                 <Link href="/" className="flex items-center active:scale-95 transition-all">
                     <img
-                        src="/logo-main.png"
+                        src="/logo-horizontal.png"
                         alt="Go Sleepy"
-                        className="h-12 w-auto object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]"
+                        className="h-8 w-auto object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]"
                     />
                 </Link>
 

@@ -11,9 +11,9 @@ export function SiteFooter() {
                     <div className="col-span-2 md:col-span-1">
                         <Link href="/" className="flex items-center mb-6">
                             <img
-                                src="/logo-main.png"
+                                src="/logo-horizontal.png"
                                 alt="Go Sleepy Logo"
-                                className="h-16 w-auto object-contain drop-shadow-[0_0_10px_rgba(255,16,240,0.4)]"
+                                className="h-10 w-auto object-contain drop-shadow-[0_0_10px_rgba(255,16,240,0.4)]"
                             />
                         </Link>
                         <p className="text-gray-500 text-xs font-medium leading-relaxed max-w-[200px]">

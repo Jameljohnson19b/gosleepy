@@ -103,8 +103,8 @@ function ResultsContent() {
                     </Link>
 
                     <div className="flex items-center mx-auto">
-                        <img src="/logo-main.png" alt="Go Sleepy" className="h-10 w-auto object-contain drop-shadow-[0_0_10px_rgba(255,16,240,0.4)]" />
-                        <span className="text-[10px] text-gray-500 uppercase tracking-[0.3em] font-black italic ml-2 mt-4">NEARBY</span>
+                        <img src="/logo-horizontal.png" alt="Go Sleepy" className="h-8 w-auto object-contain drop-shadow-[0_0_10px_rgba(255,16,240,0.4)]" />
+                        <span className="text-[10px] text-gray-550 uppercase tracking-[0.3em] font-black italic ml-3 mt-4">NEARBY</span>
                     </div>
                 </div>
 
